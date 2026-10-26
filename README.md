@@ -1,6 +1,6 @@
 # Group 11 — Beyond the Cloud
 
-A cinematic, original Mars-inspired browser presentation on cloud economics, operations, and security. Speaker order: **Paulo → Renan → Earl**. Twenty-one slides, including a final reprise of the opening title, approximately 18–22 minutes plus questions.
+A cinematic, original Mars-inspired browser presentation on cloud economics, operations, and security. Speaker order: **Paulo → Renan → Earl**. Twenty-two slides, including an interactive Cloud Lab before the final title reprise. The core report takes approximately 18–22 minutes; allow an optional additional 2–3 minutes for the lab, plus questions.
 
 ## Run locally
 
@@ -55,3 +55,12 @@ The October 27 layout audit introduces a shared coordinate contract: each slide'
 The opening and closing titles share the reference-inspired cover. Syne supplies wide display headings, Instrument Serif Italic supplies editorial subtitles, and Barlow Condensed supplies labels, names, controls, and reading text. These are close visual matches chosen from the reference image; exact fonts cannot be extracted from a bitmap. Font files and their SIL Open Font License notices are bundled locally.
 
 Scene changes now include a 560-point silhouette morph between the previous and next 3D compositions. Mars uses a revolving, shader-deformed reveal that settles into a sphere, followed by slow surface rotation. The planet renders at up to 30 frames per second only while visible and active. Motion off and reduced-motion preferences disable these effects; reading view pauses them.
+
+## Interactive Cloud Lab and mobile navigation
+
+The penultimate slide (`#cloud-lab`, slide 21 of 22) has three presenter-controlled simulations. Pricing compares 176, 438, and 730 usage hours; 438 is the equal-cost point under the stated assumptions. Elasticity grows from two baseline machines to twenty for a peak and releases the additional eighteen afterward. Incident response moves through exposure, containment, investigation, and recovery. The incident model keeps existing resource charges running after containment until cleanup; it is a fictional teaching example, not a connected cloud account. Reset lab restores the initial values. All three simulations respect Motion off.
+
+Phones have a fixed Back/Next bar with at least 44-pixel touch targets, page position, and safe-area spacing. It remains available when presentation utilities are hidden. The same bar appears in short landscape windows. The final title is now slide 22; existing script references to its old slide number should be updated when rehearsing.
+
+- `src/lab.js`: lab state, calculation model, labels, and stage controls.
+- `src/lab.css`: lab layout and mobile navigation placement.
