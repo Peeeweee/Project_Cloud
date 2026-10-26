@@ -305,6 +305,22 @@ export function createScene(host, reducedMotion) {
   mesh(new THREE.ExtrudeGeometry(triangle,{depth:.25,bevelEnabled:true,bevelSize:.06,bevelThickness:.06,bevelSegments:2,steps:1}),black,alert);
   box(alert,[.14,.85,.1],[0,.2,.4],pale);box(alert,[.14,.14,.1],[0,-.5,.4],pale);
 
+  const incident=make('lab-incident');
+  const incidentRed=new THREE.MeshStandardMaterial({color:0xe66432,metalness:.45,roughness:.36});
+  const incidentPathMat=new THREE.MeshStandardMaterial({color:0xe66432,transparent:true,opacity:1,metalness:.4,roughness:.4});
+  const exposedKey=new THREE.Group();incident.add(exposedKey);exposedKey.position.set(-3.3,0,0);
+  mesh(new THREE.TorusGeometry(.4,.11,12,40),orange,exposedKey,[-.3,.3,0]);
+  box(exposedKey,[1,.17,.2],[.4,.3,0],orange);box(exposedKey,[.15,.4,.2],[.7,.15,0],orange);
+  const incidentPath=path(incident,[[-2.3,.2,0],[-1.3,.35,0],[0,.2,0],[2.3,.2,0]],incidentPathMat,.035);
+  const containment=new THREE.Group();incident.add(containment);containment.position.x=-1.5;
+  for(const x of [-.3,.3])box(containment,[.08,1.85,.12],[x,.2,0],pale);
+  for(const y of [-.65,.2,1.05])box(containment,[.7,.08,.12],[0,y,0],pale);
+  for(let i=0;i<2;i++)box(incident,[.85,.4,.85],[0,i*.55,0],pale);
+  const rogueMachines=[];
+  for(let i=0;i<6;i++)rogueMachines.push(box(incident,[.55,.55,.55],[2.5+(i%3)*.68,Math.floor(i/3)*.72,0],incidentRed));
+  const evidence=new THREE.Group();incident.add(evidence);evidence.position.set(1.3,-1,0);
+  for(let i=0;i<3;i++)box(evidence,[.5,.08,.5],[0,i*.16,0],pale);
+
   // Deterministic, sparse distant stars. Render once; no constant particle loop.
   let seed=11; const rand=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
   const starGeo = new THREE.BufferGeometry(); const positions=[];
@@ -371,8 +387,13 @@ export function createScene(host, reducedMotion) {
     const size=bounds.getSize(new THREE.Vector3());
     if(design.scene==='price'){
       center.set(0,0,0);size.set(6.6,3.5,2.6);
+      if(design.layout==='lab'){
+        demandTower.position.x=-2;commitTower.position.x=2;
+        price.children[2].position.x=-2;price.children[3].position.x=2;
+      }
     }
     if(design.scene==='elastic'){center.set(0,0,0);size.set(5.6,4.8,4.8);}
+    if(design.scene==='lab-incident'){center.set(0,0,0);size.set(9.5,3.7,3);}
     current.position.sub(center);
     current.updateWorldMatrix(true,true);
     if(camera.isOrthographicCamera){
@@ -415,7 +436,7 @@ export function createScene(host, reducedMotion) {
     const previousShape=!instant&&!reducedMotion.matches?silhouette(current):null;
     morphTween?.kill();morphMaterial.opacity=0;
     active=true;host.hidden=false;currentDesign=design;
-    camera=['terraces','time','privilege','duality','ownership','price-duel','expansion','cycle','blueprint','proof','horizon'].includes(design.layout)?diagramCamera:perspectiveCamera;
+    camera=['terraces','time','privilege','duality','ownership','price-duel','expansion','cycle','blueprint','proof','horizon','lab'].includes(design.layout)?diagramCamera:perspectiveCamera;
     spatialTween?.kill();
     gsap.killTweensOf(camera.position);
     const g=groups[design.scene]||planet;
@@ -468,6 +489,26 @@ export function createScene(host, reducedMotion) {
       gsap.to(block.scale,{x:size,y:size,z:size,duration,delay:duration?i*.018:0,ease:'back.out(1.1)',onUpdate:render});
     });render();
   }
+  function lab(state,instant=false){
+    const duration=instant||reducedMotion.matches?0:.8;
+    if(state.mode==='pricing'){
+      const height=2.4*state.hours/730;
+      gsap.to(demandTower.scale,{y:height,duration,ease:'power3.inOut',overwrite:true,onUpdate:render});
+      gsap.to(demandTower.position,{y:-1.5+height/2,duration,ease:'power3.inOut',overwrite:true,onUpdate:render});
+      commitTower.scale.y=1.44;commitTower.position.y=-1.5+.72;
+    }else if(state.mode==='elasticity')update({saleDay:state.capacity==='peak'},instant);
+    else{
+      gsap.to(incidentPathMat,{opacity:state.incident===0?1:.06,duration,overwrite:true,onUpdate:render});
+      const barrier=state.incident>0?1:.001,logs=state.incident>=2?1:.001;
+      gsap.to(containment.scale,{x:barrier,y:barrier,z:barrier,duration,overwrite:true,ease:'power3.out',onUpdate:render});
+      gsap.to(evidence.scale,{x:logs,y:logs,z:logs,duration,overwrite:true,ease:'power3.out',onUpdate:render});
+      rogueMachines.forEach((block,i)=>{
+        const size=state.incident===3?.001:1;
+        gsap.to(block.scale,{x:size,y:size,z:size,duration,delay:duration?i*.045:0,overwrite:true,ease:'power3.inOut',onUpdate:render});
+      });
+    }
+    render();
+  }
   function resize(){
     renderer.setSize(host.clientWidth,host.clientHeight);
     camera.aspect=host.clientWidth/Math.max(host.clientHeight,1);camera.updateProjectionMatrix();
@@ -492,7 +533,7 @@ export function createScene(host, reducedMotion) {
   gsap.ticker.add(revolve);
   document.addEventListener('visibilitychange',render);resize();
   return {
-    setDesign,update,
+    setDesign,update,lab,
     set(name,intro=false,instant=false){setDesign({scene:name,position:intro?[0,-4.6,-2.5]:[3.1,-.65,-2.2],scale:1,rotation:[0,0,0],transition:'horizon',tone:'dark',layout:'gate'},instant);},
     pause(){active=false;host.hidden=true;spatialTween?.kill();morphTween?.kill();morphMaterial.opacity=0;},
     resize,
