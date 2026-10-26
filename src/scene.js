@@ -21,6 +21,18 @@ export function createScene(host, reducedMotion) {
   const backgroundCamera = new THREE.PerspectiveCamera(38,1,.1,100);
   backgroundCamera.position.z=10;
   renderer.autoClear=false;
+  // A shared silhouette travels between the old and new physical scenes.
+  const morphScene=new THREE.Scene();
+  const morphCamera=new THREE.OrthographicCamera(-1,1,1,-1,.1,10);
+  morphCamera.position.z=2;
+  const morphCount=560;
+  const morphGeometry=new THREE.BufferGeometry();
+  const morphPositions=new Float32Array(morphCount*3);
+  morphGeometry.setAttribute('position',new THREE.BufferAttribute(morphPositions,3));
+  const morphMaterial=new THREE.PointsMaterial({color:0xd58b58,size:2,sizeAttenuation:false,transparent:true,opacity:0,depthTest:false,depthWrite:false});
+  const morphCloud=new THREE.Points(morphGeometry,morphMaterial);
+  morphCloud.frustumCulled=false;morphScene.add(morphCloud);
+  let morphTween;
   const perspectiveCamera = new THREE.PerspectiveCamera(38,1,.1,100);
   const diagramCamera = new THREE.OrthographicCamera(-5,5,5,-5,.1,100);
   let camera=perspectiveCamera;
@@ -47,6 +59,11 @@ export function createScene(host, reducedMotion) {
       renderer.setScissor(r.left,y,r.width,r.height);renderer.setScissorTest(true);
       camera.aspect=r.width/r.height;camera.updateProjectionMatrix();
       renderer.clearDepth();renderer.render(scene,camera);renderer.setScissorTest(false);
+      if(morphMaterial.opacity>.001){
+        renderer.setViewport(r.left,y,r.width,r.height);
+        renderer.setScissor(r.left,y,r.width,r.height);renderer.setScissorTest(true);
+        renderer.render(morphScene,morphCamera);renderer.setScissorTest(false);
+      }
       if(slot)placeLabels(r);
     });
   }
@@ -75,8 +92,16 @@ export function createScene(host, reducedMotion) {
   };
   const box = (parent, size, pos, mat = orange) => mesh(new RoundedBoxGeometry(...size, 3, .055), mat, parent, pos);
   const planet = make('planet');
-  const vertexShader = `varying vec3 vNormal; varying vec3 vPos; varying vec2 vUv;
-    void main(){ vUv=uv; vNormal=normalize(normalMatrix*normal); vPos=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`;
+  const planetUniforms={uMorph:{value:0},uTime:{value:0}};
+  const vertexShader = `uniform float uMorph; uniform float uTime; varying vec3 vNormal; varying vec3 vPos; varying vec2 vUv;
+    void main(){
+      vUv=uv; vNormal=normalize(normalMatrix*normal); vPos=position;
+      float wave=sin(position.y*2.1+uTime)*cos(position.x*1.7-uTime*.6);
+      vec3 shaped=position+normal*wave*uMorph*.22;
+      float angle=uMorph*position.y*.13;
+      shaped.xz=mat2(cos(angle),-sin(angle),sin(angle),cos(angle))*shaped.xz;
+      gl_Position=projectionMatrix*modelViewMatrix*vec4(shaped,1.);
+    }`;
   const fragmentShader = `precision highp float;
     varying vec3 vNormal; varying vec3 vPos;
     float hash(vec3 p){p=fract(p*.3183099+vec3(.1,.2,.3));p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
@@ -92,13 +117,13 @@ export function createScene(host, reducedMotion) {
       float edge=pow(1.-max(vNormal.z,0.),3.);
       col=col*(.025+diffuse*1.6)+vec3(.7,.19,.05)*edge*.16*diffuse;
       gl_FragColor=vec4(col,1.); }`;
-  const planetSurface=mesh(new THREE.SphereGeometry(2.9,96,64),new THREE.ShaderMaterial({vertexShader,fragmentShader}),planet);
+  const planetSurface=mesh(new THREE.SphereGeometry(2.9,96,64),new THREE.ShaderMaterial({vertexShader,fragmentShader,uniforms:planetUniforms}),planet);
   new THREE.TextureLoader().load(marsMapUrl,texture=>{
     texture.colorSpace=THREE.NoColorSpace;
     texture.anisotropy=Math.min(renderer.capabilities.getMaxAnisotropy(),4);
     const previous=planetSurface.material;
     planetSurface.material=new THREE.ShaderMaterial({
-      vertexShader,uniforms:{surfaceMap:{value:texture}},
+      vertexShader,uniforms:{...planetUniforms,surfaceMap:{value:texture}},
       fragmentShader:`precision highp float; uniform sampler2D surfaceMap; varying vec3 vNormal; varying vec3 vPos; varying vec2 vUv;
       void main(){
         vec3 n=normalize(vNormal);
@@ -115,6 +140,7 @@ export function createScene(host, reducedMotion) {
   // Very faint atmospheric rim, without a full-screen bloom pass.
   mesh(new THREE.SphereGeometry(2.93, 56, 36), new THREE.ShaderMaterial({
     vertexShader,
+    uniforms:planetUniforms,
     fragmentShader: `varying vec3 vNormal; varying vec3 vPos; void main(){float f=pow(1.-abs(vNormal.z),4.);float l=max(dot(vNormal,normalize(vec3(-.85,.65,1.))),0.);gl_FragColor=vec4(.94,.36,.14,f*l*.32);}`,
     transparent: true, depthWrite: false, side: THREE.BackSide, blending: THREE.AdditiveBlending
   }), planet);
@@ -289,6 +315,37 @@ export function createScene(host, reducedMotion) {
   let current=null, currentDesign=null, active=true, quality='balanced', spatialTween;
   const homePositions=new Map();
   Object.values(groups).forEach(g=>g.children.forEach(child=>homePositions.set(child,child.position.clone())));
+  function silhouette(group){
+    if(!group)return null;
+    group.updateWorldMatrix(true,true);camera.updateMatrixWorld();
+    const shapes=[];
+    group.traverse(object=>{if(object.geometry?.attributes.position&&object.visible)shapes.push(object);});
+    if(!shapes.length)return null;
+    const points=new Float32Array(morphCount*3),point=new THREE.Vector3();
+    for(let i=0;i<morphCount;i++){
+      const object=shapes[i%shapes.length],attribute=object.geometry.attributes.position;
+      point.fromBufferAttribute(attribute,(i*137)%attribute.count).applyMatrix4(object.matrixWorld).project(camera);
+      points[i*3]=THREE.MathUtils.clamp(point.x,-1.08,1.08);
+      points[i*3+1]=THREE.MathUtils.clamp(point.y,-1.08,1.08);
+    }
+    return points;
+  }
+  function morphBetween(from,to){
+    if(!from||!to)return;
+    const state={progress:0};
+    morphPositions.set(from);morphMaterial.opacity=0;
+    morphMaterial.color.set(['paper','split'].includes(currentDesign.tone)?0x9f492a:0xe4a271);
+    morphTween=gsap.timeline({onUpdate:render});
+    morphTween.to(state,{progress:1,duration:1.05,ease:'power3.inOut',onUpdate:()=>{
+      const p=state.progress,bend=Math.sin(p*Math.PI)*.12;
+      for(let i=0;i<morphCount;i++){
+        const k=i*3,angle=i*2.399;
+        morphPositions[k]=THREE.MathUtils.lerp(from[k],to[k],p)+Math.cos(angle)*bend;
+        morphPositions[k+1]=THREE.MathUtils.lerp(from[k+1],to[k+1],p)+Math.sin(angle)*bend;
+      }
+      morphGeometry.attributes.position.needsUpdate=true;
+    }},0).to(morphMaterial,{opacity:.48,duration:.2},0).to(morphMaterial,{opacity:0,duration:.45},.6);
+  }
   function fitScene(design){
     if(!current)return;
     if(design.layout==='gate'){
@@ -355,6 +412,8 @@ export function createScene(host, reducedMotion) {
     camera.aspect=aspect;camera.updateProjectionMatrix();
   }
   function setDesign(design,instant=false){
+    const previousShape=!instant&&!reducedMotion.matches?silhouette(current):null;
+    morphTween?.kill();morphMaterial.opacity=0;
     active=true;host.hidden=false;currentDesign=design;
     camera=['terraces','time','privilege','duality','ownership','price-duel','expansion','cycle','blueprint','proof','horizon'].includes(design.layout)?diagramCamera:perspectiveCamera;
     spatialTween?.kill();
@@ -368,10 +427,16 @@ export function createScene(host, reducedMotion) {
     pivot.rotation.set(0,0,0);g.position.set(...position);g.rotation.set(...rotation);g.scale.setScalar(scale);fitScene(design);
     position[0]=g.position.x;position[1]=g.position.y;position[2]=g.position.z;
     const targetCameraZ=camera.position.z;
+    const nextShape=silhouette(g);
+    planetUniforms.uMorph.value=0;
     if(!instant&&!reducedMotion.matches){
+      morphBetween(previousShape,nextShape);
       const tl=gsap.timeline({onUpdate:render});spatialTween=tl;
       const type=design.transition;
       if(design.scene==='planet'){
+        planetUniforms.uMorph.value=1;
+        tl.to(planetUniforms.uMorph,{value:0,duration:1.8,ease:'sine.inOut'},0);
+        tl.fromTo(planetSurface.rotation,{y:planetSurface.rotation.y-.32},{y:planetSurface.rotation.y,duration:1.8,ease:'power2.out'},0);
         tl.fromTo(g.scale,{x:scale*.86,y:scale*.86,z:scale*.86},{x:scale,y:scale,z:scale,duration:1.1,ease:'power3.out'},0);
       }else if(type==='orbit'){
         tl.fromTo(g.rotation,{y:rotation[1]-.65,z:rotation[2]-.18},{y:rotation[1],z:rotation[2],duration:1.2,ease:'power3.out'},0);
@@ -414,13 +479,24 @@ export function createScene(host, reducedMotion) {
     gsap.to(pivot.rotation,{y:(e.clientX/innerWidth-.5)*.025,x:(e.clientY/innerHeight-.5)*.012,duration:.8,onUpdate:render});
   };
   addEventListener('pointermove',onPointer,{passive:true});addEventListener('resize',resize);
+  let lastPlanetFrame=0;
+  function revolve(time){
+    if(!active||document.hidden||current!==planet||reducedMotion.matches)return;
+    if(time-lastPlanetFrame<1/30)return;
+    const elapsed=Math.min(time-lastPlanetFrame,.05);lastPlanetFrame=time;
+    // Rotate the surface independently so camera framing and captions stay fixed.
+    if(!gsap.isTweening(planetSurface.rotation))planetSurface.rotation.y+=elapsed*.045;
+    planetUniforms.uTime.value+=elapsed*.28;
+    render();
+  }
+  gsap.ticker.add(revolve);
   document.addEventListener('visibilitychange',render);resize();
   return {
     setDesign,update,
     set(name,intro=false,instant=false){setDesign({scene:name,position:intro?[0,-4.6,-2.5]:[3.1,-.65,-2.2],scale:1,rotation:[0,0,0],transition:'horizon',tone:'dark',layout:'gate'},instant);},
-    pause(){active=false;host.hidden=true;spatialTween?.kill();},
+    pause(){active=false;host.hidden=true;spatialTween?.kill();morphTween?.kill();morphMaterial.opacity=0;},
     resize,
     quality(value){quality=value;renderer.setPixelRatio(Math.min(devicePixelRatio,quality==='detail'?1.8:1.15));resize();},
-    destroy(){removeEventListener('pointermove',onPointer);removeEventListener('resize',resize);renderer.dispose();}
+    destroy(){gsap.ticker.remove(revolve);morphTween?.kill();spatialTween?.kill();removeEventListener('pointermove',onPointer);removeEventListener('resize',resize);morphGeometry.dispose();morphMaterial.dispose();renderer.dispose();}
   };
 }
