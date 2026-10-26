@@ -1,0 +1,94 @@
+/* Reference-inspired typography. These are visual matches, not fonts extracted
+   from the reference bitmap. All font files are bundled with the application. */
+:root{--font-display:'Syne',Arial,sans-serif;--font-editorial:'Instrument Serif',Georgia,serif;--font-technical:'Barlow Condensed',Arial,sans-serif;font-family:var(--font-technical)}
+body{font-family:var(--font-technical)}
+.art-slide h1,.art-slide h2,.reading-heading h1,.reading-section h2,dialog h2{font-family:var(--font-display);font-weight:600;letter-spacing:-.055em}
+.art-slide .layout-subtitle,.reading-heading>p,.reading-section .reader-lead{font-family:var(--font-editorial);font-style:italic;font-weight:400;letter-spacing:-.02em}
+.art-slide .layout-subtitle{font-size:clamp(18px,1.55vw,28px);line-height:1.25}
+.micro,.scene-meta,.brand-type,.crew-line,.cover-edition,.cover-byline,.horizon-caption,.footer-meta,.resource-legend,.chart-top,.chart-axis,.key-status,.rule-status,.blueprint-labels,.blueprint-management,.blueprint-support,.ownership-costs,.cycle-owner,.finale-people,.gate-coordinate,.gate-foot{font-family:var(--font-technical);font-weight:400}
+.brand-type{font-weight:600;font-size:14px;letter-spacing:.17em}
+.brand-type>span{font-size:10px;letter-spacing:.2em}
+.brand-mark{font-family:var(--font-display);font-size:18px;font-weight:600;letter-spacing:-.08em;box-shadow:0 0 23px #d16a2418}
+.brand-mark>span,.scene-meta i{background:#ee782b;box-shadow:0 0 12px #ee782b88}
+.text-button,.source-trigger,.segmented button,.chrome-toggle,.pill-button{font-family:var(--font-technical);letter-spacing:.035em}
+.text-button{font-size:14px}.segmented button{font-size:12px}
+.scene-meta{letter-spacing:.22em;font-size:12px}
+.art-slide .slide-bottom>p{font-family:var(--font-technical);font-size:clamp(12px,.9vw,16px);letter-spacing:.035em}
+.reading-section p,.reading-section details>p,dialog p{font-size:17px;line-height:1.75}
+.script{font-size:20px!important;line-height:1.8!important}
+.reading-section h2{font-size:clamp(28px,3vw,44px)}
+
+/* Cover / closing title: one shared composition and one cinematic planet. */
+.view-horizon{background:#090807}
+.view-horizon #scene:after{background:linear-gradient(180deg,#07060566 0%,#07060511 35%,#08060422 65%,#080605c9 100%)}
+.view-horizon #app:after{content:'';position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.12;background-image:radial-gradient(#d6a36c55 .45px,transparent .6px);background-size:3px 3px}
+.view-horizon .cover-title{top:14%;left:0;right:0;text-align:center;text-shadow:0 2px 30px #07050444}
+.view-horizon .cover-title h1{font-family:var(--font-display);font-weight:800;font-size:clamp(68px,8.4vw,170px);letter-spacing:-.065em;line-height:.93;margin:0 0 30px;transform:scaleX(1.06)}
+.brand-period{color:#eb7728}
+.view-horizon .cover-title .layout-subtitle{font-family:var(--font-editorial);font-size:clamp(25px,2.45vw,44px);line-height:1.1;color:#eee5d8;margin:0 auto;max-width:none;font-style:italic}
+.view-horizon .cover-edition{font-size:clamp(10px,.92vw,17px);letter-spacing:.35em;color:#c6b29b;margin-top:25px}
+.view-horizon .scene-meta{top:35px;color:#bbaa91;font-size:clamp(11px,.95vw,16px);letter-spacing:.3em}
+.view-horizon .scene-meta>span:last-child{position:fixed;top:44px;right:var(--pad);font-size:11px;letter-spacing:.26em;color:#bbaa91}
+.view-horizon .horizon-caption{position:fixed;top:21.5svh;right:var(--pad);max-width:220px;font-size:clamp(10px,.88vw,15px);letter-spacing:.15em;line-height:1.7;color:#c6b69e;text-align:right}
+.view-horizon .crew-line{position:fixed;left:var(--pad);right:var(--pad);bottom:11.5svh;font-size:clamp(12px,1.05vw,19px);letter-spacing:.22em;color:#f0e6d8}
+.view-horizon .slide-bottom{position:fixed;left:var(--pad);right:var(--pad);bottom:5.8svh}
+.view-horizon .slide-bottom>p{font-size:clamp(11px,.9vw,15px);color:#c2b49f;letter-spacing:.02em}
+.view-horizon .slide-bottom>p:before{content:'●';font-size:8px;color:#ed7b2a;box-shadow:none;margin-right:10px;text-shadow:0 0 10px #ed7b2a}
+.view-horizon .chrome-toggle{right:18px;top:34px;width:30px;height:30px;padding:7px;justify-content:center}
+.view-horizon .chrome-toggle>span{display:none}
+.view-horizon .deck-footer{background:#080605a6;backdrop-filter:blur(8px)}
+.view-horizon:has(.deck-footer:not([aria-hidden='true'])) .slide-bottom{bottom:105px}
+.view-horizon:has(.deck-footer:not([aria-hidden='true'])) .crew-line{bottom:145px}
+
+@media(max-height:740px) and (min-width:761px){
+ .art-slide .layout-subtitle{font-size:18px}
+ .view-horizon .cover-title{top:12%}
+ .view-horizon .cover-title h1{font-size:8.4vw;margin-bottom:25px}
+ .view-horizon .cover-title .layout-subtitle{font-size:2.45vw}
+ .view-horizon .cover-edition{margin-top:20px}
+ .view-horizon .scene-meta{top:30px}
+}
+@media(max-width:760px){
+ .brand-type{font-size:11px}.text-button{font-size:12px}
+ .scene-meta{font-size:8px;letter-spacing:.12em}
+ .art-slide .layout-subtitle{font-size:16px;line-height:1.25}
+ .art-slide .slide-bottom>p{font-size:10px}
+ .art-slide h1{font-size:clamp(29px,8.2vw,49px)}
+ .art-slide h2{letter-spacing:-.05em}
+ .view-horizon .scene-meta{top:20px;font-size:8px;letter-spacing:.22em}
+ .view-horizon .scene-meta>span:last-child{top:36px;right:65px;font-size:8px}
+ .view-horizon .cover-title{top:21%}
+ .view-horizon .cover-title h1{font-size:12.7vw;line-height:1.03;transform:none;margin-bottom:28px}
+ .view-horizon .cover-title .layout-subtitle{font-size:23px;max-width:300px;line-height:1.12}
+ .view-horizon .cover-edition{font-size:8px;line-height:1.8;letter-spacing:.2em;max-width:280px;margin:20px auto 0}
+ .view-horizon .horizon-caption{display:none}
+ .view-horizon .crew-line{bottom:13svh;font-size:9px;letter-spacing:.07em;gap:8px}
+ .view-horizon .slide-bottom{bottom:7svh}
+ .view-horizon .slide-bottom>p{font-size:10px}
+ .view-horizon .chrome-toggle{top:27px;right:18px}
+ .view-horizon:has(.deck-footer:not([aria-hidden='true'])) .slide-bottom{bottom:95px}
+ .view-horizon:has(.deck-footer:not([aria-hidden='true'])) .crew-line{bottom:135px}
+}
+
+/* Fixed cover annotations belong to the viewport, not a perspective parent. */
+.view-horizon .topbar{height:118px}
+.view-horizon .art-slide{height:calc(100svh - 118px);perspective:none}
+.view-horizon .scene-content{perspective:none}
+.view-horizon .cover-title{top:20.5%}
+@media(max-width:760px){
+ .view-horizon .topbar{height:90px}
+ .view-horizon .art-slide{height:calc(100svh - 90px)}
+ .view-horizon .cover-title{top:21%}
+}
+
+.brand-type{font-size:16px}
+.view-horizon .cover-title h1{width:fit-content;margin-left:auto;margin-right:auto;transform:none;font-size:clamp(68px,8vw,160px)}
+.view-horizon .cover-title .layout-subtitle{font-size:clamp(25px,2.65vw,48px)}
+@media(min-width:761px){
+ .view-terraces .scene-slot{top:35%;height:35%}
+ .view-expansion .scene-slot{top:39%;height:27%}
+}
+@media(max-width:760px){
+ .view-horizon .cover-title h1{font-size:12.7vw}
+ .view-horizon .cover-title .layout-subtitle{font-size:23px}
+}
