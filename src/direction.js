@@ -25,6 +25,7 @@ export const directions = [
 ];
 
 // Reuse the opening's art direction for the final title reprise.
+directions.push({layout:'lab',scene:'price',scale:1,rotation:[.15,0,0],transition:'assemble',tone:'dark'});
 directions.push({ ...directions[0] });
 
 const iconArrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>';
@@ -38,6 +39,7 @@ export function composeSlide(s, i, visual, state) {
   const bottom=`<div class="slide-bottom"><p>${safe(s.takeaway)}</p><button class="source-trigger" data-action="sources" aria-label="View sources and assumptions for this slide">${s.refs.length?'Sources & context ↗':'About this report ↗'}</button></div>`;
   let content='';
   switch(d.layout){
+    case 'lab':content=visual;break;
     case 'horizon': content=`<div class="cover-orbit" aria-hidden="true"><span>11</span><i></i></div><div class="cover-title"><div class="layout-heading"><h1 id="slide-title">Beyond<br>the cloud<span class="brand-period">.</span></h1><p class="layout-subtitle">${safe(s.subtitle)}</p></div><span class="cover-edition">A STUDY IN RELIABILITY, SECURITY & VALUE</span></div><div class="crew-line"><span>PAULO DELGADO</span><span>RENAN LABAY</span><span>EARL DELGADO</span></div><div class="horizon-caption micro">THREE DISCIPLINES / ONE CONNECTED SYSTEM</div>`;break;
     case 'faults':content=`<div class="faults-title">${head(s)}<span class="status-online"><i></i> SYSTEM ONLINE</span></div><div class="fault-triptych">${s.items.map(([a,b],j)=>`<div class="fault-tile" data-reveal><span class="fault-number">0${j+1}</span><div><span class="micro">${a.toUpperCase()}</span><h2>${b}</h2></div><span class="fault-cross">+</span></div>`).join('')}</div>`;break;
     case 'terraces':content=`<div class="terrace-heading">${head(s)}</div><div class="resource-legend"><span>COMPUTE</span><span>STORAGE</span><span>NETWORK</span></div><div class="terrace-labels">${s.items.map(([a,b],j)=>`<div data-reveal data-scene-anchor="${j}"><span class="micro">0${j+1} / SERVICE MODEL</span><h2>${a}</h2><p>${b}</p></div>`).join('')}</div>`;break;
@@ -59,5 +61,5 @@ export function composeSlide(s, i, visual, state) {
     case 'decision':content=`<div class="decision-heading">${head(s)}</div><div class="decision-context"><span>EXPOSED CREDENTIAL</span><i>→</i><span>UNKNOWN INSTANCES</span><i>→</i><span>SPENDING SPIKE</span></div><div class="decision-choices">${visual}</div>`;break;
     case 'finale':content=`<div class="finale-heading"><h1 id="slide-title"><span data-reveal>Keep it running.</span><span data-reveal>Protect access.</span><span data-reveal>Make it count.</span></h1><p class="layout-subtitle">${s.subtitle}</p></div><div class="finale-people"><span>PAULO / OPERATIONS</span><span>RENAN / SECURITY</span><span>EARL / ECONOMICS</span></div><button class="pill-button finale-questions" data-action="questions">Questions & discussion ${iconArrow}</button>`;break;
   }
-  return `<article class="slide art-slide layout-${d.layout}" data-layout="${d.layout}" aria-labelledby="slide-title">${meta}<div class="scene-content">${content}<div class="scene-slot" aria-hidden="true"></div></div>${bottom}</article>`;
+  return `<article class="slide art-slide layout-${d.layout}" data-layout="${d.layout}" aria-labelledby="slide-title">${meta}<div class="scene-content">${content}${d.layout==='lab'?'':'<div class="scene-slot" aria-hidden="true"></div>'}</div>${bottom}</article>`;
 }
