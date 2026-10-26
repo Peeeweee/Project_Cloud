@@ -7,6 +7,8 @@ import './style.css';
 import './redesign.css';
 import './layout-fixes.css';
 import './branding.css';
+import './lab.css';
+import {labState,labHTML,labDesign} from './lab.js';
 import { directions, composeSlide } from './direction.js';
 import { gsap } from 'gsap';
 import { createScene } from './scene.js';
@@ -31,6 +33,8 @@ function updateControls(){
   toggle.setAttribute('aria-label',controlsVisible?'Hide presentation controls':'Show presentation controls');
   toggle.querySelector('span').textContent=controlsVisible?'Hide controls':'Show controls';
   for(const el of document.querySelectorAll('.topnav,.deck-footer')){el.inert=!controlsVisible;el.setAttribute('aria-hidden',String(!controlsVisible));}
+  const phone=$('.phone-nav');
+  if(phone){phone.querySelector('[data-action="previous"]').disabled=index===0;phone.querySelector('[data-action="next"]').disabled=index===slides.length-1;phone.querySelector('span').textContent=`${index+1} / ${slides.length}`;}
   if(!controlsVisible&&document.activeElement?.closest('.topnav,.deck-footer,.source-trigger'))toggle.focus({preventScroll:true});
 }
 function toggleControls(){controlsVisible=!controlsVisible;try{localStorage.setItem('group11-controls-visible',String(controlsVisible));}catch{}updateControls();}
@@ -55,6 +59,7 @@ $('#app').innerHTML = `
     <div class="progress" aria-label="Choose a slide"></div>
     <div class="footer-actions"><button class="text-button notes-button" data-action="notes">Speaker notes</button><button class="icon-button" data-action="fullscreen" aria-label="Toggle fullscreen">${expand}</button><button class="icon-button prev" data-action="previous" aria-label="Previous slide">${arrow}</button><button class="icon-button next" data-action="next" aria-label="Next slide">${arrow}</button></div>
   </footer>
+  <nav class="phone-nav" aria-label="Mobile slide navigation"><button data-action="previous" aria-label="Previous slide on phone">← Back</button><span></span><button data-action="next" aria-label="Next slide on phone">Next →</button></nav>
   <dialog id="panel" aria-labelledby="panel-title"><div class="dialog-top"><span class="micro" id="panel-title"></span><button class="icon-button" data-action="close" aria-label="Close panel">✕</button></div><div id="panel-content"></div></dialog>
   <div class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></div>
   <div id="print-report"></div>
@@ -77,6 +82,7 @@ function pricingHTML() {
 }
 function visualHTML(slide) {
   switch(slide.kind) {
+    case 'lab':return labHTML();
     case 'cover': return `<div class="cover-index"><span>01 / OPERATIONS</span><span>02 / SECURITY</span><span>03 / ECONOMICS</span></div><p class="cover-byline">PAULO DELGADO <i>·</i> RENAN LABAY <i>·</i> EARL DELGADO</p>`;
     case 'risks': return labelRows(slide.items,'risk-list');
     case 'models': return labelRows(slide.items,'model-list');
@@ -136,9 +142,10 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false }={}
   $('.prev').disabled=index===0;$('.next').disabled=index===slides.length-1;
   $('#announcement').textContent=`Slide ${index+1} of ${slides.length}. ${slide.title.replace(/\n/g,' ')}. Presenter: ${slide.speaker}.`;
   if(updateHash) history.replaceState(null,'',`#${slide.id}`);
-  const art = directions[index];
+  const art = slides[index].kind==='lab'?labDesign(directions[index]):directions[index];
   scene.setDesign(art, instant || reducedMotion.matches);
   scene.update?.({partTime:pricingPart, saleDay}, true);
+  if(slide.kind==='lab')scene.lab?.(labState,true);
   if(!instant && !reducedMotion.matches) {
     const direction=index>=previous?1:-1;
     const tl=gsap.timeline();navigationTween=tl;
@@ -208,6 +215,20 @@ document.addEventListener('click',async e=>{
     case 'capacity': saleDay=target.dataset.value==='sale';drawArt();scene.update?.({partTime:pricingPart,saleDay});$('.segmented [data-value="'+target.dataset.value+'"]').focus();break;
     case 'answer': quizAnswer=target.dataset.value;drawArt();break;
     case 'reset-answer':quizAnswer=null;drawArt();break;
+    case 'lab-mode':case 'lab-hours':case 'lab-capacity':case 'lab-incident':case 'lab-reset':{
+      const switching=action==='lab-mode'||action==='lab-reset';
+      if(action==='lab-reset')Object.assign(labState,{mode:'pricing',hours:730,capacity:'normal',incident:0});
+      else if(action==='lab-mode')labState.mode=target.dataset.value;
+      else if(action==='lab-hours')labState.hours=Number(target.dataset.value);
+      else if(action==='lab-capacity')labState.capacity=target.dataset.value;
+      else labState.incident=Number(target.dataset.value);
+      drawArt();
+      if(switching)scene.setDesign(labDesign(directions[index]),reducedMotion.matches);
+      scene.lab?.(labState,false);
+      scene.resize();
+      main.querySelector(`[data-action="${action}"]${target.dataset.value!==undefined?`[data-value="${target.dataset.value}"]`:''}`)?.focus({preventScroll:true});
+      break;
+    }
     case 'settings':settings();break;
     case 'controls':toggleControls();break;
     case 'quality':quality=target.dataset.value;scene.quality(quality);settings();break;
