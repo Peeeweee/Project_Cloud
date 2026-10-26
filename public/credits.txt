@@ -1,0 +1,20 @@
+Group 11 — Presentation asset credits
+
+Mars surface map
+Viking imagery processed by Caltech/JPL/USGS.
+NASA/JPL Solar System Simulator texture library:
+https://space.jpl.nasa.gov/tmaps/mars.html
+Local texture source:
+https://space.jpl.nasa.gov/tmaps/pix/mar0kuu2.jpg
+The presentation applies artistic rotation, warm color grading, and lighting.
+
+Typography
+Syne — display headlines, weights 600 and 800.
+Instrument Serif — italic editorial subtitles.
+Barlow Condensed — technical labels, names, controls, and reading text.
+Bundled using Fontsource packages. SIL Open Font License notices are included
+in the licenses/ directory. These are visual matches selected from a supplied
+reference screenshot, not exact font identification or extracted font files.
+
+Visual mood inspired by The Martian. No movie stills, logos, or film assets.
+Three-dimensional geometry and presentation layouts are original code.
