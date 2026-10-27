@@ -171,7 +171,7 @@ export const slides = [
 
 slides.push({
   id:'cloud-lab',chapter:'Together',speaker:'All',time:'2:30',scene:'price',kind:'lab',
-  eyebrow:'GROUP 11 / CLOUD LAB',title:'Make it visible.',subtitle:'Pricing. Elasticity. Incident response.',
+  eyebrow:'GROUP 11 / CLOUD LAB',title:'Cloud, in your hands.',subtitle:'Pricing. Elasticity. Incident response.',
   takeaway:'Change a condition. See the consequence.',refs:['pricing','cloud','ops'],
   notes:'Optional two-to-three minute interactive recap. Earl: Pricing compares 176, 438, and 730 usage hours against a $43.80 full-month commitment. At 438 hours the totals match. Elasticity adds eighteen temporary machines to two baseline instances and releases them after the peak. The monthly compute comparison stays $189.20 versus $1,460. Renan: Expose a fictional cloud credential, contain access, preserve audit evidence, then remove unauthorized resources and validate recovery. Paulo: explain detection and recovery checks. Containment stops new credential actions; existing unauthorized machines may keep billing until cleanup. Reset lab restores all examples. No real cloud account is connected.',
   detail:'Interactive teaching simulation with three modes. Pricing assumes $0.10 per hour, a 730-hour month, and a 40% commitment discount. Elasticity assumes two baseline instances for 730 hours and eighteen additions for 24 hours. Incident response uses two trusted and six unauthorized machines at an illustrative $0.10 each per hour: $0.80/h before cleanup and $0.20/h afterward. Revoking a credential alone does not terminate existing resources or guarantee all sessions are invalidated. The simulation is deterministic and is not a production security tool or live billing dashboard.'
