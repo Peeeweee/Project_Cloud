@@ -341,8 +341,8 @@ export function createScene(host, reducedMotion) {
     for(let i=0;i<morphCount;i++){
       const object=shapes[i%shapes.length],attribute=object.geometry.attributes.position;
       point.fromBufferAttribute(attribute,(i*137)%attribute.count).applyMatrix4(object.matrixWorld).project(camera);
-      points[i*3]=THREE.MathUtils.clamp(point.x,-1.08,1.08);
-      points[i*3+1]=THREE.MathUtils.clamp(point.y,-1.08,1.08);
+      points[i*3]=Number.isFinite(point.x)?THREE.MathUtils.clamp(point.x,-1.08,1.08):0;
+      points[i*3+1]=Number.isFinite(point.y)?THREE.MathUtils.clamp(point.y,-1.08,1.08):0;
     }
     return points;
   }
@@ -379,6 +379,8 @@ export function createScene(host, reducedMotion) {
     }
     const slot=document.querySelector('.scene-slot');if(!slot)return;
     const rect=slot.getBoundingClientRect();
+    // Compact layouts may intentionally hide the supporting 3D viewport.
+    if(rect.width<2||rect.height<2)return;
     const aspect=rect.width/Math.max(rect.height,1);
     if(design.scene==='privilege')current.children.forEach(c=>{const h=homePositions.get(c);if(h)c.position.x=h.x;});
     current.position.set(0,0,0);current.updateWorldMatrix(true,true);
