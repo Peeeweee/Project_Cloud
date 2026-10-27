@@ -9,6 +9,7 @@ import './layout-fixes.css';
 import './branding.css';
 import './lab.css';
 import './experience.css';
+import './lab-fit.css';
 import {labState,labHTML,labDesign} from './lab.js';
 import { directions, composeSlide } from './direction.js';
 import { gsap } from 'gsap';
@@ -39,7 +40,15 @@ function updateControls(){
   if(!controlsVisible&&document.activeElement?.closest('.topnav,.deck-footer,.source-trigger'))toggle.focus({preventScroll:true});
 }
 function toggleControls(){controlsVisible=!controlsVisible;try{localStorage.setItem('group11-controls-visible',String(controlsVisible));}catch{}updateControls();}
-function drawArt() { main.innerHTML = composeSlide(slides[index], index, visualHTML(slides[index]), { pricingPart, saleDay }); }
+function fitLab(){
+ const lab=main.querySelector('.cloud-lab');if(!lab)return;
+ const host=lab.parentElement,w=host.clientWidth,h=host.clientHeight;if(w<1||h<1)return;
+ const width=Math.max(1000,w),height=Math.max(640,h);
+ const scale=Math.min(w/width,h/height);
+ Object.assign(lab.style,{width:width+'px',height:height+'px',left:(w-width*scale)/2+'px',top:(h-height*scale)/2+'px',transform:`scale(${scale})`});
+ lab.scrollTop=0;
+}
+function drawArt() { main.innerHTML = composeSlide(slides[index], index, visualHTML(slides[index]), { pricingPart, saleDay });fitLab(); }
 const sceneHost = document.createElement('div');sceneHost.id='scene';sceneHost.setAttribute('aria-hidden','true');document.body.prepend(sceneHost);
 const scene = createScene(sceneHost,reducedMotion);
 
@@ -261,3 +270,8 @@ route();
 // Commit slider changes without replacing the focused control during a drag.
 document.addEventListener('input',e=>{if(e.target.matches('[data-lab-hours]'))e.target.previousElementSibling.textContent=e.target.value+' hours';});
 document.addEventListener('change',e=>{if(!e.target.matches('[data-lab-hours]'))return;labState.hours=Number(e.target.value);drawArt();scene.lab?.(labState,false);scene.resize();main.querySelector('[data-lab-hours]')?.focus({preventScroll:true});});
+
+// Refit after viewport, fullscreen, or browser chrome size changes.
+new ResizeObserver(fitLab).observe(main);
+window.visualViewport?.addEventListener('resize',fitLab);
+window.addEventListener('resize',fitLab);
