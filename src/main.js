@@ -8,6 +8,7 @@ import './redesign.css';
 import './layout-fixes.css';
 import './branding.css';
 import './lab.css';
+import './experience.css';
 import {labState,labHTML,labDesign} from './lab.js';
 import { directions, composeSlide } from './direction.js';
 import { gsap } from 'gsap';
@@ -256,3 +257,7 @@ addEventListener('hashchange',route);
 media.addEventListener('change',()=>{if(manualMotion===null)document.documentElement.classList.toggle('reduce-motion',media.matches);});
 document.documentElement.classList.toggle('reduce-motion',reducedMotion.matches);
 route();
+
+// Commit slider changes without replacing the focused control during a drag.
+document.addEventListener('input',e=>{if(e.target.matches('[data-lab-hours]'))e.target.previousElementSibling.textContent=e.target.value+' hours';});
+document.addEventListener('change',e=>{if(!e.target.matches('[data-lab-hours]'))return;labState.hours=Number(e.target.value);drawArt();scene.lab?.(labState,false);scene.resize();main.querySelector('[data-lab-hours]')?.focus({preventScroll:true});});
