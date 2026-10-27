@@ -64,3 +64,9 @@ Phones have a fixed Back/Next bar with at least 44-pixel touch targets, page pos
 
 - `src/lab.js`: lab state, calculation model, labels, and stage controls.
 - `src/lab.css`: lab layout and mobile navigation placement.
+
+## Interactive redesign
+
+Cloud Lab compares cause and effect with a 0–730 hour pricing slider, animated elastic/fixed fleets, and a four-stage incident walkthrough. Presets, direct stage selection, previous/next steps, and reset support live teaching. Assumptions stay visible; examples are illustrative compute costs, not live cloud billing.
+
+The highlighted security and economics scenes use larger explanations and distinct compositions. Phone content scrolls while the safe-area-aware Back/Next navigation stays fixed. Hidden supporting 3D viewports are excluded from camera fitting to avoid invalid geometry during responsive changes. Reduced-motion preferences disable the new bar and machine entrances.
