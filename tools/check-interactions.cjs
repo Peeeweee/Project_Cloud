@@ -25,7 +25,7 @@ for(const id of ['total-cost','pricing','elasticity','finops']){
 console.log('PASS rapid build reversal, counters and split cleanup');
 
 // A title is the same DOM heading in hero and detail states; its words must not replay on docking.
-for(const id of ['cloud-basics','observability','root-access','firewalls','key-lifecycle']){
+for(const id of ['cloud-basics','daily-operations','observability','root-access','firewalls','key-lifecycle']){
  await go(id);await at(id,1);
  const title=p.locator('main #slide-title');
  const flipId=await title.getAttribute('data-flip-id');assert.ok(flipId);
@@ -39,6 +39,17 @@ for(const id of ['cloud-basics','observability','root-access','firewalls','key-l
  await press('ArrowRight',120);await at(id,1);
  assert.equal(await title.getAttribute('data-flip-id'),flipId,'Next moves the same heading');
  assert.equal(await title.locator('div').count(),0);
+ const typography=await title.evaluate(el=>{const s=getComputedStyle(el),m=new DOMMatrixReadOnly(s.transform);return {weight:s.fontWeight,x:m.a,y:m.d};});
+ assert.equal(typography.weight,'600','title weight stays consistent');
+ assert.ok(Math.abs(typography.x-1)<.001&&Math.abs(typography.y-1)<.001,'title moves without glyph stretching');
+ if(id==='daily-operations'){
+  const labels=()=>p.locator('.orbital-label').evaluateAll(els=>els.map(e=>e.getBoundingClientRect().y));
+  const moving=await labels();
+  assert.equal(await p.locator('.orbit-annotations').evaluate(el=>getComputedStyle(el).transform),'none');
+  await p.waitForTimeout(1500);
+  const settled=await labels();
+  moving.forEach((y,i)=>assert.ok(Math.abs(y-settled[i])<1,'orbital labels keep their positioning frame'));
+ }
 }
 console.log('PASS single live heading, no duplicate reveal, and rapid title reversal');
 
