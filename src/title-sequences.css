@@ -46,3 +46,7 @@ body.presenting #scene{transition:opacity .55s ease}
 .reduce-motion #scene{transition:none}
 @media(prefers-reduced-motion:reduce){body.presenting #scene{transition:none}}
 @media(max-width:760px) and (orientation:portrait){body.view-horizon.presenting .cover-title h1{font-size:15vw!important}}
+
+/* The hero hosts the real heading; its original line breaks return in the content layout. */
+.slide-title-card .intro-title br{display:none}
+.slide-title-card .intro-title-mount{width:100%}
