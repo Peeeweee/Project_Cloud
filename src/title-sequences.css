@@ -76,3 +76,28 @@ body.chapter-security.tone-split{
 .chapter-security.tone-split .boundary-note{color:#e6aa7d}
 .chapter-security.tone-split .boundary-halves .micro{color:#f0bd91}
 .chapter-security.tone-split .deck-footer{background:#171310}
+
+/* Ivory and rust mirror the two ownership zones without the black/white contrast. */
+body.chapter-security.tone-split{
+ background:linear-gradient(90deg,#f2ece2 0%,#f2ece2 49.8%,#853b26 50.2%,#853b26 100%);
+}
+.chapter-security.tone-split .brand,
+.chapter-security.tone-split .provider-half{color:#4b2d21}
+.chapter-security.tone-split .brand-type>span,
+.chapter-security.tone-split .scene-meta>span:first-child,
+.chapter-security.tone-split .footer-meta,
+.chapter-security.tone-split .slide-bottom>p,
+.chapter-security.tone-split .provider-half p{color:#765743}
+.chapter-security.tone-split .provider-half h2,
+.chapter-security.tone-split .provider-half .micro{color:#a64c2b}
+.chapter-security.tone-split .boundary-title h1{background:linear-gradient(90deg,#a64c2b 49.8%,#fff0df 50.2%);background-clip:text;-webkit-background-clip:text;color:transparent}
+.chapter-security.tone-split .boundary-title{background:none}
+.chapter-security.tone-split .boundary-title .layout-subtitle{background:linear-gradient(90deg,#765743 49.8%,#f1d4bc 50.2%);background-clip:text;-webkit-background-clip:text;color:transparent}
+.chapter-security.tone-split .customer-half,
+.chapter-security.tone-split .customer-half .micro{color:#fff0df}
+.chapter-security.tone-split .customer-half p{color:#f1d4bc}
+.chapter-security.tone-split .boundary-note{color:#f8e6d1;background:#853b26;width:fit-content;max-width:100%;margin:auto;padding:7px 18px;border-radius:5px}
+.chapter-security.tone-split .deck-footer{background:#f2ece2}
+.chapter-security.tone-split .brand-mark{border-color:#976e51}
+.chapter-security.tone-split .intro-kicker,
+.chapter-security.tone-split .intro-cue{color:#f8e6d1;background:#853b26;width:fit-content;margin-left:auto;margin-right:auto;padding:4px 14px;border-radius:4px}
