@@ -1,3 +1,4 @@
+import {securityAdditions} from './security-additions.js';
 import {foundations,operationsRecap} from './additions.js';
 export const people = {
   Paulo: 'Kent Paulo Delgado', Renan: 'John Renan Labay', Earl: 'Earl Josh Delgado'
@@ -190,7 +191,10 @@ slides.push({
 
 slides.splice(1,0,...foundations);
 slides.splice(slides.findIndex(s=>s.id==='shared-responsibility'),0,...operationsRecap);
+for(const addition of securityAdditions)slides.splice(slides.findIndex(s=>s.id===addition.after)+1,0,addition);
 Object.assign(sources,{
+ sshd:['OpenSSH server configuration · OpenBSD','https://man.openbsd.org/sshd_config'],
+ waf:['Web application firewall · AWS','https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html'],
  observability:['CloudTrail or CloudWatch · AWS','https://docs.aws.amazon.com/decision-guides/latest/decision-guides/cloudtrail-or-cloudwatch.html'],
  backup:['Backup guidance · CISA','https://www.cisa.gov/stopransomware/ransomware-guide'],
  sla:['Reliability targets and SLAs · Microsoft','https://learn.microsoft.com/en-us/azure/well-architected/reliability/metrics'],
