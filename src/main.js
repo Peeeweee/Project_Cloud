@@ -171,7 +171,7 @@ function gate() {
 function resetSlideInteractions(){pricingPart=false;saleDay=false;quizAnswer=null;step=0;resetLab();}
 // Next/Back play a slide's build steps before changing slides; Back lands on the previous slide's last step.
 function setStep(n){navigationTween?.progress(1);clearWords(main);const prev=step;step=n;applyBuild(main,directions[index].layout,step,prev,{instant:reducedMotion.matches,scene});$('#announcement').textContent=`Slide ${index+1}. Step ${step+1} of ${buildSteps(directions[index].layout)}.`;}
-function beginChapter(){if(!chapterActive)return;chapterActive=false;$('#announcement').textContent=`${slides[index].title.replace(/\n/g,' ')}. Next to reveal the slide.`;dismissChapter(main,{instant:reducedMotion.matches,onComplete:()=>{const title=main.querySelector('.intro-title')||main.querySelector('#slide-title');if(title&&!reducedMotion.matches)wordsIn(title);scene.resize();}});}
+function beginChapter(){if(!chapterActive)return;chapterActive=false;$('#announcement').textContent=`${slides[index].title.replace(/\n/g,' ')}. Next to reveal the slide.`;dismissChapter(main,{instant:reducedMotion.matches,onComplete:()=>{if(step===0&&!chapterActive){const title=main.querySelector('.intro-title')||main.querySelector('.kn-title');if(title&&!reducedMotion.matches)wordsIn(title);}scene.resize();}});}
 function advance(){if(chapterActive)return beginChapter();if(mode!=='slides')return showSlide(0,{focus:true});if(step<buildSteps(directions[index].layout)-1)setStep(step+1);else showSlide(index+1);}
 function retreat(){if(mode!=='slides')return;if(chapterActive){if(index>0)showSlide(index-1,{atEnd:true});return;}if(step>0)setStep(step-1);else if(chapterFor(slides[index].id)){chapterActive=true;mountChapter(main,chapterFor(slides[index].id),{instant:reducedMotion.matches});}else if(index>0)showSlide(index-1,{atEnd:true});}
 function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atEnd=false }={}) {
@@ -217,7 +217,9 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atE
     if(oldTone&&oldTone!==directions[index].tone)toneWipe(oldBackground,direction);
     if(outgoing) tl.to(outgoing,{opacity:0,x:-direction*36,scale:.97,filter:'blur(10px)',duration:.45,ease:'power2.inOut',onComplete:()=>outgoing.remove()},0);
     // Every slide plays the same choreography: the title first, then each detail in reading order.
-    const morph=titleFrom&&title&&slide.kind!=='lab'&&!['horizon','finale'].includes(art.layout);
+    const titleFirst=Boolean(main.querySelector('.has-title-entrance'));
+    const heroOnly=titleFirst&&step===0;
+    const morph=!titleFirst&&titleFrom&&title&&slide.kind!=='lab'&&!['horizon','finale'].includes(art.layout);
     if(morph){
       // Magic move: the new title starts where the old one was, at its size, and glides into place.
       // Measure the text itself (centred headings sit in full-width boxes) and scale around its corner.
@@ -225,10 +227,9 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atE
       if(outTitle)tl.to(outTitle,{opacity:0,duration:.18},0);
       tl.fromTo(title,{x:titleFrom.rect.left-to.left,y:titleFrom.rect.top-to.top,scale:titleFrom.size/size,opacity:.2,transformOrigin:`${to.left-box.left}px ${to.top-box.top}px`},{x:0,y:0,scale:1,opacity:1,duration:1,ease:'expo.inOut',clearProps:'transform,opacity,transformOrigin'},0);
     }
-    if(title)wordsIn(title,{delay:outgoing?.25:.1,stagger:.045,duration:.8});
-    if(step===0&&main.querySelector('.intro-title'))wordsIn(main.querySelector('.intro-title'),{delay:.2,stagger:.06,duration:.85});
+    if(title&&!(chapterFor(slide.id)&&!atEnd))wordsIn(title,{delay:outgoing?.25:.1,stagger:.045,duration:.8});
     // Details: each block softens in and its words rise, one block after another.
-    const parts=entranceTargets(content,title);
+    const parts=heroOnly?[]:entranceTargets(content,title);
     const start=(outgoing?.3:.15)+(morph?.35:.25);
     parts.forEach((part,i)=>{
       const at=start+i*.14;
@@ -237,9 +238,9 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atE
     });
     // The takeaway line closes the sequence.
     const last=start+parts.length*.14+.05,bottom=main.querySelector('.slide-bottom');
-    if(bottom){tl.fromTo(bottom,{opacity:0,y:10},{opacity:1,y:0,duration:.6,ease:'power2.out',clearProps:'opacity,transform'},last);wordsIn(bottom,{delay:last});}
-    if(art.layout==='signal')tl.fromTo('.chart-line',{strokeDasharray:900,strokeDashoffset:900},{strokeDashoffset:0,duration:1.3,ease:'power2.out'},.25);
-    if(art.layout==='proof')tl.fromTo('.proof-signature b',{left:'0%'},{left:'95%',duration:1.3,ease:'power2.inOut'},.25);
+    if(bottom&&!heroOnly){tl.fromTo(bottom,{opacity:0,y:10},{opacity:1,y:0,duration:.6,ease:'power2.out',clearProps:'opacity,transform'},last);wordsIn(bottom,{delay:last});}
+    if(!heroOnly&&art.layout==='signal')tl.fromTo('.chart-line',{strokeDasharray:900,strokeDashoffset:900},{strokeDashoffset:0,duration:1.3,ease:'power2.out'},.25);
+    if(!heroOnly&&art.layout==='proof')tl.fromTo('.proof-signature b',{left:'0%'},{left:'95%',duration:1.3,ease:'power2.inOut'},.25);
   } else outgoing?.remove();
   const chapter=chapterFor(slide.id);
   if(chapter&&!atEnd){chapterActive=true;mountChapter(main,chapter,{instant:instant||reducedMotion.matches});$('#announcement').textContent=`Part ${chapter.number}: ${chapter.title}. ${chapter.speaker}. Next to begin.`;}
