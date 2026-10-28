@@ -109,36 +109,34 @@ export function applyBuild(root, layout, step, prev, { instant = false, scene } 
   if (instant) requestAnimationFrame(() => slide.classList.remove('kn-instant'));
 }
 
-// One live heading moves between the hero card and its original layout, like Earl's Flip builds.
-const titleHomes=new WeakMap();
+// Keep the heading in its real layout. Only translate it; never reparent or resize it.
 function applyTitleEntrance(slide,step,{instant,scene}){
- titleEntranceTween?.progress(1).kill();titleEntranceTween=null;
+ titleEntranceTween?.kill();titleEntranceTween=null;
  const card=slide.querySelector('.slide-title-card'),mount=card?.querySelector('.intro-title-mount');
  const content=slide.querySelector('.scene-content'),bottom=slide.querySelector('.slide-bottom');
  if(!card||!mount||!content)return;
- let home=titleHomes.get(slide);
- if(!home){
-  const title=slide.querySelector('#slide-title');if(!title)return;
-  const anchor=document.createComment('Live title returns here after its hero reveal');
-  title.before(anchor);home={title,anchor};titleHomes.set(slide,home);
- }
- const {title,anchor}=home;
- Flip.killFlipsOf(title,true);clearWords(title);
+ const title=slide.querySelector('#slide-title');if(!title)return;
+ clearWords(title);
+ const current={x:Number(gsap.getProperty(title,'x'))||0,y:Number(gsap.getProperty(title,'y'))||0};
  const changing=slide.dataset.step!==undefined&&Number(slide.dataset.step)!==step;
- // Tween actual typography instead of stretching glyphs to match two different boxes.
- const flipState=!instant&&changing?Flip.getState(title,{props:'fontSize,lineHeight,letterSpacing'}):null;
  slide.dataset.step=step;
  const titleOnly=step===0;
  document.body.classList.toggle('title-only',titleOnly);
  slide.setAttribute('aria-labelledby','slide-title');
- if(titleOnly){title.classList.add('intro-title');mount.append(title);}
- else{anchor.after(title);title.classList.remove('intro-title');}
- content.inert=titleOnly;content.setAttribute('aria-hidden',String(titleOnly));
+ title.classList.add('live-moving-title');
+ // Measure the natural heading once at its destination, then centre that same box in the intro.
+ gsap.set(title,{x:0,y:0});
+ const destination=title.getBoundingClientRect();
+ mount.style.height=`${destination.height}px`;
+ const hero=mount.getBoundingClientRect();
+ const target=titleOnly?{x:hero.left+hero.width/2-destination.left-destination.width/2,y:hero.top-destination.top}:{x:0,y:0};
+ gsap.set(title,changing&&!instant?current:target);
+ content.inert=false;content.removeAttribute('aria-hidden');
  if(bottom){bottom.inert=titleOnly;bottom.setAttribute('aria-hidden',String(titleOnly));}
  card.inert=!titleOnly;card.setAttribute('aria-hidden',String(!titleOnly));
  if(instant)return;
  const tl=gsap.timeline();titleEntranceTween=tl;
- if(flipState)tl.add(Flip.from(flipState,{duration:.95,ease:'power3.inOut',scale:false}),0);
+ if(changing)tl.to(title,{...target,duration:.95,ease:'power3.inOut'},0);
  if(titleOnly)return;
  // Never animate the heading or an ancestor that could move it a second time.
  const parts=[];
