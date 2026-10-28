@@ -1,3 +1,4 @@
+import {foundations,operationsRecap} from './additions.js';
 export const people = {
   Paulo: 'Kent Paulo Delgado', Renan: 'John Renan Labay', Earl: 'Earl Josh Delgado'
 };
@@ -185,6 +186,17 @@ slides.push({
   time: '0:15',
   notes: 'Thank you for listening. We are Group 11. We are ready for your questions on cloud operations, security, and economics.',
   detail: 'Closing title reprise. Group 11 welcomes questions and discussion.'
+});
+
+slides.splice(1,0,...foundations);
+slides.splice(slides.findIndex(s=>s.id==='shared-responsibility'),0,...operationsRecap);
+Object.assign(sources,{
+ observability:['CloudTrail or CloudWatch · AWS','https://docs.aws.amazon.com/decision-guides/latest/decision-guides/cloudtrail-or-cloudwatch.html'],
+ backup:['Backup guidance · CISA','https://www.cisa.gov/stopransomware/ransomware-guide'],
+ sla:['Reliability targets and SLAs · Microsoft','https://learn.microsoft.com/en-us/azure/well-architected/reliability/metrics'],
+ iac:['Terraform overview · HashiCorp','https://developer.hashicorp.com/terraform/intro'],
+ autoscale:['Auto Scaling capacity limits · AWS','https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-capacity-limits.html'],
+ incident:['Incident response · AWS','https://docs.aws.amazon.com/whitepapers/latest/aws-security-incident-response-guide/incident-response.html']
 });
 
 export const glossary = [
