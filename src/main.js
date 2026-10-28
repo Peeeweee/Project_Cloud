@@ -93,7 +93,7 @@ function pricingHTML() {
 function visualHTML(slide) {
   switch(slide.kind) {
     case 'lab':return labHTML();
-    case 'cover': return `<div class="cover-index"><span>01 / OPERATIONS</span><span>02 / SECURITY</span><span>03 / ECONOMICS</span></div><p class="cover-byline">PAULO DELGADO <i>·</i> RENAN LABAY <i>·</i> EARL DELGADO</p>`;
+    case 'cover': return `<div class="cover-index"><span>01 / OPERATIONS</span><span>02 / SECURITY</span><span>03 / ECONOMICS</span></div><p class="cover-byline">KENT PAULO DELGADO <i>·</i> JOHN RENAN LABAY <i>·</i> EARL JOSH DELGADO</p>`;
     case 'risks': return labelRows(slide.items,'risk-list');
     case 'models': return labelRows(slide.items,'model-list');
     case 'steps': return labelRows(slide.items,'step-list');
