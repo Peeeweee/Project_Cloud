@@ -25,3 +25,13 @@ for(const s of foundations){
 import {foundationScene} from '../src/foundation-scenes.js';
 const signatures=['resource-map','everyday-route','scale-comparison','elastic-timeline'];
 foundations.forEach((s,i)=>assert.ok(foundationScene(s,'heading',String).includes(signatures[i]),'distinct concept layout'));
+import {operationsScene} from '../src/operations-scenes.js';
+const opsSignatures=['ops-evidence','backup-recipe','ops-control-rail','response-track','mistake-ledger'];
+operationsRecap.forEach((s,i)=>{
+ const html=operationsScene(s,'heading',String);
+ assert.ok(html.includes(opsSignatures[i]),'distinct operations layout');
+ assert.ok(!html.includes('briefing-card'),'no shared card template');
+});
+const resources=foundationScene(foundations[0],'heading',String),daily=foundationScene(foundations[1],'heading',String);
+assert.ok(!resources.includes('resource-link'),'no connectors through resource labels');
+assert.ok(!daily.includes('route-line'),'no path through everyday symbols');
