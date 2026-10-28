@@ -171,7 +171,7 @@ function gate() {
 function resetSlideInteractions(){pricingPart=false;saleDay=false;quizAnswer=null;step=0;resetLab();}
 // Next/Back play a slide's build steps before changing slides; Back lands on the previous slide's last step.
 function setStep(n){navigationTween?.progress(1);clearWords(main);const prev=step;step=n;applyBuild(main,directions[index].layout,step,prev,{instant:reducedMotion.matches,scene});$('#announcement').textContent=`Slide ${index+1}. Step ${step+1} of ${buildSteps(directions[index].layout)}.`;}
-function beginChapter(){if(!chapterActive)return;chapterActive=false;$('#announcement').textContent=`${slides[index].title.replace(/\n/g,' ')}. Next to reveal the slide.`;dismissChapter(main,{instant:reducedMotion.matches,onComplete:()=>{if(step===0&&!chapterActive){const title=main.querySelector('.intro-title')||main.querySelector('.kn-title');if(title&&!reducedMotion.matches)wordsIn(title);}scene.resize();}});}
+function beginChapter(){if(!chapterActive)return;chapterActive=false;$('#announcement').textContent=`${slides[index].title.replace(/\n/g,' ')}. Next to reveal the slide.`;dismissChapter(main,{instant:reducedMotion.matches,onComplete:()=>{if(step===0&&!chapterActive){const title=main.querySelector('.live-moving-title')||main.querySelector('.kn-title');if(title&&!reducedMotion.matches){if(title.classList.contains('live-moving-title'))gsap.fromTo(title,{opacity:0},{opacity:1,duration:.6,clearProps:'opacity'});else wordsIn(title);}}scene.resize();}});}
 function advance(){if(chapterActive)return beginChapter();if(mode!=='slides')return showSlide(0,{focus:true});if(step<buildSteps(directions[index].layout)-1)setStep(step+1);else showSlide(index+1);}
 function retreat(){if(mode!=='slides')return;if(chapterActive){if(index>0)showSlide(index-1,{atEnd:true});return;}if(step>0)setStep(step-1);else if(chapterFor(slides[index].id)){chapterActive=true;mountChapter(main,chapterFor(slides[index].id),{instant:reducedMotion.matches});}else if(index>0)showSlide(index-1,{atEnd:true});}
 function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atEnd=false }={}) {
@@ -227,7 +227,7 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atE
       if(outTitle)tl.to(outTitle,{opacity:0,duration:.18},0);
       tl.fromTo(title,{x:titleFrom.rect.left-to.left,y:titleFrom.rect.top-to.top,scale:titleFrom.size/size,opacity:.2,transformOrigin:`${to.left-box.left}px ${to.top-box.top}px`},{x:0,y:0,scale:1,opacity:1,duration:1,ease:'expo.inOut',clearProps:'transform,opacity,transformOrigin'},0);
     }
-    if(title&&!(chapterFor(slide.id)&&!atEnd))wordsIn(title,{delay:outgoing?.25:.1,stagger:.045,duration:.8});
+    if(title&&!(chapterFor(slide.id)&&!atEnd)){if(titleFirst)tl.fromTo(title,{opacity:0},{opacity:1,duration:.6,clearProps:'opacity'},outgoing?.25:.1);else wordsIn(title,{delay:outgoing?.25:.1,stagger:.045,duration:.8});}
     // Details: each block softens in and its words rise, one block after another.
     const parts=heroOnly?[]:entranceTargets(content,title);
     const start=(outgoing?.3:.15)+(morph?.35:.25);
@@ -340,3 +340,8 @@ document.addEventListener('change',e=>{if(!e.target.matches('[data-lab-hours]'))
 new ResizeObserver(fitLab).observe(main);
 window.visualViewport?.addEventListener('resize',fitLab);
 window.addEventListener('resize',fitLab);
+
+// Fonts and viewport changes can alter the natural heading box before its first move.
+function fitTitleIntro(){if(mode==='slides'&&step===0&&main.querySelector('.has-title-entrance'))applyBuild(main,directions[index].layout,step,null,{instant:true,scene});}
+document.fonts.ready.then(fitTitleIntro);
+window.addEventListener('resize',fitTitleIntro);
