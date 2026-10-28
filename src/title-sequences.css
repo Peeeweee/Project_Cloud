@@ -6,7 +6,7 @@
 .has-title-entrance[data-step="0"] .slide-title-card{opacity:1;visibility:visible}
 .has-title-entrance[data-step="0"]>.scene-content,.has-title-entrance[data-step="0"]>.slide-bottom{visibility:hidden!important;pointer-events:none}
 body.title-only #scene{opacity:0;pointer-events:none}
-body.title-only .art-slide{min-height:0!important}
+
 .tone-paper .intro-kicker,.tone-paper .intro-cue{color:#59614e}
 /* A 40% larger title reprise and an explicit visual identity for the three disciplines. */
 body.view-horizon.presenting .cover-title h1{font-size:clamp(90px,min(11.5vw,23vh),240px)!important;line-height:.94;letter-spacing:-.07em;margin-bottom:35px}
@@ -28,7 +28,7 @@ body.chapter-is-active #scene{opacity:0}body.chapter-is-active{overflow:hidden!i
 @keyframes column-grow{from{transform:scaleY(.02);opacity:0}to{transform:scaleY(1);opacity:1}}
 @media(max-width:760px){
  .slide-title-card{position:fixed;inset:120px 24px 100px}.art-slide .slide-title-card .intro-title{font-size:clamp(38px,10.5vw,76px)}.intro-kicker{font-size:13px;margin-bottom:25px}.intro-cue{font-size:16px}
- body.title-only .art-slide{height:calc(100svh - 165px)!important;padding-bottom:0!important}body.title-only{overflow:hidden!important}
+ body.title-only{overflow:hidden!important}
  body.view-horizon.presenting .cover-title h1{font-size:17vw!important;margin-bottom:26px}body.view-horizon.presenting .cover-title{top:20%}.cover-disciplines{gap:16px;flex-wrap:wrap;max-width:95%;margin:0 auto}.cover-disciplines>span{font-size:clamp(13px,3.8vw,22px);gap:4px}.view-horizon .cover-edition{margin-top:24px}
  .chapter-part,.chapter-person{top:40px;font-size:12px;letter-spacing:.1em}.chapter-person{top:70px;left:var(--pad);right:auto}.chapter-copy{left:7%;right:5%;top:36%}.chapter-copy h1{font-size:clamp(46px,12vw,90px)}.chapter-copy p{font-size:27px}.chapter-verb{font-size:12px;letter-spacing:.12em}.chapter-begin{left:7%;bottom:100px;padding:12px 20px;font-size:18px;gap:30px}.chapter-navigation{left:7%;right:auto;bottom:75px;font-size:12px}.chapter-assembly{left:50%;opacity:.6}.chapter-iris{left:30%;top:21%;width:100vw;opacity:.7}.chapter-columns{left:40%;opacity:.55}
 }
@@ -50,3 +50,7 @@ body.presenting #scene{transition:opacity .55s ease}
 /* The hero hosts the real heading; its original line breaks return in the content layout. */
 .slide-title-card .intro-title br{display:none}
 .slide-title-card .intro-title-mount{width:100%}
+/* A single heading keeps its natural typography and parent in both stages. */
+.has-title-entrance[data-step="0"] .live-moving-title{visibility:visible!important}
+.live-moving-title{position:relative;z-index:5;will-change:transform}
+body.chapter-is-active .art-slide .live-moving-title{visibility:hidden!important}
