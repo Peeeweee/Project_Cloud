@@ -10,7 +10,7 @@ Timed delivery: about 20-22 minutes, excluding questions. The optional Cloud Lab
 
 Read only the spoken paragraphs aloud. Guide notes and bracketed cues are delivery instructions. Study notes and defense answers are preparation material.
 
-Slides run **1 to 22 in order**, matching the website: use Next only, with no Contents jumps. Slide numbers and speakers match the website's speaker notes (N key).
+Slides run **1 to 22 in order**, matching the website: use Next, with no Contents jumps. On Earl’s slides 14–17, press Next for each step before moving to the next slide; Back reverses a step. Slide numbers and speakers match the website's speaker notes (N key).
 
 ## PART 1: PAULO - OPERATIONS
 
@@ -180,7 +180,7 @@ Controlled access protects the system and its resources. Earl will now explain h
 
 ### Slide 14: The full cost not just the fee
 
-**Guide:** Begin immediately after Renan. Compare the two choices over the same period and workload.
+**Guide:** Begin immediately after Renan. Press Next for each step: complete the title, compare CapEx and OpEx, reveal the four cost blocks, then highlight transfer and people. Compare the choices over the same period and workload.
 
 Thank you, Renan. Cloud economics asks whether our spending supports the service we actually need.
 
@@ -192,7 +192,7 @@ A low server price can hide expensive data transfer or operational work. Equally
 
 ### Slide 15: A lower rate a bigger bill
 
-**Guide:** Show Always on first. Read the totals, then switch to Part time. Let the verdict change before explaining break-even.
+**Guide:** Press Next for each step: complete the title, show the always-on totals, change to part-time usage, then reveal the 438-hour break-even. Let each counter and verdict settle before explaining it.
 
 This example shows why a lower hourly rate can still produce a larger bill. These are teaching assumptions, not current provider quotations.
 
@@ -206,7 +206,7 @@ So we match commitments to predictable demand, rather than choosing a discount j
 
 ### Slide 16: Meet the peak then let go
 
-**Guide:** Switch Normal day to Sale day, then back. Point out that the extra blocks disappear when demand falls.
+**Guide:** Press Next for each step: complete the title, show two machines, add eighteen for the sale, release them, then compare the monthly bills. Point out that the extra blocks disappear when demand falls.
 
 Elasticity means adding capacity when demand rises and releasing it afterward. The release is part of the saving.
 
@@ -218,7 +218,7 @@ Actual savings depend on how the application scales and on supporting costs. Aut
 
 ### Slide 17: Give every resource an owner
 
-**Guide:** Follow Inform, Optimize, Operate, then continue straight to the integrated example.
+**Guide:** Press Next for each step: complete the title, reveal the owner tag, show the Inform–Optimize–Operate loop, then explain that a budget alert is not a spending cap. Continue to the integrated example.
 
 Financial accountability is a shared practice. FinOps connects engineering, finance, and business decisions so that spending can be understood and tied to value.
 
@@ -798,11 +798,11 @@ Finish slide 13 and press Next. Earl begins slide 14, The full cost, with the wr
 
 ### Interactive pricing
 
-On slide 15, explain Always on before selecting Part time. Point to $73.00 and $43.80, then $17.60 and $43.80. Interactive slides return to their starting state each time you arrive, so Always on is always shown first.
+On slides 14–17, press Next for each step. Back reverses the current step; Back from the following slide returns to the last step. Forward entry starts at the title. On slide 15, reveal always-on usage ($73.00 and $43.80), then part-time usage ($17.60 and $43.80), then the 438-hour break-even.
 
 ### Interactive elasticity
 
-On slide 16, use Normal day, Sale day, and Normal day again. The extra eighteen instances explain the changing capacity. The figures represent the monthly example, not a live cloud account.
+On slide 16, press Next for each step: two machines, the twenty-machine peak, the return to two, then the monthly comparison. The extra eighteen instances explain the changing capacity. The figures represent the monthly example, not a live cloud account.
 
 ### Audience question
 
