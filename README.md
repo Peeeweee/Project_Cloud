@@ -103,3 +103,10 @@ npx vite build
 The interaction check covers all 39 slide/build states, rapid reversals, counters, covers, quiz, lab, reading links, motion settings, and phone scrolling. The layout check captures all states at eight laptop, projector, and phone sizes in ignored `previews/upgrade/`, plus scrolled phone views. It fails on overflow or browser errors and records text-overlap and scene-slot candidates for visual review; font bounding boxes can overlap while the glyphs remain separate. Use `npm run check:layout -- 1366x768` for one size. Both checks accept `PRESENTATION_URL` for a different **dev server** URL; they import source modules and are not production smoke checks.
 
 Phone review preview: https://group11-report-779241214444.asia-southeast1.run.app. This is separate from GitHub Pages; pushing `main` still requires Earl’s explicit approval.
+
+
+## Title-first presentation and chapter entrances
+
+Every content slide now opens with its title before Next reveals the original composition. The four economics slides retain their existing multi-step keynote builds. Opening and closing covers use larger type and emphasize Operations, Security, and Economics.
+
+The Operations, Security, and Economics sections each begin with a distinct full-screen animated chapter card. Next, Space, or the Begin button opens the first title; Next again reveals the content. Back reverses those stages. Chapter cards do not add slide numbers or change existing slide URLs. The order remains Paulo → Renan → Earl. Reduced-motion mode preserves presenter control with immediate state changes.
