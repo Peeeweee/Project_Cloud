@@ -27,20 +27,21 @@ The opening is manually activated and skippable. No sound plays. Essential asset
 
 ## GitHub Pages
 
-Push this project to a repository with a `main` branch. In **Settings → Pages → Build and deployment**, select **GitHub Actions**. The included workflow builds and publishes `dist/`. This project uses relative asset paths, so the repository name does not need to be embedded in the build. Do not upload `node_modules/`.
+Live site: https://peeeweee.github.io/Project_Cloud/ — every push to `main` rebuilds and redeploys it, so merged changes go public automatically.
 
-The workflow has been prepared locally; no repository was created and no public deployment was performed by this build task.
+To set up Pages on a new copy of the repository: in **Settings → Pages → Build and deployment**, select **GitHub Actions**. The included workflow builds and publishes `dist/`. This project uses relative asset paths, so the repository name does not need to be embedded in the build. Do not upload `node_modules/`.
 
 ## Edit
 
 - `src/content.js`: slide order, presenter, speaker notes, reading text, sources, glossary, defense questions.
 - `src/main.js`: layouts, controls, reading view, print output.
-- `src/direction.js`: twenty individual compositions, scene poses, palettes, and transition choices.
+- `src/direction.js`: twenty-two individual compositions, scene poses, palettes, and transition choices.
 - `src/scene.js`: original procedural Three.js objects, textured Mars and terrain shaders, spatial transitions, interactive resource scenes, quality controls.
 - `src/style.css`: shared interface, reading view, and print styles.
 - `src/redesign.css`: slide-specific editorial layouts and responsive art direction.
 - `src/layout-fixes.css`: reserved scene areas, diagram-caption alignment, contrast, and cross-viewport corrections.
 - `src/branding.css`: reference-inspired typography, cover composition, planet atmosphere, and responsive branding.
+- `src/mobile-fit.css`: loaded last; phone portrait and landscape layout, and the phone Cloud Lab.
 - `REPORT_BLUEPRINT.md`: design and content plan.
 - `PRESENTATION_AUDIT.md`: screenshot-driven findings, structural fixes, and validation scope.
 
@@ -60,7 +61,14 @@ Scene changes now include a 560-point silhouette morph between the previous and 
 
 The penultimate slide (`#cloud-lab`, slide 21 of 22) has three presenter-controlled simulations. Pricing compares 176, 438, and 730 usage hours; 438 is the equal-cost point under the stated assumptions. Elasticity grows from two baseline machines to twenty for a peak and releases the additional eighteen afterward. Incident response moves through exposure, containment, investigation, and recovery. The incident model keeps existing resource charges running after containment until cleanup; it is a fictional teaching example, not a connected cloud account. Each mode starts fresh when selected, with direct stage selection and a Replay action after recovery. All three simulations respect Motion off.
 
-Phones have a fixed Back/Next bar with at least 44-pixel touch targets, page position, and safe-area spacing. It remains available when presentation utilities are hidden. The same bar appears in short landscape windows. The final title is now slide 22; existing script references to its old slide number should be updated when rehearsing.
+Phones have a fixed Back/Next bar with at least 44-pixel touch targets, page position, and safe-area spacing. It remains available when presentation utilities are hidden. The same bar appears in short landscape windows.
+
+Phone layouts (`src/mobile-fit.css`):
+
+- **Upright (≤760 px wide):** each slide is a stacked page that scrolls under the fixed Back/Next bar. The Cloud Lab is not scaled down on phones; its panels stack at readable size.
+- **Sideways (≤500 px tall):** wider phones keep the desktop composition at a fixed 640 px slide height and scroll; narrower ones use the upright layout. The title cover never scrolls; it compacts its title and hides secondary captions instead.
+
+The site is the authoritative running order: Paulo → Renan → Earl, 22 slides, with the Cloud Lab at 21 and the title reprise at 22. `output/script/` still uses an older order (Paulo → Earl → Renan) and numbering from before the lab was added; update it before rehearsing from it.
 
 - `src/lab.js`: lab state, calculation model, labels, and stage controls.
 - `src/lab.css`: lab layout and mobile navigation placement.
@@ -69,6 +77,6 @@ Phones have a fixed Back/Next bar with at least 44-pixel touch targets, page pos
 
 Cloud Lab compares cause and effect with a 0–730 hour pricing slider, animated elastic/fixed fleets, and a four-stage incident walkthrough. Presets, direct stage selection, previous/next steps, and one-click replay support live teaching. Assumptions stay visible; examples are illustrative compute costs, not live cloud billing.
 
-The highlighted security and economics scenes use larger explanations and distinct compositions. Phone content scrolls while the safe-area-aware Back/Next navigation stays fixed; Cloud Lab uses a fitted single-screen stage. Hidden supporting 3D viewports are excluded from camera fitting to avoid invalid geometry during responsive changes. Reduced-motion preferences disable the new bar and machine entrances.
+The highlighted security and economics scenes use larger explanations and distinct compositions. Phone content scrolls while the safe-area-aware Back/Next navigation stays fixed; on laptops and projectors Cloud Lab uses a fitted single-screen stage, and on upright phones its panels stack and scroll. Hidden supporting 3D viewports are excluded from camera fitting to avoid invalid geometry during responsive changes. Reduced-motion preferences disable the new bar and machine entrances.
 
 All interactive slides start at their initial values on entry. Pricing, elasticity, discussion answers, and lab scenarios remain directly selectable without a reset requirement. Re-selecting a lab mode starts that scenario again; incident navigation cycles through its stages.

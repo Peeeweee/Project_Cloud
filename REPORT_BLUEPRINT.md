@@ -1,12 +1,12 @@
 # GROUP 11 — CLOUD ECONOMICS, OPERATIONS, AND SECURITY
 
-Latest implementation correction (October 27): model/text layout is governed by reserved `.scene-slot` rectangles, per-scene camera fitting, projected captions, and isometric diagram views. See `PRESENTATION_AUDIT.md` for screenshot-driven findings and the 60-case desktop/laptop/phone verification. This supersedes any earlier proposal to freely position foreground models behind slide text.
+Latest implementation correction (October 27): model/text layout is governed by reserved `.scene-slot` rectangles, per-scene camera fitting, projected captions, and isometric diagram views. See `PRESENTATION_AUDIT.md` for screenshot-driven findings and the current desktop, projector, tablet, and phone verification. This supersedes any earlier proposal to freely position foreground models behind slide text.
 
 ## Cloud Economics, Operations, and Security
 
 Theme: cinematic space imagery inspired by The Martian's visual atmosphere and themes of resilience, protection, and resourcefulness. The report stays directly about cloud computing. Use original visual assets and branding.
 
-Status: first local website implementation complete. Twenty slides, procedural Three.js visuals, presenter-controlled depth transitions, reading view, speaker notes, source references, interactive examples, and GitHub Pages workflow implemented. Public deployment has not been performed.
+Status: implemented and deployed to GitHub Pages (https://peeeweee.github.io/Project_Cloud/) from `main`. Twenty-two slides — twenty report slides, the interactive Cloud Lab (21), and a closing title reprise (22) — with procedural Three.js visuals, presenter-controlled depth transitions, reading view, speaker notes, source references, interactive examples, and phone layouts.
 
 Implementation title: **Beyond the cloud.** The academic subtitle remains **Cloud economics, operations & security**. The opening begins in black space with a restrained horizon and a manual Enter control.
 
@@ -72,6 +72,8 @@ Slides must look finished when paused. Use short fades or position changes only 
 | 18 | Earl | ONE SYSTEM. CONNECTED CONTROLS. | Full architecture assembled from the same visual elements used earlier | Show visitor HTTPS route, separate administrator route, app, private database, monitoring, audit logs, protected backups, and budgets. Distinguish management MFA from SSH keys. |
 | 19 | Earl / All | A CLOUD CREDENTIAL HAS LEAKED. | Fictional exposed cloud credential, unknown resources, spending spike; audience chooses a response | Ask what to do first. Reveal credential containment, investigation and unauthorized resource handling, then recovery and prevention. Do not imply open SSH caused API credential theft. |
 | 20 | All, led by Earl | KEEP IT RUNNING. PROTECT ACCESS. MAKE RESOURCES COUNT. | Return to the black-space composition with the three cloud takeaways and a restrained planetary horizon | Paulo closes reliability, Renan closes security, Earl closes economics and opens Q&A. |
+| 21 | All | CLOUD, IN YOUR HANDS. | Interactive Cloud Lab: pricing hours, elastic vs fixed fleet, four-step incident walkthrough | Optional 2–3 minute recap. Earl runs pricing and elasticity, Renan the incident steps, Paulo detection and recovery checks. |
+| 22 | All | BEYOND THE CLOUD. | The opening title cover, reprised | Stays on screen during questions. |
 
 Target duration: 18–22 minutes plus Q&A. Adjust after timed rehearsal. Never force equal speaking time by rushing dense sections.
 
@@ -111,12 +113,12 @@ Keep code snippets out of the main presentation. Technical commands may exist in
 
 ## Completion criteria
 
-All 20 slides have a clear message and correct presenter; no code or terminal gimmicks appear in the main flow; static slides remain visually compelling; sample numbers and historical claims are distinguishable; every major technical claim has a supporting source; production assets load under the correct Pages path; navigation, reading view, print layout, and responsive layouts work; team handoffs and timings survive a full rehearsal.
+All 22 slides have a clear message and correct presenter; no code or terminal gimmicks appear in the main flow; static slides remain visually compelling; sample numbers and historical claims are distinguishable; every major technical claim has a supporting source; production assets load under the correct Pages path; navigation, reading view, print layout, and responsive layouts work; team handoffs and timings survive a full rehearsal.
 
 
 ## Second design edition — implemented
 
-The repeated text-left/object-right composition has been replaced by twenty individually composed slides, nineteen scene configurations, eleven transition families, and four palette treatments. This implementation table supersedes the earlier visual composition column. Speaker order and technical content are retained. The black-space opening is retained. Pricing controls adjust physical tower height; the elasticity control assembles 2 or 20 instances. Motion is presenter-controlled and respects reduced-motion settings.
+The repeated text-left/object-right composition has been replaced by individually composed slides (twenty in this edition; the Cloud Lab and title reprise were added later, for twenty-two), nineteen scene configurations, eleven transition families, and four palette treatments. This implementation table supersedes the earlier visual composition column. Speaker order and technical content are retained. The black-space opening is retained. Pricing controls adjust physical tower height; the elasticity control assembles 2 or 20 instances. Motion is presenter-controlled and respects reduced-motion settings.
 
 | Slide | Presenter | Composition | 3D scene | Entrance | Palette |
 |---|---|---|---|---|---|
@@ -139,6 +141,8 @@ The repeated text-left/object-right composition has been replaced by twenty indi
 | 17 | Earl | cycle | finops | orbit | paper |
 | 18 | Earl | blueprint | architecture | assemble | dark |
 | 19 | Earl | decision | alert | impact | rust |
-| 20 | All | finale | terrain | horizon | dark |
+| 20 | All | finale | planet | horizon | dark |
+| 21 | All | lab | price (changes with lab mode) | assemble | dark |
+| 22 | All | horizon | planet | horizon | dark |
 
-Validation: production build passes; all twenty layouts checked for horizontal overflow and heading/footer collisions at approximately 1365×768 and 391×845 CSS pixels; interactive pricing and capacity states checked; source and notes controls retained. Browser console showed no runtime errors during review. No physical GPU benchmark or public deployment was performed.
+Validation: see `PRESENTATION_AUDIT.md` for the current checks. No physical GPU benchmark has been performed.
