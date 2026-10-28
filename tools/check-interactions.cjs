@@ -24,34 +24,27 @@ for(const id of ['total-cost','pricing','elasticity','finops']){
 }
 console.log('PASS rapid build reversal, counters and split cleanup');
 
-// A title is the same DOM heading in hero and detail states; its words must not replay on docking.
-for(const id of ['cloud-basics','daily-operations','observability','root-access','firewalls','key-lifecycle']){
- await go(id);await at(id,1);
+// Generic titles retain their parent, typography and dimensions; only their translation changes.
+for(const id of ['cloud-basics','daily-operations','incident-response','observability','root-access','firewalls','key-lifecycle']){
+ await go(id);await press('ArrowLeft',1200);await at(id,0);
  const title=p.locator('main #slide-title');
- const flipId=await title.getAttribute('data-flip-id');assert.ok(flipId);
+ const measure=()=>title.evaluate(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect(),m=new DOMMatrixReadOnly(s.transform);return {parent:el.parentElement.className,font:s.fontSize,line:s.lineHeight,spacing:s.letterSpacing,weight:s.fontWeight,width:r.width,height:r.height,left:r.left,top:r.top,x:m.a,y:m.d};});
+ const hero=await measure();
  assert.equal(await p.locator('main #slide-title').count(),1);
- assert.equal(await p.locator('.intro-title-mount h1').count(),0);
- assert.equal(await title.locator('div').count(),0,'docked title has no repeated word reveal');
- assert.equal(await title.evaluate(el=>getComputedStyle(el).opacity),'1','moving title stays visible');
- await press('ArrowLeft',120);await at(id,0);
- assert.equal(await p.locator('.intro-title-mount #slide-title').count(),1);
- assert.equal(await title.getAttribute('data-flip-id'),flipId,'Back keeps the live heading');
- await press('ArrowRight',120);await at(id,1);
- assert.equal(await title.getAttribute('data-flip-id'),flipId,'Next moves the same heading');
- assert.equal(await title.locator('div').count(),0);
- const typography=await title.evaluate(el=>{const s=getComputedStyle(el),m=new DOMMatrixReadOnly(s.transform);return {weight:s.fontWeight,x:m.a,y:m.d};});
- assert.equal(typography.weight,'600','title weight stays consistent');
- assert.ok(Math.abs(typography.x-1)<.001&&Math.abs(typography.y-1)<.001,'title moves without glyph stretching');
- if(id==='daily-operations'){
-  const labels=()=>p.locator('.orbital-label').evaluateAll(els=>els.map(e=>e.getBoundingClientRect().y));
-  const moving=await labels();
-  assert.equal(await p.locator('.orbit-annotations').evaluate(el=>getComputedStyle(el).transform),'none');
-  await p.waitForTimeout(1500);
-  const settled=await labels();
-  moving.forEach((y,i)=>assert.ok(Math.abs(y-settled[i])<1,'orbital labels keep their positioning frame'));
+ assert.equal(await p.locator('.intro-title-mount h1').count(),0,'heading never leaves its original parent');
+ for(const [key,step] of [['ArrowRight',1],['ArrowLeft',0],['ArrowRight',1]]){
+  const visible=await measure();
+  await press(key,100);await at(id,step);
+  const moving=await measure();
+  assert.ok(Math.hypot(moving.left-visible.left,moving.top-visible.top)<80,'movement starts at the currently visible position');
+  for(const prop of ['parent','font','line','spacing','weight'])assert.equal(moving[prop],hero[prop],`${id} keeps ${prop}`);
+  assert.ok(Math.abs(moving.width-hero.width)<1&&Math.abs(moving.height-hero.height)<1,'heading never resizes');
+  assert.equal(moving.x,1);assert.equal(moving.y,1);
+  assert.equal(await title.locator('div').count(),0,'no replacement word reveal');
  }
+ if(id==='daily-operations')assert.equal(await p.locator('.orbit-annotations').evaluate(el=>getComputedStyle(el).transform),'none');
 }
-console.log('PASS single live heading, no duplicate reveal, and rapid title reversal');
+console.log('PASS translation-only headings with stable parent, size and typography');
 
 await go('decision');for(const [choice,word] of [['budget','larger budget'],['contain','Correct.'],['delete','does not revoke']]){await p.click(`[data-action="answer"][data-value="${choice}"]`);assert.ok((await p.locator('.quiz-result').innerText()).includes(word));}console.log('PASS quiz switches');
 await press('n',100);assert.ok(await p.locator('#panel').evaluate(e=>e.open));await press('Escape');await press('c',100);await p.click('.chapter-list button:nth-child(15)');await at('pricing',0);
