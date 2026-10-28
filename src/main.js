@@ -10,7 +10,7 @@ import './branding.css';
 import './lab.css';
 import './experience.css';
 import './lab-fit.css';
-import {labState,labHTML,labDesign} from './lab.js';
+import {labState,labHTML,labDesign,resetLab} from './lab.js';
 import { directions, composeSlide } from './direction.js';
 import { gsap } from 'gsap';
 import { createScene } from './scene.js';
@@ -131,13 +131,14 @@ function gate() {
   scene.set('planet',true,true); entered=false;
 }
 
+function resetSlideInteractions(){pricingPart=false;saleDay=false;quizAnswer=null;resetLab();}
 function showSlide(nextIndex, { updateHash=true, instant=false, focus=false }={}) {
   const previous=index;
   if(navigationTween) navigationTween.kill();
   gsap.killTweensOf('.scene-content, .scene-content *, .slide-bottom');
   document.querySelectorAll('.outgoing-scene').forEach(el=>el.remove());
   const outgoing = !instant && !reducedMotion.matches && mode==='slides' ? main.querySelector('.art-slide')?.cloneNode(true) : null;
-  index=Math.max(0,Math.min(slides.length-1,nextIndex));if(index!==previous)quizAnswer=null;const slide=slides[index];
+  index=Math.max(0,Math.min(slides.length-1,nextIndex));if(index!==previous||mode!=='slides')resetSlideInteractions();const slide=slides[index];
   updateControls();
   mode='slides';entered=true;document.body.className=`presenting chapter-${slide.chapter.toLowerCase()} tone-${directions[index].tone} view-${directions[index].layout}`;
   $('#view-toggle').innerHTML='Read report <span>↗</span>';
@@ -228,10 +229,9 @@ document.addEventListener('click',async e=>{
     case 'pricing': pricingPart=target.dataset.value==='part';drawArt();scene.update?.({partTime:pricingPart,saleDay});$('.segmented [data-value="'+target.dataset.value+'"]').focus();break;
     case 'capacity': saleDay=target.dataset.value==='sale';drawArt();scene.update?.({partTime:pricingPart,saleDay});$('.segmented [data-value="'+target.dataset.value+'"]').focus();break;
     case 'answer': {const value=target.dataset.value;quizAnswer=quizAnswer===value?null:value;drawArt();main.querySelector(`[data-action="answer"][data-value="${value}"]`)?.focus({preventScroll:true});break;}
-    case 'lab-mode':case 'lab-hours':case 'lab-capacity':case 'lab-incident':case 'lab-reset':{
-      const switching=action==='lab-mode'||action==='lab-reset';
-      if(action==='lab-reset')Object.assign(labState,{mode:'pricing',hours:730,capacity:'normal',incident:0});
-      else if(action==='lab-mode')labState.mode=target.dataset.value;
+    case 'lab-mode':case 'lab-hours':case 'lab-capacity':case 'lab-incident':{
+      const switching=action==='lab-mode';
+      if(switching)resetLab(target.dataset.value);
       else if(action==='lab-hours')labState.hours=Number(target.dataset.value);
       else if(action==='lab-capacity')labState.capacity=target.dataset.value;
       else labState.incident=Number(target.dataset.value);
