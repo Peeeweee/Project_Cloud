@@ -102,3 +102,10 @@
  .view-expansion .expansion-summary{top:665px;bottom:auto;width:100%}
  body.view-expansion.presenting .art-slide .scene-content{min-height:850px!important}
 }
+
+/* Presenter-friendly discussion: choices remain active and feedback never locks the slide. */
+.decision-choices .quiz-live>button[aria-pressed="true"]{background:#f3e4cf;color:#2b3028;border-color:#fff0dc;box-shadow:0 0 0 2px #f3e4cf33}
+.decision-choices .quiz-live>button[aria-pressed="true"]>span{color:#934323}
+.decision-choices .quiz-live .quiz-result{min-height:3em;margin:4px 0 0;padding:16px 20px;border-left:3px solid #f2d5b7;background:#2d160c20;font-size:clamp(18px,1.5vw,26px);line-height:1.4}
+.decision-choices .quiz-live .quiz-result.is-correct{border-color:#c7d8aa}
+@media(max-width:760px){.decision-choices .quiz-live .quiz-result{font-size:18px;padding:12px 14px;min-height:100px}body.view-decision.presenting .art-slide .scene-content{min-height:800px!important}}
