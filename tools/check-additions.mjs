@@ -16,3 +16,12 @@ assert.equal(operationsRecap.at(-1).items.reduce((n,item)=>n+item[1].split('|').
 assert.equal(operationsRecap.find(s=>s.variant==='response').items.length,6);
 assert.equal(slides.at(-1).id,'closing-title');
 console.log('PASS 31 slides, nine inserted scenes, eleven mistakes, six response stages, sources and art alignment');
+
+for(const s of foundations){
+ const html=composeSlide(s,slides.indexOf(s),'',{});
+ assert.ok(!html.includes('briefing-object'),'no repeated orange stacks');
+ assert.ok(!html.includes('briefing-card'),'foundations use distinct spatial scenes');
+}
+import {foundationScene} from '../src/foundation-scenes.js';
+const signatures=['resource-map','everyday-route','scale-comparison','elastic-timeline'];
+foundations.forEach((s,i)=>assert.ok(foundationScene(s,'heading',String).includes(signatures[i]),'distinct concept layout'));
