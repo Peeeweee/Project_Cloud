@@ -58,7 +58,7 @@ Scene changes now include a 560-point silhouette morph between the previous and 
 
 ## Interactive Cloud Lab and mobile navigation
 
-The penultimate slide (`#cloud-lab`, slide 21 of 22) has three presenter-controlled simulations. Pricing compares 176, 438, and 730 usage hours; 438 is the equal-cost point under the stated assumptions. Elasticity grows from two baseline machines to twenty for a peak and releases the additional eighteen afterward. Incident response moves through exposure, containment, investigation, and recovery. The incident model keeps existing resource charges running after containment until cleanup; it is a fictional teaching example, not a connected cloud account. Reset lab restores the initial values. All three simulations respect Motion off.
+The penultimate slide (`#cloud-lab`, slide 21 of 22) has three presenter-controlled simulations. Pricing compares 176, 438, and 730 usage hours; 438 is the equal-cost point under the stated assumptions. Elasticity grows from two baseline machines to twenty for a peak and releases the additional eighteen afterward. Incident response moves through exposure, containment, investigation, and recovery. The incident model keeps existing resource charges running after containment until cleanup; it is a fictional teaching example, not a connected cloud account. Each mode starts fresh when selected, with direct stage selection and a Replay action after recovery. All three simulations respect Motion off.
 
 Phones have a fixed Back/Next bar with at least 44-pixel touch targets, page position, and safe-area spacing. It remains available when presentation utilities are hidden. The same bar appears in short landscape windows. The final title is now slide 22; existing script references to its old slide number should be updated when rehearsing.
 
@@ -67,6 +67,8 @@ Phones have a fixed Back/Next bar with at least 44-pixel touch targets, page pos
 
 ## Interactive redesign
 
-Cloud Lab compares cause and effect with a 0–730 hour pricing slider, animated elastic/fixed fleets, and a four-stage incident walkthrough. Presets, direct stage selection, previous/next steps, and reset support live teaching. Assumptions stay visible; examples are illustrative compute costs, not live cloud billing.
+Cloud Lab compares cause and effect with a 0–730 hour pricing slider, animated elastic/fixed fleets, and a four-stage incident walkthrough. Presets, direct stage selection, previous/next steps, and one-click replay support live teaching. Assumptions stay visible; examples are illustrative compute costs, not live cloud billing.
 
-The highlighted security and economics scenes use larger explanations and distinct compositions. Phone content scrolls while the safe-area-aware Back/Next navigation stays fixed. Hidden supporting 3D viewports are excluded from camera fitting to avoid invalid geometry during responsive changes. Reduced-motion preferences disable the new bar and machine entrances.
+The highlighted security and economics scenes use larger explanations and distinct compositions. Phone content scrolls while the safe-area-aware Back/Next navigation stays fixed; Cloud Lab uses a fitted single-screen stage. Hidden supporting 3D viewports are excluded from camera fitting to avoid invalid geometry during responsive changes. Reduced-motion preferences disable the new bar and machine entrances.
+
+All interactive slides start at their initial values on entry. Pricing, elasticity, discussion answers, and lab scenarios remain directly selectable without a reset requirement. Re-selecting a lab mode starts that scenario again; incident navigation cycles through its stages.
