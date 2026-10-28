@@ -7,33 +7,33 @@ const slide=(id,title,subtitle,variant,items,notes,refs=['ops'],chapter='Operati
  design:{layout:'briefing',scene:'platforms',scale:1,rotation:[.25,0,0],transition:'assemble',tone:['resources','scale','recovery'].includes(variant)?'paper':'dark'}
 });
 export const foundations=[
- slide('what-is-cloud','Computing. On demand.','Resources over the internet. Pay for what you use.','resources',[
+ slide('what-is-cloud','Computing.\nOn demand.','Resources over the internet. Pay for what you use.','resources',[
  ['Compute','Run applications.'],['Storage','Keep data.'],['Networking','Connect services.']
  ],'Cloud computing delivers computing services over a network, commonly the internet, with on-demand provisioning and usage-based pricing. Instead of buying every server first, an organization rents capacity. Compute runs an application, storage retains its data, and networking connects users and services. A student enrollment portal can rent capacity during registration rather than purchase equipment for its busiest day. Usage-based pricing still requires budgets and ownership.',['cloud'],'Foundations'),
- slide('cloud-in-real-life','Already in your day.','One idea. Many everyday services.','everyday',[
+ slide('cloud-in-real-life','Already in\nyour day.','One idea. Many everyday services.','everyday',[
  ['Save','Files backed up online.'],['Collaborate','A shared document.'],['Launch','A shop hosted online.']
  ],'Online file storage, collaborative documents, and hosted shops illustrate cloud computing. A finished application is usually SaaS; a developer hosting a shop may choose a managed platform or virtual machines. The cloud is physical infrastructure in data centers, not an invisible place where responsibility disappears. The customer still needs to configure access and protect data according to the service.',['cloud','shared'],'Foundations'),
- slide('scalability','Build room to grow.','Scalability = the ability to handle more work.','scale',[
+ slide('scalability','Build room\nto grow.','Scalability = the ability to handle more work.','scale',[
  ['Scale up','A stronger machine.'],['Scale out','More machines.']
  ],'Scalability is the ability to adjust capacity to support a changing workload, often discussed as growth. Vertical scaling increases the resources of a machine; horizontal scaling adds machines. For an enrollment portal growing from one department to the whole university, either approach may increase capacity. Application architecture, database limits, quotas, and cost determine what is feasible. Scaling can be manual or automated; scalability does not by itself mean automatic scaling.',['cloud'],'Foundations'),
- slide('scalability-vs-elasticity','Grow. Then let go.','Scalability handles growth. Elasticity follows demand.','elastic',[
+ slide('scalability-vs-elasticity','Grow.\nThen let go.','Scalability handles growth. Elasticity follows demand.','elastic',[
  ['02','Normal demand'],['20','Registration peak'],['02','Peak ends']
  ],'Elasticity adjusts resources up and down as demand changes. In this illustrative portal, two instances handle normal traffic, twenty handle registration, and capacity returns to two afterward. Scalability describes the capability to handle a larger workload; elasticity emphasizes matching capacity to current demand, including releasing resources. The numbers are a teaching example, not measured capacity. Automatic policies need suitable metrics, minimums, maximums, and safe scale-in behavior.',['cloud'],'Foundations')
 ];
 export const operationsRecap=[
- slide('operations-signals','Notice. Then investigate.','CloudOps keeps systems working, safe, and affordable.','signals',[
+ slide('operations-signals','Notice.\nThen investigate.','CloudOps keeps systems working, safe, and affordable.','signals',[
  ['Monitoring','CPU + traffic → alerts','CloudWatch'],['Logging','Events + account actions → evidence','CloudTrail + application logs']
  ],'Cloud operations is the daily practice of keeping systems working, safe, and affordable. Monitoring tracks metrics such as CPU, requests, and errors and can raise alerts. CloudWatch supports metrics, logs, dashboards, and alarms. CloudTrail records supported AWS account and API activity; application logs describe behavior inside an application. Monitoring tells us something may be wrong. Logs help explain what happened and why; they do not automatically prove the cause. Compare the alert, application events, and account activity.',['observability','ops']),
- slide('operations-recovery-checklist','Recovery needs proof.','Copies, objectives, and a tested return.','recovery',[
+ slide('operations-recovery-checklist','Recovery\nneeds proof.','Copies, objectives, and a tested return.','recovery',[
  ['3–2–1','3 copies · 2 storage types · 1 offsite'],['RPO','How much data loss? In time.'],['RTO','How long can service be down?'],['SLA','Provider uptime promise · 99.9% ≈ 8.76 h / year*']
  ],'The 3-2-1 rule is a backup heuristic: three copies of data, on two media or storage types, with one copy offsite. Use isolated or immutable copies where appropriate and test restores. RPO is the maximum acceptable data loss expressed as time; RTO is the target time to restore service. An SLA describes a provider service commitment, its measurement, exclusions, and remedies. The 99.9 percent example gives 8.76 hours of arithmetic downtime in a 365-day year; actual SLAs often use monthly measurement and do not grant an annual downtime allowance. A provider SLA does not guarantee application availability.',['recovery','backup','sla']),
- slide('operations-guardrails','Repeatable. Bounded. Updated.','Automation still needs limits and ownership.','guardrails',[
+ slide('operations-guardrails','Repeatable.\nBounded. Updated.','Automation still needs limits and ownership.','guardrails',[
  ['IaC','Define infrastructure in files.','Terraform · review before apply'],['Autoscaling','Add and remove capacity.','Set limits + protect against abuse'],['Patching','Update software regularly.','Test · deploy · verify']
  ],'Infrastructure as Code describes infrastructure in version-controlled files. Terraform supports planned, reviewable, repeatable changes; identical outcomes still depend on providers, state, configuration, and external conditions. Autoscaling adds or removes capacity using policies. Set maximums and spending alerts, but a maximum is not a complete cost cap or DDoS defense: use appropriate filtering, rate limits, and protection services as well. Patching updates vulnerable or faulty software. Test changes, schedule deployment, and verify the result rather than assuming automation removes mistakes.',['iac','autoscale','ops','budgets']),
- slide('incident-response-cycle','Practice the whole response.','Containment is a step. Recovery is a process.','response',[
+ slide('incident-response-cycle','Practice the\nwhole response.','Containment is a step. Recovery is a process.','response',[
  ['Prepare','Roles + runbooks'],['Detect','Confirm the signal'],['Contain','Limit the damage'],['Eradicate','Remove the cause'],['Recover','Restore + validate'],['Learn','Improve the controls']
  ],'Prepare owners, contacts, backups, and playbooks before an incident. Detect and confirm unusual behavior. Contain the incident to limit harm while preserving evidence. Eradicate the cause, including compromised resources or persistence. Recover trusted service and validate its health. Learn through a review and improve controls. These activities can overlap and repeat. For a leaked credential, blocking access alone does not remove unauthorized running machines or stop their charges; investigate and perform controlled cleanup before declaring recovery.',['incident','ops']),
- slide('cloud-mistakes','Avoid the quiet failures.','Eleven mistakes. Three places to check.','mistakes',[
+ slide('cloud-mistakes','Avoid the\nquiet failures.','Eleven mistakes. Three places to check.','mistakes',[
  ['Spending','Idle resources|No budget alerts|Over-provisioning'],
  ['Exposure','Ports open to everyone (0.0.0.0/0)|Public storage buckets|Root used daily|No MFA|Keys hardcoded in code'],
  ['Readiness','Missing / untested backups|No monitoring or logs|“The provider handles all security”']
