@@ -110,7 +110,11 @@ function visualHTML(slide) {
     case 'elasticity': return `<div class="elastic-chart"><svg viewBox="0 0 550 110" role="img" aria-label="Two baseline instances grow to twenty for a one-day peak, then return to two"><path class="chart-grid" d="M0 95h550M0 10h550"/><path class="chart-area" d="M0 95H230V10H310V95H550V110H0Z"/><path class="chart-line" d="M0 95H230V10H310V95H550"/><text x="8" y="85">2 INSTANCES</text><text x="235" y="32">20</text></svg><div class="elastic-totals"><div><span>ELASTIC CAPACITY</span><strong>$189.20</strong></div><div><span>FIXED PEAK CAPACITY</span><strong>$1,460</strong></div></div><p class="tiny">Sample month: 730 h · peak: 24 h · $0.10 / instance-hour · compute only</p></div>`;
     case 'finops': return `<div class="finops-cycle"><div><span>01</span><strong>Inform</strong><small>See & allocate</small></div><b>→</b><div><span>02</span><strong>Optimize</strong><small>Improve value</small></div><b>→</b><div><span>03</span><strong>Operate</strong><small>Act & repeat</small></div></div><div class="resource-tag">OWNER <strong>group-11</strong><span>PROJECT</span><strong>cloud-report</strong></div>`;
     case 'architecture': return `<div class="architecture"><div class="arch-route"><span>Visitors</span><b>HTTPS →</b><span>Application</span><b>→</b><span>Private database</span></div><div class="arch-admin"><span>Administrators</span><b>→ Controlled access →</b><span>Application</span></div><div class="arch-support"><span>Monitoring</span><span>Audit logs</span><span>Backups</span><span>Budgets</span></div></div>`;
-    case 'quiz': return `<div class="quiz" role="group" aria-label="Choose the first incident response"><button data-action="answer" data-value="budget" ${quizAnswer?'disabled':''}><span>A</span>Increase the budget ${arrow}</button><button data-action="answer" data-value="contain" ${quizAnswer?'disabled':''}><span>B</span>Contain the credential ${arrow}</button><button data-action="answer" data-value="delete" ${quizAnswer?'disabled':''}><span>C</span>Delete the repository file ${arrow}</button><p class="quiz-result" aria-live="polite">${quizAnswer ? (quizAnswer==='contain'?'Correct. ':'Contain the credential first. ')+'Then investigate, handle unauthorized resources, and recover.':''}</p>${quizAnswer?'<button class="quiz-reset" data-action="reset-answer">Reset question ↺</button>':''}</div>`;
+    case 'quiz': {
+      const answers=[['budget','A','Increase the budget'],['contain','B','Contain the credential'],['delete','C','Delete the repository file']];
+      const feedback={budget:'A larger budget does not block misuse. Contain compromised access first.',contain:'Correct. Contain compromised access first, then investigate, remove unauthorized resources, and recover.',delete:'Deleting the file does not revoke an exposed credential. Contain compromised access first.'};
+      return `<div class="quiz quiz-live" role="group" aria-label="Explore the first incident response">${answers.map(([value,letter,label])=>`<button data-action="answer" data-value="${value}" aria-pressed="${quizAnswer===value}"><span>${letter}</span>${label}${arrow}</button>`).join('')}<p class="quiz-result ${quizAnswer==='contain'?'is-correct':''}" aria-live="polite" aria-atomic="true">${quizAnswer?feedback[quizAnswer]:'Choose an action to explain it. You can switch choices at any time.'}</p></div>`;
+    }
     case 'closing': return `<div class="closing-credits"><span>PAULO / OPERATIONS</span><span>RENAN / SECURITY</span><span>EARL / ECONOMICS</span></div><button class="pill-button" data-action="questions">Questions & discussion ${arrow}</button>`;
     default: return '';
   }
@@ -133,7 +137,7 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false }={}
   gsap.killTweensOf('.scene-content, .scene-content *, .slide-bottom');
   document.querySelectorAll('.outgoing-scene').forEach(el=>el.remove());
   const outgoing = !instant && !reducedMotion.matches && mode==='slides' ? main.querySelector('.art-slide')?.cloneNode(true) : null;
-  index=Math.max(0,Math.min(slides.length-1,nextIndex));const slide=slides[index];
+  index=Math.max(0,Math.min(slides.length-1,nextIndex));if(index!==previous)quizAnswer=null;const slide=slides[index];
   updateControls();
   mode='slides';entered=true;document.body.className=`presenting chapter-${slide.chapter.toLowerCase()} tone-${directions[index].tone} view-${directions[index].layout}`;
   $('#view-toggle').innerHTML='Read report <span>↗</span>';
@@ -223,8 +227,7 @@ document.addEventListener('click',async e=>{
     case 'sources': {const s=slides[index];openPanel('SOURCES & CONTEXT',`<h2>${esc(s.title.replace(/\n/g,' '))}</h2><p>${esc(s.detail)}</p><div class="source-library">${refsHTML(s.refs)}</div><p class="tiny">Based on the Group 11 defense guide. Teaching calculations are illustrative; live rates vary. Original visuals inspired by the atmosphere of The Martian.</p>`);break;}
     case 'pricing': pricingPart=target.dataset.value==='part';drawArt();scene.update?.({partTime:pricingPart,saleDay});$('.segmented [data-value="'+target.dataset.value+'"]').focus();break;
     case 'capacity': saleDay=target.dataset.value==='sale';drawArt();scene.update?.({partTime:pricingPart,saleDay});$('.segmented [data-value="'+target.dataset.value+'"]').focus();break;
-    case 'answer': quizAnswer=target.dataset.value;drawArt();break;
-    case 'reset-answer':quizAnswer=null;drawArt();break;
+    case 'answer': {const value=target.dataset.value;quizAnswer=quizAnswer===value?null:value;drawArt();main.querySelector(`[data-action="answer"][data-value="${value}"]`)?.focus({preventScroll:true});break;}
     case 'lab-mode':case 'lab-hours':case 'lab-capacity':case 'lab-incident':case 'lab-reset':{
       const switching=action==='lab-mode'||action==='lab-reset';
       if(action==='lab-reset')Object.assign(labState,{mode:'pricing',hours:730,capacity:'normal',incident:0});
