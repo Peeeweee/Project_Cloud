@@ -47,11 +47,13 @@ const builds = {
   }
 };
 
-export const buildSteps = layout => builds[layout]?.steps || 1;
+export const buildSteps = layout => builds[layout]?.steps || (layout==='horizon'?1:2);
 
 // Tween a number shown as text. `from` restarts the count (used when a value first appears).
 const counters = new Map();
+let titleEntranceTween;
 export function clearBuilds(root) {
+  titleEntranceTween?.progress(1).kill();titleEntranceTween=null;
   for (const [el, tween] of counters) {
     if (root.contains(el)) { tween.kill(); counters.delete(el); }
   }
@@ -69,7 +71,8 @@ function count(el, to, format, instant, from) {
 export function applyBuild(root, layout, step, prev, { instant = false, scene } = {}) {
   const build = builds[layout];
   const slide = root.querySelector('.art-slide');
-  if (!build || !slide) return;
+  if (!slide) return;
+  if(!build){if(layout!=='horizon')applyTitleEntrance(slide,step,{instant,scene});return;}
   const title = slide.querySelector('.kn-title');
   // Finish a previous title move before measuring the next one.
   if (title) Flip.killFlipsOf(title, true);
@@ -103,4 +106,34 @@ export function applyBuild(root, layout, step, prev, { instant = false, scene } 
   if (flipState) Flip.from(flipState, { duration: .95, ease: 'power3.inOut', scale: true });
   build.apply(slide, step, prev ?? -1, { instant, scene });
   if (instant) requestAnimationFrame(() => slide.classList.remove('kn-instant'));
+}
+
+// Existing compositions keep their layouts; a shared title card precedes their details.
+function applyTitleEntrance(slide,step,{instant,scene}){
+ titleEntranceTween?.progress(1).kill();titleEntranceTween=null;
+ const card=slide.querySelector('.slide-title-card'),hero=card?.querySelector('.intro-title');
+ const content=slide.querySelector('.scene-content'),bottom=slide.querySelector('.slide-bottom');
+ if(!card||!content)return;
+ const wasTitle=slide.dataset.step==='0',from=hero.getBoundingClientRect();
+ slide.dataset.step=step;
+ const titleOnly=step===0;
+ document.body.classList.toggle('title-only',titleOnly);
+ slide.setAttribute('aria-labelledby',titleOnly?'intro-slide-title':'slide-title');
+ content.inert=titleOnly;content.setAttribute('aria-hidden',String(titleOnly));
+ if(bottom){bottom.inert=titleOnly;bottom.setAttribute('aria-hidden',String(titleOnly));}
+ card.inert=!titleOnly;card.setAttribute('aria-hidden',String(!titleOnly));
+ gsap.set(card,{clearProps:'opacity,visibility'});gsap.set(hero,{clearProps:'transform,opacity'});
+ if(instant)return;
+ if(titleOnly){wordsIn(hero,{duration:.75,stagger:.055});return;}
+ const title=content.querySelector('#slide-title');
+ const tl=gsap.timeline();titleEntranceTween=tl;
+ if(wasTitle&&title){
+  const to=title.getBoundingClientRect(),scale=parseFloat(getComputedStyle(title).fontSize)/parseFloat(getComputedStyle(hero).fontSize);
+  gsap.set(card,{autoAlpha:1});
+  tl.to(hero,{x:to.left-from.left,y:to.top-from.top,scale,transformOrigin:'top left',opacity:0,duration:.8,ease:'expo.inOut'},0)
+    .set(card,{autoAlpha:0},.8);
+ }
+ const parts=[...content.children].filter(el=>!el.matches('.scene-slot'));
+ tl.fromTo(parts,{opacity:0,y:18},{opacity:1,y:0,duration:.7,stagger:.07,ease:'power3.out',clearProps:'opacity,transform'},.35);
+ wordsIn(content,{delay:.45});scene?.resize?.();
 }
