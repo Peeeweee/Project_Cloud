@@ -1,0 +1,31 @@
+/* A shared soft-toon illustration language for Paulo and Renan. Typography stays untouched. */
+body.view-briefing{--toon-ink:#493426;--toon-cream:#ffedc9;--toon-orange:#fb7134;--toon-shade:#f3d5b2}
+.view-briefing .soft-glyph{stroke:var(--toon-ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;overflow:visible;filter:drop-shadow(0 6px 0 #291b1215)}
+.view-briefing .soft-glyph .toon-face,.view-briefing .key-passport .toon-face{fill:var(--toon-cream);stroke:var(--toon-ink)}
+.view-briefing .soft-glyph .toon-orange,.view-briefing .key-passport .toon-orange{fill:var(--toon-orange);stroke:var(--toon-ink)}
+.view-briefing .soft-glyph .toon-shade{fill:var(--toon-shade);stroke:var(--toon-ink)}
+.view-briefing .soft-glyph .toon-shadow{fill:#49342624;stroke:none}
+.view-briefing .soft-glyph .toon-line{stroke:var(--toon-ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.view-briefing .resource-center{background:#ffedc9;border:2px solid #493426b3;box-shadow:inset -9px -7px 0 #efcfaa80,0 9px 0 #49342613}
+.view-briefing .resource-center i{border-color:#aa76524a}
+.view-briefing .resource-node .soft-glyph{animation:soft-icon-drift 6s ease-in-out infinite}.view-briefing .resource-node-1 .soft-glyph{animation-delay:-2s}.view-briefing .resource-node-2 .soft-glyph{animation-delay:-4s}
+.view-briefing .daily-symbol{border:2px solid #493426;background:#45413d;border-radius:24px;box-shadow:6px 7px 0 #291b1270,0 14px 18px #1a120b16;transform:rotate(-5deg)}
+.view-briefing .daily-symbol .soft-glyph{transform:rotate(5deg);width:72%;height:72%;filter:drop-shadow(2px 3px 0 #17110d35)}
+.view-briefing .vertical-machine{border:2px solid #493426;border-radius:22px;background:#ffedc9;box-shadow:10px 8px 0 #efcfaa,12px 10px 0 #493426,0 21px 0 #49342616}
+.view-briefing .vertical-machine .soft-glyph{width:68%;height:68%}
+.view-briefing .horizontal-fleet>i{border:2px solid #493426;border-radius:13px;background:#ffedc9;box-shadow:5px 5px 0 #efcfaa,7px 7px 0 #493426,0 13px 0 #49342612}
+.view-briefing .horizontal-fleet>i:nth-child(n+5){background:#fb7134;box-shadow:5px 5px 0 #d85825,7px 7px 0 #493426,0 13px 0 #49342612}
+.view-briefing .horizontal-fleet .soft-glyph{height:78%;width:70%;stroke-width:2.5}
+.view-briefing .signal-pulse,.view-briefing .demand-path,.view-briefing .capacity-path{stroke-linecap:round;stroke-linejoin:round}
+.view-briefing .root-vault{border-radius:26px;border:2px solid #77503b75;box-shadow:inset -8px -8px 0 #c87b3a08,5px 8px 0 #1d140f35}
+.view-briefing .vault-dial{background:#ffedc9;border:2px solid #493426;box-shadow:5px 6px 0 #e6bd92,7px 8px 0 #493426;opacity:.9}.view-briefing .vault-dial:before{border:1px dashed #976f4f}.view-briefing .vault-dial i{height:4px;border-radius:4px;background:#493426}
+.view-briefing .control-glyph{width:48px;height:48px;font-size:30px;display:grid;place-items:center;color:#493426;border:2px solid #493426;border-radius:14px;background:#ffedc9;box-shadow:4px 5px 0 #e1b084}
+.view-briefing .control-row:nth-child(2) .control-glyph{background:#fb7134;box-shadow:4px 5px 0 #bf4d20}
+.view-briefing .response-dot{background:#ffedc9;border:2px solid #493426;box-shadow:0 3px 0 #e5b88c}.view-briefing .response-stop:nth-child(3) .response-dot{background:#fb7134;box-shadow:0 3px 0 #bc4d26}
+.view-briefing .key-passport svg{stroke:#493426;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(4px 6px 0 #d5642a70)}
+.view-briefing .key-passport .key-hole{fill:#090909;stroke:#493426}
+.view-briefing .resource-map,.view-briefing .everyday-route,.view-briefing .key-passport{isolation:isolate}
+@keyframes soft-icon-drift{0%,100%{translate:0 0}50%{translate:0 -4px}}
+.reduce-motion .soft-glyph{animation:none!important}
+@media(prefers-reduced-motion:reduce){.soft-glyph{animation:none!important}}
+@media(max-width:760px){.view-briefing .daily-symbol{border-radius:18px;box-shadow:4px 5px 0 #291b1270}.view-briefing .control-glyph{width:36px;height:36px;font-size:24px;border-radius:11px}.view-briefing .vault-dial{width:90px}}
