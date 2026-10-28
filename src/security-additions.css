@@ -1,0 +1,29 @@
+/* Renan's three additions use a vault, inspection spectrum, and key passport. */
+.security-kicker{display:block;font-size:clamp(13px,1vw,18px);letter-spacing:.16em;color:var(--orange)}
+.security-caption{position:absolute;bottom:0;right:0;max-width:100%;margin:0;font-size:clamp(14px,1vw,18px);line-height:1.4;color:var(--muted)}
+.foundation-root-safeguards .briefing-heading{right:auto;width:46%}
+.root-routine{position:absolute;inset:45% 55% 3% 0;display:flex;flex-direction:column;justify-content:space-between}
+.root-routine section{border-top:1px solid var(--line);padding:16px 0}.art-slide .root-routine h2{font-size:clamp(25px,2.4vw,42px);margin:0 0 12px}.root-routine p{font-size:clamp(19px,1.5vw,27px);color:var(--paper);margin:0 0 10px}.root-routine section>span{font-size:clamp(16px,1.2vw,22px);color:var(--muted)}
+.root-vault{position:absolute;inset:3% 0 4% 55%;border:1px solid #c8854c66;border-radius:24px;padding:clamp(22px,3vw,50px);background:radial-gradient(ellipse at 80% 15%,#bd62201c,transparent 60%);display:flex;flex-direction:column;justify-content:flex-end;isolation:isolate}
+.vault-dial{position:absolute;right:8%;top:7%;width:clamp(90px,12vw,200px);aspect-ratio:1;border:1px solid #c88d5755;border-radius:50%;z-index:-1;transform:rotate(-15deg)}.vault-dial:before{content:'';position:absolute;inset:15%;border:1px dashed #c88d5766;border-radius:50%}.vault-dial i{position:absolute;top:50%;left:25%;width:50%;height:2px;background:#d6975b88}.vault-dial i:nth-child(2){transform:rotate(60deg)}.vault-dial i:nth-child(3){transform:rotate(120deg)}
+.art-slide .root-vault h2{font-size:clamp(30px,3.1vw,55px);line-height:1.05;margin:16px 0 24px}.root-vault ul{list-style:none;padding:0;margin:0;display:grid;gap:14px}.root-vault li{font-size:clamp(18px,1.35vw,25px);line-height:1.4;color:#cebda6;border-top:1px solid var(--line);padding-top:12px}
+.foundation-firewall-types .briefing-heading{top:10%;right:auto;width:35%}.foundation-firewall-types .layout-subtitle{max-width:100%}
+.firewall-spectrum{position:absolute;inset:0 0 23% 43%;display:flex;flex-direction:column;justify-content:space-between}
+.firewall-spectrum>section{display:grid;grid-template-columns:76px 1fr;gap:4px 22px;border-bottom:1px solid var(--line);padding:12px 0}.firewall-scope{grid-row:1/3;align-self:center;font-size:14px;letter-spacing:.1em;color:#a64c2b;border-left:2px solid #a64c2b;padding-left:12px}.art-slide .firewall-spectrum h2{font-size:clamp(23px,2.2vw,39px);line-height:1.1;margin:0}.firewall-spectrum p{font-size:clamp(18px,1.3vw,24px);line-height:1.4;margin:4px 0 0;color:var(--muted)}
+.firewall-fields{position:absolute;left:0;right:0;bottom:9%;display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:20px}.firewall-fields>span{font-size:14px;letter-spacing:.12em;color:var(--muted)}.firewall-fields b{font-weight:400;font-size:clamp(18px,1.5vw,27px);color:#a64c2b}
+.foundation-ssh-hardening .briefing-heading{left:49%;width:51%}.foundation-ssh-hardening .layout-subtitle{max-width:100%}
+.key-passport{position:absolute;inset:2% 57% 5% 0;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-content:center}
+.key-passport svg{width:100%;height:clamp(130px,24vh,270px);grid-column:1 / -1;stroke:#e59960;fill:none;stroke-width:3;stroke-linejoin:round;margin-bottom:40px;transform:rotate(-12deg)}
+.key-passport>section{border-top:1px solid var(--line);padding-top:20px}.art-slide .key-passport h2{font-size:clamp(26px,2.5vw,44px);margin:14px 0}.key-passport p{font-size:clamp(18px,1.3vw,24px);line-height:1.4;color:var(--muted);margin:0}
+.ssh-practices{position:absolute;inset:42% 0 10% 49%;display:flex;flex-direction:column;justify-content:space-between}.ssh-practices>section{border-top:1px solid var(--line);padding:13px 0}.art-slide .ssh-practices h2{font-size:clamp(23px,2vw,36px);margin:0 0 8px}.ssh-practices p{font-size:clamp(18px,1.3vw,24px);color:var(--paper);margin:0 0 8px}.ssh-practices section>span{font-size:clamp(15px,1.1vw,20px);color:var(--muted)}
+@media(max-height:740px) and (min-width:761px){.root-vault{padding:24px}.root-vault li{padding-top:8px}.root-vault ul{gap:8px}.vault-dial{width:100px}.root-routine section{padding:10px 0}.firewall-spectrum>section{padding:8px 0}.key-passport svg{margin-bottom:15px;height:160px}.ssh-practices>section{padding:8px 0}}
+@media(max-width:760px){
+ .foundation-root-safeguards .briefing-heading,.foundation-firewall-types .briefing-heading,.foundation-ssh-hardening .briefing-heading{position:relative;inset:auto;width:100%}
+ .root-routine,.root-vault,.firewall-spectrum,.firewall-fields,.key-passport,.ssh-practices{position:relative;inset:auto;margin-top:32px}.root-routine{gap:20px}.root-vault{min-height:370px;padding:24px}.root-vault li{font-size:19px}.art-slide .root-vault h2{font-size:34px}.root-routine p{font-size:21px}
+ .firewall-spectrum{gap:8px}.firewall-spectrum>section{grid-template-columns:60px 1fr;gap:6px 16px;padding:18px 0}.firewall-scope{font-size:12px}.firewall-spectrum p{font-size:19px}.firewall-fields{flex-wrap:wrap;justify-content:flex-start;padding-top:18px;gap:14px 20px}.firewall-fields>span{width:100%}.firewall-fields b{font-size:19px}
+ .key-passport{gap:20px}.key-passport svg{height:150px;margin-bottom:10px}.art-slide .key-passport h2{font-size:28px}.key-passport p{font-size:18px}.ssh-practices{gap:12px}.ssh-practices>section{padding:18px 0}.ssh-practices p{font-size:20px}.ssh-practices section>span{font-size:17px}.security-caption{position:relative;margin-top:26px;font-size:14px}
+}
+@media(min-width:761px){
+ .ssh-practices>section{display:grid;grid-template-columns:110px 1fr;gap:4px 18px;padding:12px 0}
+ .ssh-practices h2{grid-row:1/3}.ssh-practices p{margin-bottom:4px}.ssh-practices section>span{grid-column:2}
+}
