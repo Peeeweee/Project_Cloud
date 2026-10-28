@@ -13,6 +13,8 @@ import './lab-fit.css';
 import './mobile-fit.css';
 import './keynote.css';
 import './stage.css';
+import './title-sequences.css';
+import {chapterFor,mountChapter,dismissChapter,clearChapter} from './chapters.js';
 import { buildSteps, applyBuild, clearBuilds } from './builds.js';
 import { wordsIn, clearWords } from './choreo.js';
 import {labState,labHTML,labDesign,resetLab} from './lab.js';
@@ -30,7 +32,7 @@ const media = matchMedia('(prefers-reduced-motion: reduce)');
 let manualMotion = null;
 const reducedMotion = { get matches() { return manualMotion === null ? media.matches : !manualMotion; } };
 let index = 0, mode = 'gate', pricingPart = false, quizAnswer = null, quality = 'balanced', focusBeforeDialog = null;
-let entered = false, navigationTween, saleDay = false, step = 0;
+let entered = false, navigationTween, saleDay = false, step = 0, chapterActive=false;
 let controlsVisible=false;
 try{controlsVisible=localStorage.getItem('group11-controls-visible')==='true';}catch{}
 function updateControls(){
@@ -150,6 +152,7 @@ function toneWipe(color,direction){
   gsap.fromTo(wipe,{clipPath:'inset(0 0 0 0%)'},{clipPath:edge,duration:.75,ease:'expo.inOut',onComplete:()=>wipe.remove()});
 }
 function stopNavigation(){
+  chapterActive=false;clearChapter(main);
   navigationTween?.kill();
   clearWords(main);clearBuilds(main);
   gsap.killTweensOf('.scene-content, .scene-content *, .slide-bottom');
@@ -168,8 +171,9 @@ function gate() {
 function resetSlideInteractions(){pricingPart=false;saleDay=false;quizAnswer=null;step=0;resetLab();}
 // Next/Back play a slide's build steps before changing slides; Back lands on the previous slide's last step.
 function setStep(n){navigationTween?.progress(1);clearWords(main);const prev=step;step=n;applyBuild(main,directions[index].layout,step,prev,{instant:reducedMotion.matches,scene});$('#announcement').textContent=`Slide ${index+1}. Step ${step+1} of ${buildSteps(directions[index].layout)}.`;}
-function advance(){if(mode!=='slides')return showSlide(0,{focus:true});if(step<buildSteps(directions[index].layout)-1)setStep(step+1);else showSlide(index+1);}
-function retreat(){if(mode!=='slides')return;if(step>0)setStep(step-1);else if(index>0)showSlide(index-1,{atEnd:true});}
+function beginChapter(){if(!chapterActive)return;chapterActive=false;$('#announcement').textContent=`${slides[index].title.replace(/\n/g,' ')}. Next to reveal the slide.`;dismissChapter(main,{instant:reducedMotion.matches,onComplete:()=>{const title=main.querySelector('.intro-title')||main.querySelector('#slide-title');if(title&&!reducedMotion.matches)wordsIn(title);scene.resize();}});}
+function advance(){if(chapterActive)return beginChapter();if(mode!=='slides')return showSlide(0,{focus:true});if(step<buildSteps(directions[index].layout)-1)setStep(step+1);else showSlide(index+1);}
+function retreat(){if(mode!=='slides')return;if(chapterActive){if(index>0)showSlide(index-1,{atEnd:true});return;}if(step>0)setStep(step-1);else if(chapterFor(slides[index].id)){chapterActive=true;mountChapter(main,chapterFor(slides[index].id),{instant:reducedMotion.matches});}else if(index>0)showSlide(index-1,{atEnd:true});}
 function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atEnd=false }={}) {
   const previous=index;
   stopNavigation();
@@ -202,7 +206,7 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atE
   if(updateHash) history.replaceState(null,'',`#${slide.id}`);
   const art = slides[index].kind==='lab'?labDesign(directions[index]):directions[index];
   scene.setDesign(art, instant || reducedMotion.matches);
-  if(buildSteps(directions[index].layout)===1)scene.update?.({partTime:pricingPart, saleDay}, true);
+  if(!directions[index].layout.startsWith('keynote-'))scene.update?.({partTime:pricingPart, saleDay}, true);
   if(slide.kind==='lab')scene.lab?.(labState,true);
   applyBuild(main,directions[index].layout,step,null,{instant:true,scene});
   if(!instant && !reducedMotion.matches) {
@@ -222,6 +226,7 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atE
       tl.fromTo(title,{x:titleFrom.rect.left-to.left,y:titleFrom.rect.top-to.top,scale:titleFrom.size/size,opacity:.2,transformOrigin:`${to.left-box.left}px ${to.top-box.top}px`},{x:0,y:0,scale:1,opacity:1,duration:1,ease:'expo.inOut',clearProps:'transform,opacity,transformOrigin'},0);
     }
     if(title)wordsIn(title,{delay:outgoing?.25:.1,stagger:.045,duration:.8});
+    if(step===0&&main.querySelector('.intro-title'))wordsIn(main.querySelector('.intro-title'),{delay:.2,stagger:.06,duration:.85});
     // Details: each block softens in and its words rise, one block after another.
     const parts=entranceTargets(content,title);
     const start=(outgoing?.3:.15)+(morph?.35:.25);
@@ -236,6 +241,8 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atE
     if(art.layout==='signal')tl.fromTo('.chart-line',{strokeDasharray:900,strokeDashoffset:900},{strokeDashoffset:0,duration:1.3,ease:'power2.out'},.25);
     if(art.layout==='proof')tl.fromTo('.proof-signature b',{left:'0%'},{left:'95%',duration:1.3,ease:'power2.inOut'},.25);
   } else outgoing?.remove();
+  const chapter=chapterFor(slide.id);
+  if(chapter&&!atEnd){chapterActive=true;mountChapter(main,chapter,{instant:instant||reducedMotion.matches});$('#announcement').textContent=`Part ${chapter.number}: ${chapter.title}. ${chapter.speaker}. Next to begin.`;}
   if(focus)main.focus({preventScroll:true});
 }
 
@@ -260,13 +267,14 @@ function openPanel(title,html) {
 function closePanel(){dialog.close();focusBeforeDialog?.focus({preventScroll:true});}
 function notes(){const s=slides[index];openPanel(`SPEAKER NOTES / ${String(index+1).padStart(2,'0')}`,`<div class="notes-meta"><span>${s.speaker==='All'?'ALL PRESENTERS':esc(people[s.speaker])}</span><span>TARGET ${s.time}</span></div><h2>${esc(s.title.replace(/\n/g,' '))}</h2><p class="script">${esc(s.notes)}</p><div class="notes-nav"><button class="text-button" data-action="notes-prev" ${index===0?'disabled':''}>← Previous</button><span>${index+1} / ${slides.length}</span><button class="text-button" data-action="notes-next" ${index===slides.length-1?'disabled':''}>Next →</button></div>`);}
 function chapters(){openPanel('REPORT CONTENTS',`<h2>Choose your perspective.</h2><div class="chapter-list">${slides.map((s,i)=>`<button data-action="jump" data-index="${i}" class="${index===i?'selected':''}"><span>${String(i+1).padStart(2,'0')}</span><strong>${esc(s.title.replace(/\n/g,' '))}</strong><small>${s.speaker}</small></button>`).join('')}</div>`);}
-function settings(){openPanel('PRESENTATION SETTINGS',`<h2>Make it yours.</h2><div class="setting-row"><div><strong>3D detail</strong><p>Balanced is tuned for ordinary laptops.</p></div><div class="segmented"><button data-action="quality" data-value="balanced" aria-pressed="${quality==='balanced'}">Balanced</button><button data-action="quality" data-value="detail" aria-pressed="${quality==='detail'}">High</button></div></div><div class="setting-row"><div><strong>Motion</strong><p>Respect your device preference, or choose here.</p></div><button class="pill-button" data-action="motion">${reducedMotion.matches?'Motion off':'Motion on'}</button></div><div class="shortcuts"><span>→ / Space</span><strong>Next slide</strong><span>←</span><strong>Previous slide</strong><span>Home / End</span><strong>First / last slide</strong><span>N / C / R</span><strong>Notes / contents / reading view</strong><span>H</span><strong>Show / hide presentation controls</strong><span>F / Esc</span><strong>Fullscreen / close panel</strong></div><button class="text-button" data-action="print">Print report / save PDF ↗</button><p class="tiny">Speaker notes and all report content are public in a deployed static site.</p>`);}
+function settings(){openPanel('PRESENTATION SETTINGS',`<h2>Make it yours.</h2><div class="setting-row"><div><strong>3D detail</strong><p>Balanced is tuned for ordinary laptops.</p></div><div class="segmented"><button data-action="quality" data-value="balanced" aria-pressed="${quality==='balanced'}">Balanced</button><button data-action="quality" data-value="detail" aria-pressed="${quality==='detail'}">High</button></div></div><div class="setting-row"><div><strong>Motion</strong><p>Respect your device preference, or choose here.</p></div><button class="pill-button" data-action="motion">${reducedMotion.matches?'Motion off':'Motion on'}</button></div><div class="shortcuts"><span>→ / Space</span><strong>Next reveal / slide</strong><span>←</span><strong>Previous reveal / slide</strong><span>Home / End</span><strong>First / last slide</strong><span>N / C / R</span><strong>Notes / contents / reading view</strong><span>H</span><strong>Show / hide presentation controls</strong><span>F / Esc</span><strong>Fullscreen / close panel</strong></div><button class="text-button" data-action="print">Print report / save PDF ↗</button><p class="tiny">Speaker notes and all report content are public in a deployed static site.</p>`);}
 
 document.addEventListener('click',async e=>{
   if(e.target.closest('.skip-link')){e.preventDefault();main.focus({preventScroll:true});return;}
   const target=e.target.closest('[data-action]');if(!target||target.disabled)return;
   const action=target.dataset.action;
   switch(action){
+    case 'begin-chapter':beginChapter();break;
     case 'enter': showSlide(0,{focus:true});break;
     case 'home': if(dialog.open)closePanel();history.replaceState(null,'',location.pathname+location.search);gate();break;
     case 'next': advance();break;
