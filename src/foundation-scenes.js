@@ -1,13 +1,13 @@
 // Each foundation concept has its own spatial metaphor and illustration.
 const glyphs={
- compute:'<rect x="20" y="20" width="60" height="60" rx="9"/><rect x="34" y="34" width="32" height="32" rx="3"/><path d="M32 8v12m18-12v12m18-12v12M32 80v12m18-12v12m18-12v12M8 32h12M8 50h12M8 68h12m60-36h12M80 50h12M80 68h12"/>',
- storage:'<ellipse cx="50" cy="22" rx="32" ry="13"/><path d="M18 22v55c0 18 64 18 64 0V22M18 48c0 18 64 18 64 0M18 72c0 18 64 18 64 0"/>',
- network:'<path d="m50 21-28 50m28-50 28 50M22 71h56"/><circle cx="50" cy="21" r="12"/><circle cx="22" cy="71" r="12"/><circle cx="78" cy="71" r="12"/>',
- file:'<path d="M25 12h32l20 20v56H25zM57 12v22h20M38 53h26M38 67h20"/>',
- document:'<path d="M23 12h54v76H23zM35 30h30M35 45h30M35 60h17"/><circle cx="70" cy="73" r="15"/><path d="M62 73h16m-8-8v16"/>',
- shop:'<path d="M16 40h68L74 16H26zM22 40v46h56V40M37 86V60h25v26M16 40c0 16 23 16 23 0 0 16 22 16 22 0 0 16 23 16 23 0"/>'
+ compute:'<rect class="toon-shadow" x="22" y="25" width="60" height="60" rx="14"/><rect class="toon-face" x="18" y="18" width="60" height="60" rx="14"/><path class="toon-line" d="M30 7v11m18-11v11m18-11v11M30 78v12m18-12v12m18-12v12M7 30h11M7 48h11M7 66h11m60-36h12M78 48h12M78 66h12"/><rect class="toon-orange" x="34" y="34" width="28" height="28" rx="7"/>',
+ storage:'<path class="toon-shadow" d="M23 26v53c0 18 61 18 61 0V26z"/><path class="toon-face" d="M18 22v53c0 18 62 18 62 0V22z"/><path class="toon-line" d="M18 46c0 18 62 18 62 0M18 68c0 18 62 18 62 0"/><ellipse class="toon-orange" cx="49" cy="22" rx="31" ry="13"/>',
+ network:'<path class="toon-line" d="m50 25-28 47m28-47 28 47M22 72h56"/><circle class="toon-shadow" cx="52" cy="29" r="15"/><circle class="toon-shadow" cx="24" cy="76" r="15"/><circle class="toon-shadow" cx="80" cy="76" r="15"/><circle class="toon-orange" cx="50" cy="25" r="15"/><circle class="toon-face" cx="22" cy="72" r="15"/><circle class="toon-face" cx="78" cy="72" r="15"/>',
+ file:'<path class="toon-shadow" d="M29 17h29l21 21v51H29z"/><path class="toon-face" d="M24 12h30l20 20v52H24q-3 0-3-4V16q0-4 3-4z"/><path class="toon-shade" d="M54 12v22h20z"/><path class="toon-line" d="M34 51h27M34 64h21"/>',
+ document:'<rect class="toon-shadow" x="24" y="17" width="54" height="72" rx="9"/><rect class="toon-face" x="19" y="12" width="54" height="72" rx="9"/><path class="toon-line" d="M32 29h28M32 43h28M32 57h17"/><circle class="toon-orange" cx="71" cy="73" r="16"/><path class="toon-line" d="M63 73h16m-8-8v16"/>',
+ shop:'<rect class="toon-shadow" x="23" y="38" width="58" height="51" rx="7"/><rect class="toon-face" x="18" y="33" width="58" height="51" rx="7"/><path class="toon-orange" d="M14 39h66L71 15H25z"/><path class="toon-line" d="M14 39c0 14 22 14 22 0 0 14 22 14 22 0 0 14 22 14 22 0"/><rect class="toon-shade" x="36" y="60" width="23" height="24" rx="3"/>'
 };
-const icon=key=>`<svg viewBox="0 0 100 100" aria-hidden="true">${glyphs[key]}</svg>`;
+const icon=key=>`<svg class="soft-glyph" viewBox="0 0 100 100" aria-hidden="true">${glyphs[key]}</svg>`;
 export function foundationScene(s,heading,safe){
  const title=`<div class="briefing-heading">${heading}</div>`;
  if(s.variant==='resources')return `${title}<div class="resource-map" data-reveal><div class="resource-center"><span>ON</span><strong>DEMAND</strong><i></i></div>${s.items.map(([name,copy],i)=>`<section class="resource-node resource-node-${i}">${icon(['compute','storage','network'][i])}<h2>${safe(name)}</h2><p>${safe(copy)}</p></section>`).join('')}</div>`;
