@@ -1,6 +1,6 @@
 # Group 11 — Beyond the Cloud
 
-A cinematic, original Mars-inspired browser presentation on cloud economics, operations, and security. Speaker order: **Paulo → Renan → Earl**. Twenty-two slides, including an interactive Cloud Lab before the final title reprise. The core report takes approximately 18–22 minutes; allow an optional additional 2–3 minutes for the lab, plus questions.
+A cinematic, original Mars-inspired browser presentation on cloud economics, operations, and security. Speaker order: **Paulo → Renan → Earl**. Thirty-one slides, including an interactive Cloud Lab before the final title reprise. The core report takes approximately 25–30 minutes; allow an optional additional 2–3 minutes for the lab, plus questions.
 
 ## Run locally
 
@@ -15,7 +15,7 @@ Open the URL printed by Vite. `npm run build` creates `dist/`; `npm run preview`
 
 ## Present
 
-- Arrow keys / Space: navigate. On Earl’s slides 14–17, Next/Back move through the builds first; Back from the next slide returns to the last build. Home / End: first / last slide.
+- Arrow keys / Space: navigate. On Earl’s slides 23–26, Next/Back move through the builds first; Back from the next slide returns to the last build. Home / End: first / last slide.
 - N: speaker notes. C: contents. R: reading view. F: fullscreen. H: show/hide controls.
 - Presentation utilities start hidden. The discreet top-right eye button reveals the top menu, source links, and bottom navigation together. Your choice is remembered in this browser. Arrow-key navigation works while controls are hidden. Reading view keeps its navigation available.
 - Escape: close a panel. Focused buttons retain their normal keyboard behavior.
@@ -36,7 +36,7 @@ To set up Pages on a new copy of the repository: in **Settings → Pages → Bui
 - `src/content.js`: slide order, presenter, speaker notes, reading text, sources, glossary, defense questions.
 - `src/main.js`: layouts, controls, reading view, print output.
 - `src/direction.js`: twenty-two individual compositions, build markup, scene poses, palettes, and transition choices.
-- `src/builds.js`: presenter steps for slides 14–17, cancellable counters, Flip title moves, and 3D scene hooks.
+- `src/builds.js`: presenter steps for slides 23–26, cancellable counters, Flip title moves, and 3D scene hooks.
 - `src/choreo.js`: shared masked word reveals, with split cleanup on interruption and navigation.
 - `src/keynote.css`: build visibility, sequenced arrivals, title states, and phone layouts.
 - `src/stage.css`: desktop stage expansion and larger text, with reserved space around diagrams.
@@ -63,7 +63,7 @@ Scene changes now include a 560-point silhouette morph between the previous and 
 
 ## Interactive Cloud Lab and mobile navigation
 
-The penultimate slide (`#cloud-lab`, slide 21 of 22) has three presenter-controlled simulations. Pricing compares 176, 438, and 730 usage hours; 438 is the equal-cost point under the stated assumptions. Elasticity grows from two baseline machines to twenty for a peak and releases the additional eighteen afterward. Incident response moves through exposure, containment, investigation, and recovery. The incident model keeps existing resource charges running after containment until cleanup; it is a fictional teaching example, not a connected cloud account. Each mode starts fresh when selected, with direct stage selection and a Replay action after recovery. All three simulations respect Motion off.
+The penultimate slide (`#cloud-lab`, slide 30 of 31) has three presenter-controlled simulations. Pricing compares 176, 438, and 730 usage hours; 438 is the equal-cost point under the stated assumptions. Elasticity grows from two baseline machines to twenty for a peak and releases the additional eighteen afterward. Incident response moves through exposure, containment, investigation, and recovery. The incident model keeps existing resource charges running after containment until cleanup; it is a fictional teaching example, not a connected cloud account. Each mode starts fresh when selected, with direct stage selection and a Replay action after recovery. All three simulations respect Motion off.
 
 Phones have a fixed Back/Next bar with at least 44-pixel touch targets, page position, and safe-area spacing. It remains available when presentation utilities are hidden. The same bar appears in short landscape windows.
 
@@ -83,9 +83,9 @@ Cloud Lab compares cause and effect with a 0–730 hour pricing slider, animated
 
 The highlighted security and economics scenes use larger explanations and distinct compositions. Phone content scrolls while the safe-area-aware Back/Next navigation stays fixed; on laptops and projectors Cloud Lab uses a fitted single-screen stage, and on upright phones its panels stack and scroll. Hidden supporting 3D viewports are excluded from camera fitting to avoid invalid geometry during responsive changes. Reduced-motion preferences disable the new bar and machine entrances.
 
-Forward entry and contents jumps start interactive slides at their initial values. Slides 14–17 use 5, 5, 6, and 5 builds respectively, including their opening state. Next reveals the next part; Back reverses it and returns from the next slide to the last build. Quiz answers and lab scenarios remain directly selectable. Re-selecting a lab mode starts that scenario again; incident navigation cycles through its stages.
+Forward entry and contents jumps start interactive slides at their initial values. Slides 23–26 use 5, 5, 6, and 5 builds respectively, including their opening state. Next reveals the next part; Back reverses it and returns from the next slide to the last build. Quiz answers and lab scenarios remain directly selectable. Re-selecting a lab mode starts that scenario again; incident navigation cycles through its stages.
 
-Every slide, including the cover and title reprise, uses the same arrival sequence: title, details in reading order, then the takeaway. Titles move between compositions, words rise through masks, and background tone changes use a curtain wipe. A single click completes the sequence on Paulo’s and Renan’s slides; only Earl’s slides 14–17 need more clicks. Rapid navigation cancels obsolete splits and counters. Motion off shows the same build states immediately.
+Every slide, including the cover and title reprise, uses the same arrival sequence: title, details in reading order, then the takeaway. Titles move between compositions, words rise through masks, and background tone changes use a curtain wipe. A single click completes the sequence on Paulo’s and Renan’s slides; only Earl’s slides 23–26 need more clicks. Rapid navigation cancels obsolete splits and counters. Motion off shows the same build states immediately.
 
 The 3D models use three-band toon shading, ink outlines, and soft squash-and-stretch arrivals, without eyes. Desktop slides use more of the available height when controls are hidden. Phone slides scroll under their fixed navigation; changing slides returns to the top.
 
@@ -112,3 +112,10 @@ Every content slide now opens with its title before Next reveals the original co
 The Operations, Security, and Economics sections each begin with a distinct full-screen animated chapter card. Operations appears immediately after the opening cover, before “Online isn’t enough”; it does not repeat at “Resources. On demand.” Next, Space, or the Begin button opens the first title; Next again reveals the content. Back reverses those stages. Chapter cards do not add slide numbers or change existing slide URLs. The order remains Paulo → Renan → Earl. Reduced-motion mode preserves presenter control with immediate state changes.
 
 Paulo’s and Renan’s title reveals move the same live heading from the centered statement into its content position using GSAP Flip, matching the economics build approach. Content animates separately; the heading does not fade out, duplicate, or replay its word reveal after docking.
+
+
+### Foundation and Operations field guide
+
+Four new slides follow the opening and precede the Operations chapter entrance: cloud definition, everyday services, scalability, and scalability versus elasticity. Five field-guide slides follow Incident Response and precede Security: monitoring/logs, recovery objectives and backups, automation guardrails, the six-stage response cycle, and eleven mistakes grouped by spending, exposure, and readiness. All nine belong to Paulo; stage copy stays brief while presenter notes and reader mode retain explanations and examples.
+
+`src/additions.js` supplies these scenes and their art directions. `src/briefing.css` provides resource stacks, service portals, capacity comparisons, signal panels, recovery tiles, and a response sequence. They retain translation-only title movement and respect reduced motion. Desktop scenes fit the slide; phones stack content above the fixed navigation. Run `node tools/check-additions.mjs` for sequence, coverage, source, and design alignment checks.
