@@ -23,6 +23,25 @@ for(const id of ['total-cost','pricing','elasticity','finops']){
  if(id==='elasticity'){assert.equal(await p.locator('[data-count="fleet"]').textContent(),'20');await press('ArrowRight',80);await press('ArrowRight',1600);assert.equal(await p.locator('[data-count="elastic"]').textContent(),'$189.20');assert.equal(await p.locator('[data-count="fixed"]').textContent(),'$1,460.00');}
 }
 console.log('PASS rapid build reversal, counters and split cleanup');
+
+// A title is the same DOM heading in hero and detail states; its words must not replay on docking.
+for(const id of ['cloud-basics','observability','root-access','firewalls','key-lifecycle']){
+ await go(id);await at(id,1);
+ const title=p.locator('main #slide-title');
+ const flipId=await title.getAttribute('data-flip-id');assert.ok(flipId);
+ assert.equal(await p.locator('main #slide-title').count(),1);
+ assert.equal(await p.locator('.intro-title-mount h1').count(),0);
+ assert.equal(await title.locator('div').count(),0,'docked title has no repeated word reveal');
+ assert.equal(await title.evaluate(el=>getComputedStyle(el).opacity),'1','moving title stays visible');
+ await press('ArrowLeft',120);await at(id,0);
+ assert.equal(await p.locator('.intro-title-mount #slide-title').count(),1);
+ assert.equal(await title.getAttribute('data-flip-id'),flipId,'Back keeps the live heading');
+ await press('ArrowRight',120);await at(id,1);
+ assert.equal(await title.getAttribute('data-flip-id'),flipId,'Next moves the same heading');
+ assert.equal(await title.locator('div').count(),0);
+}
+console.log('PASS single live heading, no duplicate reveal, and rapid title reversal');
+
 await go('decision');for(const [choice,word] of [['budget','larger budget'],['contain','Correct.'],['delete','does not revoke']]){await p.click(`[data-action="answer"][data-value="${choice}"]`);assert.ok((await p.locator('.quiz-result').innerText()).includes(word));}console.log('PASS quiz switches');
 await press('n',100);assert.ok(await p.locator('#panel').evaluate(e=>e.open));await press('Escape');await press('c',100);await p.click('.chapter-list button:nth-child(15)');await at('pricing',0);
 await press('h');await p.click('[data-action="sources"]');assert.ok(await p.locator('#panel').evaluate(e=>e.open));await press('Escape');await p.click('[data-action="settings"]');await p.click('[data-action="motion"]');await press('Escape');await press('ArrowRight');await at('pricing',1);assert.equal(await p.locator('#slide-title div').count(),0);
