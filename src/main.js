@@ -10,6 +10,7 @@ import './branding.css';
 import './lab.css';
 import './experience.css';
 import './lab-fit.css';
+import './mobile-fit.css';
 import {labState,labHTML,labDesign,resetLab} from './lab.js';
 import { directions, composeSlide } from './direction.js';
 import { gsap } from 'gsap';
@@ -42,6 +43,8 @@ function updateControls(){
 function toggleControls(){controlsVisible=!controlsVisible;try{localStorage.setItem('group11-controls-visible',String(controlsVisible));}catch{}updateControls();}
 function fitLab(){
  const lab=main.querySelector('.cloud-lab');if(!lab)return;
+ // Phones use the stacked, scrolling lab layout from CSS instead of a shrunken desktop view.
+ if(matchMedia('(max-width:760px)').matches){for(const k of ['width','height','left','top','transform'])lab.style[k]='';return;}
  const host=lab.parentElement,w=host.clientWidth,h=host.clientHeight;if(w<1||h<1)return;
  const width=Math.max(1000,w),height=Math.max(640,h);
  const scale=Math.min(w/width,h/height);
