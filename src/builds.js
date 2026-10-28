@@ -125,7 +125,8 @@ function applyTitleEntrance(slide,step,{instant,scene}){
  const {title,anchor}=home;
  Flip.killFlipsOf(title,true);clearWords(title);
  const changing=slide.dataset.step!==undefined&&Number(slide.dataset.step)!==step;
- const flipState=!instant&&changing?Flip.getState(title):null;
+ // Tween actual typography instead of stretching glyphs to match two different boxes.
+ const flipState=!instant&&changing?Flip.getState(title,{props:'fontSize,lineHeight,letterSpacing'}):null;
  slide.dataset.step=step;
  const titleOnly=step===0;
  document.body.classList.toggle('title-only',titleOnly);
@@ -137,7 +138,7 @@ function applyTitleEntrance(slide,step,{instant,scene}){
  card.inert=!titleOnly;card.setAttribute('aria-hidden',String(!titleOnly));
  if(instant)return;
  const tl=gsap.timeline();titleEntranceTween=tl;
- if(flipState)tl.add(Flip.from(flipState,{duration:.95,ease:'power3.inOut',scale:true}),0);
+ if(flipState)tl.add(Flip.from(flipState,{duration:.95,ease:'power3.inOut',scale:false}),0);
  if(titleOnly)return;
  // Never animate the heading or an ancestor that could move it a second time.
  const parts=[];
@@ -146,7 +147,8 @@ function applyTitleEntrance(slide,step,{instant,scene}){
   if(child.contains(title))visit(child);else parts.push(child);
  }};
  visit(content);
- tl.fromTo(parts,{opacity:0,y:18},{opacity:1,y:0,duration:.7,stagger:.07,ease:'power3.out',clearProps:'opacity,transform'},.25);
+ // Structural wrappers contain positioned labels: a transform would change their containing block.
+ tl.fromTo(parts,{opacity:0},{opacity:1,duration:.7,stagger:.07,ease:'power3.out',clearProps:'opacity'},.25);
  parts.forEach((part,i)=>wordsIn(part,{delay:.25+i*.08}));
  if(bottom)tl.fromTo(bottom,{opacity:0,y:8},{opacity:1,y:0,duration:.55,clearProps:'opacity,transform'},.55);
  scene?.resize?.();
