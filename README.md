@@ -1,6 +1,6 @@
 # Group 11 — Beyond the Cloud
 
-A cinematic, original Mars-inspired browser presentation on cloud economics, operations, and security. Speaker order: **Paulo → Renan → Earl**. Thirty-one slides, including an interactive Cloud Lab before the final title reprise. The core report takes approximately 25–30 minutes; allow an optional additional 2–3 minutes for the lab, plus questions.
+A cinematic, original Mars-inspired browser presentation on cloud economics, operations, and security. Speaker order: **Paulo → Renan → Earl**. Thirty-four slides, including an interactive Cloud Lab before the final title reprise. The core report takes approximately 27–33 minutes; allow an optional additional 2–3 minutes for the lab, plus questions.
 
 ## Run locally
 
@@ -15,7 +15,7 @@ Open the URL printed by Vite. `npm run build` creates `dist/`; `npm run preview`
 
 ## Present
 
-- Arrow keys / Space: navigate. On Earl’s slides 23–26, Next/Back move through the builds first; Back from the next slide returns to the last build. Home / End: first / last slide.
+- Arrow keys / Space: navigate. On Earl’s slides 26–29, Next/Back move through the builds first; Back from the next slide returns to the last build. Home / End: first / last slide.
 - N: speaker notes. C: contents. R: reading view. F: fullscreen. H: show/hide controls.
 - Presentation utilities start hidden. The discreet top-right eye button reveals the top menu, source links, and bottom navigation together. Your choice is remembered in this browser. Arrow-key navigation works while controls are hidden. Reading view keeps its navigation available.
 - Escape: close a panel. Focused buttons retain their normal keyboard behavior.
@@ -36,7 +36,7 @@ To set up Pages on a new copy of the repository: in **Settings → Pages → Bui
 - `src/content.js`: slide order, presenter, speaker notes, reading text, sources, glossary, defense questions.
 - `src/main.js`: layouts, controls, reading view, print output.
 - `src/direction.js`: twenty-two individual compositions, build markup, scene poses, palettes, and transition choices.
-- `src/builds.js`: presenter steps for slides 23–26, cancellable counters, Flip title moves, and 3D scene hooks.
+- `src/builds.js`: presenter steps for slides 26–29, cancellable counters, Flip title moves, and 3D scene hooks.
 - `src/choreo.js`: shared masked word reveals, with split cleanup on interruption and navigation.
 - `src/keynote.css`: build visibility, sequenced arrivals, title states, and phone layouts.
 - `src/stage.css`: desktop stage expansion and larger text, with reserved space around diagrams.
@@ -63,13 +63,13 @@ Scene changes now include a 560-point silhouette morph between the previous and 
 
 ## Interactive Cloud Lab and mobile navigation
 
-The penultimate slide (`#cloud-lab`, slide 30 of 31) has three presenter-controlled simulations. Pricing compares 176, 438, and 730 usage hours; 438 is the equal-cost point under the stated assumptions. Elasticity grows from two baseline machines to twenty for a peak and releases the additional eighteen afterward. Incident response moves through exposure, containment, investigation, and recovery. The incident model keeps existing resource charges running after containment until cleanup; it is a fictional teaching example, not a connected cloud account. Each mode starts fresh when selected, with direct stage selection and a Replay action after recovery. All three simulations respect Motion off.
+The penultimate slide (`#cloud-lab`, slide 33 of 34) has three presenter-controlled simulations. Pricing compares 182, 438, and 730 usage hours; 438 is the equal-cost point under the stated assumptions. Elasticity grows from two baseline machines to twenty for a peak and releases the additional eighteen afterward. Incident response moves through exposure, containment, investigation, and recovery. The incident model keeps existing resource charges running after containment until cleanup; it is a fictional teaching example, not a connected cloud account. Each mode starts fresh when selected, with direct stage selection and a Replay action after recovery. All three simulations respect Motion off.
 
 Phones have a fixed Back/Next bar with at least 44-pixel touch targets, page position, and safe-area spacing. It remains available when presentation utilities are hidden. The same bar appears in short landscape windows.
 
 Phone layouts (`src/mobile-fit.css`):
 
-- **Upright (≤760 px wide):** each slide is a stacked page that scrolls under the fixed Back/Next bar. The Cloud Lab is not scaled down on phones; its panels stack at readable size.
+- **Upright (≤820 px wide):** each slide is a stacked page that scrolls under the fixed Back/Next bar. The Cloud Lab is not scaled down on phones; its panels stack at readable size.
 - **Sideways (≤500 px tall):** wider phones keep the desktop composition at a fixed 640 px slide height and scroll; narrower ones use the upright layout. The title cover never scrolls; it compacts its title and hides secondary captions instead.
 
 The site is the authoritative running order: Paulo → Renan → Earl, 22 slides, with the Cloud Lab at 21 and the title reprise at 22. The speaker script (`output/script/`) and its PDF (`output/pdf/`) follow the same order and numbering.
@@ -83,9 +83,9 @@ Cloud Lab compares cause and effect with a 0–730 hour pricing slider, animated
 
 The highlighted security and economics scenes use larger explanations and distinct compositions. Phone content scrolls while the safe-area-aware Back/Next navigation stays fixed; on laptops and projectors Cloud Lab uses a fitted single-screen stage, and on upright phones its panels stack and scroll. Hidden supporting 3D viewports are excluded from camera fitting to avoid invalid geometry during responsive changes. Reduced-motion preferences disable the new bar and machine entrances.
 
-Forward entry and contents jumps start interactive slides at their initial values. Slides 23–26 use 5, 5, 6, and 5 builds respectively, including their opening state. Next reveals the next part; Back reverses it and returns from the next slide to the last build. Quiz answers and lab scenarios remain directly selectable. Re-selecting a lab mode starts that scenario again; incident navigation cycles through its stages.
+Forward entry and contents jumps start interactive slides at their initial values. Slides 26–29 use 5, 5, 6, and 5 builds respectively, including their opening state. Next reveals the next part; Back reverses it and returns from the next slide to the last build. Quiz answers and lab scenarios remain directly selectable. Re-selecting a lab mode starts that scenario again; incident navigation cycles through its stages.
 
-Every slide, including the cover and title reprise, uses the same arrival sequence: title, details in reading order, then the takeaway. Titles move between compositions, words rise through masks, and background tone changes use a curtain wipe. A single click completes the sequence on Paulo’s and Renan’s slides; only Earl’s slides 23–26 need more clicks. Rapid navigation cancels obsolete splits and counters. Motion off shows the same build states immediately.
+Every slide, including the cover and title reprise, uses the same arrival sequence: title, details in reading order, then the takeaway. Titles move between compositions, words rise through masks, and background tone changes use a curtain wipe. A single click completes the sequence on Paulo’s and Renan’s slides; only Earl’s slides 26–29 need more clicks. Rapid navigation cancels obsolete splits and counters. Motion off shows the same build states immediately.
 
 The 3D models use three-band toon shading, ink outlines, and soft squash-and-stretch arrivals, without eyes. Desktop slides use more of the available height when controls are hidden. Phone slides scroll under their fixed navigation; changing slides returns to the top.
 
@@ -100,7 +100,7 @@ npm run check:layout
 npx vite build
 ```
 
-The interaction check covers all 39 slide/build states, rapid reversals, counters, covers, quiz, lab, reading links, motion settings, and phone scrolling. The layout check captures all states at eight laptop, projector, and phone sizes in ignored `previews/upgrade/`, plus scrolled phone views. It fails on overflow or browser errors and records text-overlap and scene-slot candidates for visual review; font bounding boxes can overlap while the glyphs remain separate. Use `npm run check:layout -- 1366x768` for one size. Both checks accept `PRESENTATION_URL` for a different **dev server** URL; they import source modules and are not production smoke checks.
+The interaction check covers all 39 slide/build states, rapid reversals, counters, covers, quiz, lab, reading links, motion settings, and phone scrolling. The layout check captures all states at eight laptop, projector, and phone sizes in ignored `previews/upgrade/`, plus scrolled phone views. It fails on overflow or browser errors and records text-overlap and scene-slot candidates for visual review; font bounding boxes can overlap while the glyphs remain separate. Use `npm run check:layout -- 1366x828` for one size. Both checks accept `PRESENTATION_URL` for a different **dev server** URL; they import source modules and are not production smoke checks.
 
 Phone review preview: https://group11-report-779241214444.asia-southeast1.run.app. This is separate from GitHub Pages; pushing `main` still requires Earl’s explicit approval.
 
@@ -121,3 +121,6 @@ Four new slides follow the opening and precede the Operations chapter entrance: 
 `src/additions.js` supplies these scenes and their art directions. `src/briefing.css` provides resource stacks, service portals, capacity comparisons, signal panels, recovery tiles, and a response sequence. They retain translation-only title movement and respect reduced motion. Desktop scenes fit the slide; phones stack content above the fixed navigation. Run `node tools/check-additions.mjs` for sequence, coverage, source, and design alignment checks.
 
 The five Operations field-guide additions now use dedicated compositions in `src/operations-scenes.js` and `src/operations-scenes.css`: signal-to-evidence, a 3-2-1 recipe with recovery objectives, a control rail, a six-stage timeline, and a categorized mistakes ledger. All nine additions use concept-specific layouts. Decorative connectors that crossed resource labels and everyday icons have been removed; the elasticity legend uses the same dashed styling as its capacity line. Brand typography remains Syne 600, Instrument Serif, and Barlow Condensed.
+
+
+Three Renan slides extend the Security section: `root-safeguards` follows Root Access, `firewall-types` follows Firewalls, and `ssh-hardening` follows SSH Authentication. They use a protected-access vault, an inspection spectrum, and a key passport. Source-linked presenter notes distinguish Linux root from AWS account root, explain overlapping firewall capabilities, and cover SSH hardening without presenting a live terminal. These additions are defined and rendered in `src/security-additions.js`, with responsive styles in `src/security-additions.css`.
