@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {slides,sources} from '../src/content.js';
 import {directions,composeSlide} from '../src/direction.js';
 import {foundations,operationsRecap} from '../src/additions.js';
-assert.equal(slides.length,31);assert.equal(directions.length,slides.length);
+assert.equal(slides.length,34);assert.equal(directions.length,slides.length);
 assert.equal(new Set(slides.map(s=>s.id)).size,slides.length);
 assert.deepEqual(slides.slice(1,5).map(s=>s.id),foundations.map(s=>s.id));
 const boundary=slides.findIndex(s=>s.id==='shared-responsibility');
@@ -15,7 +15,7 @@ for(const s of [...foundations,...operationsRecap]){
 assert.equal(operationsRecap.at(-1).items.reduce((n,item)=>n+item[1].split('|').length,0),11);
 assert.equal(operationsRecap.find(s=>s.variant==='response').items.length,6);
 assert.equal(slides.at(-1).id,'closing-title');
-console.log('PASS 31 slides, nine inserted scenes, eleven mistakes, six response stages, sources and art alignment');
+console.log('PASS 34 slides, source and design alignment, eleven mistakes, and six response stages');
 
 for(const s of foundations){
  const html=composeSlide(s,slides.indexOf(s),'',{});
@@ -35,3 +35,10 @@ operationsRecap.forEach((s,i)=>{
 const resources=foundationScene(foundations[0],'heading',String),daily=foundationScene(foundations[1],'heading',String);
 assert.ok(!resources.includes('resource-link'),'no connectors through resource labels');
 assert.ok(!daily.includes('route-line'),'no path through everyday symbols');
+
+import {securityAdditions,securityScene} from '../src/security-additions.js';
+for(const s of securityAdditions){
+ const i=slides.indexOf(s);assert.equal(slides[i-1].id,s.after);assert.equal(s.speaker,'Renan');
+ assert.equal(directions[i].layout,'briefing');assert.equal(directions[i].tone,s.design.tone);
+ assert.ok(securityScene(s,'heading',String));for(const ref of s.refs)assert.ok(sources[ref]);
+}
