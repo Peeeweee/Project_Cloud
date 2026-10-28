@@ -33,3 +33,5 @@ body.presenting.view-lab{overflow:hidden}
 body.view-lab.presenting .art-slide{height:calc(100svh - 182px);min-height:0;padding-bottom:0}
 body.view-lab.presenting .art-slide .scene-content{position:absolute;inset:48px var(--pad) 38px;width:auto;height:auto;min-height:0!important;margin:0}
 @media(max-width:760px){body.view-lab.presenting .art-slide{height:calc(100svh - 155px - env(safe-area-inset-bottom));min-height:0;padding:0}body.view-lab.presenting .art-slide .scene-content{inset:30px var(--pad) 0}}
+
+.view-lab .lab-replay-hint{font-size:18px;color:#c9bba5;text-align:right;max-width:220px;line-height:1.25}
