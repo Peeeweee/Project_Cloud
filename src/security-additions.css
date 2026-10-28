@@ -24,6 +24,6 @@
  .key-passport{gap:20px}.key-passport svg{height:150px;margin-bottom:10px}.art-slide .key-passport h2{font-size:28px}.key-passport p{font-size:18px}.ssh-practices{gap:12px}.ssh-practices>section{padding:18px 0}.ssh-practices p{font-size:20px}.ssh-practices section>span{font-size:17px}.security-caption{position:relative;margin-top:26px;font-size:14px}
 }
 @media(min-width:761px){
- .ssh-practices>section{display:grid;grid-template-columns:110px 1fr;gap:4px 18px;padding:12px 0}
+ .ssh-practices>section{display:grid;grid-template-columns:minmax(165px, 28%) 1fr;gap:4px 18px;padding:12px 0}
  .ssh-practices h2{grid-row:1/3}.ssh-practices p{margin-bottom:4px}.ssh-practices section>span{grid-column:2}
 }
