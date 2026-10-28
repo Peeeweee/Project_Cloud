@@ -54,3 +54,25 @@ body.presenting #scene{transition:opacity .55s ease}
 .has-title-entrance[data-step="0"] .live-moving-title{visibility:visible!important}
 .live-moving-title{position:relative;z-index:5;will-change:transform}
 body.chapter-is-active .art-slide .live-moving-title{visibility:hidden!important}
+
+/* Shared responsibility uses two related warm tones instead of an ivory/black cut. */
+body.chapter-security.tone-split{
+ background:linear-gradient(90deg,#171310 0%,#1b1410 45%,#302019 55%,#432319 100%);
+ color:#f2e8da;--paper:#f2e8da;--muted:#c8b49e;--line:#dec3a72e;--orange:#ed8a4c;
+}
+.chapter-security.tone-split .brand,
+.chapter-security.tone-split .provider-half,
+.chapter-security.tone-split .customer-half{color:#f2e8da}
+.chapter-security.tone-split .brand-type>span,
+.chapter-security.tone-split .scene-meta,
+.chapter-security.tone-split .scene-meta>span:first-child,
+.chapter-security.tone-split .footer-meta,
+.chapter-security.tone-split .slide-bottom>p,
+.chapter-security.tone-split .source-trigger,
+.chapter-security.tone-split .boundary-halves p{color:#cfbba5}
+.chapter-security.tone-split .boundary-title h1,
+.chapter-security.tone-split .provider-half h2{color:#efa36e}
+.chapter-security.tone-split .boundary-title .layout-subtitle{color:#dcc6ad}
+.chapter-security.tone-split .boundary-note{color:#e6aa7d}
+.chapter-security.tone-split .boundary-halves .micro{color:#f0bd91}
+.chapter-security.tone-split .deck-footer{background:#171310}
