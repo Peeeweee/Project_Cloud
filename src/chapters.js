@@ -1,6 +1,6 @@
 import {gsap} from 'gsap';
 export const chapterFor=id=>({
- 'cloud-basics':{key:'operations',number:'01',title:'Operations',speaker:'Kent Paulo R. Delgado',line:'Keep it running.',verb:'Observe / Maintain / Recover'},
+ 'online-is-not-enough':{key:'operations',number:'01',title:'Operations',speaker:'Kent Paulo R. Delgado',line:'Keep it running.',verb:'Observe / Maintain / Recover'},
  'shared-responsibility':{key:'security',number:'02',title:'Security',speaker:'John Renan Labay',line:'Protect what matters.',verb:'Identity / Boundaries / Trust'},
  'total-cost':{key:'economics',number:'03',title:'Economics',speaker:'Earl Josh Delgado',line:'Make every resource count.',verb:'Measure / Adapt / Optimize'}
 })[id];
