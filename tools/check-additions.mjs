@@ -9,7 +9,7 @@ const boundary=slides.findIndex(s=>s.id==='shared-responsibility');
 assert.deepEqual(slides.slice(boundary-5,boundary).map(s=>s.id),operationsRecap.map(s=>s.id));
 for(const s of [...foundations,...operationsRecap]){
  const i=slides.indexOf(s);assert.equal(directions[i].layout,'briefing');
- assert.equal(s.speaker,'Paulo');assert.ok(s.title.includes('\n'),'editorial two-line title');assert.ok(composeSlide(s,i,'',{}).includes('briefing-intro-art'),'dedicated title entrance artwork');for(const ref of s.refs)assert.ok(sources[ref],ref);
+ assert.equal(s.speaker,'Paulo');assert.ok(s.title.includes('\n'),'editorial two-line title');assert.ok(composeSlide(s,i,'',{}).includes('briefing-intro-art'),'dedicated title entrance artwork');assert.ok(!composeSlide(s,i,'',{}).includes('briefing-intro-number'),'no decorative slide numbers');for(const ref of s.refs)assert.ok(sources[ref],ref);
  assert.ok(s.notes.length>200);assert.ok(s.items.length>=2);
 }
 assert.equal(operationsRecap.at(-1).items.reduce((n,item)=>n+item[1].split('|').length,0),11);
