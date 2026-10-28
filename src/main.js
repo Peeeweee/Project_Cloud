@@ -15,6 +15,7 @@ import './keynote.css';
 import './stage.css';
 import './title-sequences.css';
 import './briefing.css';
+import './foundation-scenes.css';
 import {chapterFor,mountChapter,dismissChapter,clearChapter} from './chapters.js';
 import { buildSteps, applyBuild, clearBuilds } from './builds.js';
 import { wordsIn, clearWords } from './choreo.js';
