@@ -54,6 +54,7 @@ const counters = new Map();
 let titleEntranceTween;
 export function clearBuilds(root) {
   titleEntranceTween?.progress(1).kill();titleEntranceTween=null;
+  root.querySelectorAll('.has-title-entrance #slide-title').forEach(title=>Flip.killFlipsOf(title,true));
   for (const [el, tween] of counters) {
     if (root.contains(el)) { tween.kill(); counters.delete(el); }
   }
@@ -108,32 +109,45 @@ export function applyBuild(root, layout, step, prev, { instant = false, scene } 
   if (instant) requestAnimationFrame(() => slide.classList.remove('kn-instant'));
 }
 
-// Existing compositions keep their layouts; a shared title card precedes their details.
+// One live heading moves between the hero card and its original layout, like Earl's Flip builds.
+const titleHomes=new WeakMap();
 function applyTitleEntrance(slide,step,{instant,scene}){
  titleEntranceTween?.progress(1).kill();titleEntranceTween=null;
- const card=slide.querySelector('.slide-title-card'),hero=card?.querySelector('.intro-title');
+ const card=slide.querySelector('.slide-title-card'),mount=card?.querySelector('.intro-title-mount');
  const content=slide.querySelector('.scene-content'),bottom=slide.querySelector('.slide-bottom');
- if(!card||!content)return;
- const wasTitle=slide.dataset.step==='0',from=hero.getBoundingClientRect();
+ if(!card||!mount||!content)return;
+ let home=titleHomes.get(slide);
+ if(!home){
+  const title=slide.querySelector('#slide-title');if(!title)return;
+  const anchor=document.createComment('Live title returns here after its hero reveal');
+  title.before(anchor);home={title,anchor};titleHomes.set(slide,home);
+ }
+ const {title,anchor}=home;
+ Flip.killFlipsOf(title,true);clearWords(title);
+ const changing=slide.dataset.step!==undefined&&Number(slide.dataset.step)!==step;
+ const flipState=!instant&&changing?Flip.getState(title):null;
  slide.dataset.step=step;
  const titleOnly=step===0;
  document.body.classList.toggle('title-only',titleOnly);
- slide.setAttribute('aria-labelledby',titleOnly?'intro-slide-title':'slide-title');
+ slide.setAttribute('aria-labelledby','slide-title');
+ if(titleOnly){title.classList.add('intro-title');mount.append(title);}
+ else{anchor.after(title);title.classList.remove('intro-title');}
  content.inert=titleOnly;content.setAttribute('aria-hidden',String(titleOnly));
  if(bottom){bottom.inert=titleOnly;bottom.setAttribute('aria-hidden',String(titleOnly));}
  card.inert=!titleOnly;card.setAttribute('aria-hidden',String(!titleOnly));
- gsap.set(card,{clearProps:'opacity,visibility'});gsap.set(hero,{clearProps:'transform,opacity'});
  if(instant)return;
- if(titleOnly){wordsIn(hero,{duration:.75,stagger:.055});return;}
- const title=content.querySelector('#slide-title');
  const tl=gsap.timeline();titleEntranceTween=tl;
- if(wasTitle&&title){
-  const to=title.getBoundingClientRect(),scale=parseFloat(getComputedStyle(title).fontSize)/parseFloat(getComputedStyle(hero).fontSize);
-  gsap.set(card,{autoAlpha:1});
-  tl.to(hero,{x:to.left-from.left,y:to.top-from.top,scale,transformOrigin:'top left',opacity:0,duration:.8,ease:'expo.inOut'},0)
-    .set(card,{autoAlpha:0},.8);
- }
- const parts=[...content.children].filter(el=>!el.matches('.scene-slot'));
- tl.fromTo(parts,{opacity:0,y:18},{opacity:1,y:0,duration:.7,stagger:.07,ease:'power3.out',clearProps:'opacity,transform'},.35);
- wordsIn(content,{delay:.45});scene?.resize?.();
+ if(flipState)tl.add(Flip.from(flipState,{duration:.95,ease:'power3.inOut',scale:true}),0);
+ if(titleOnly)return;
+ // Never animate the heading or an ancestor that could move it a second time.
+ const parts=[];
+ const visit=parent=>{for(const child of parent.children){
+  if(child===title||child.matches('.scene-slot'))continue;
+  if(child.contains(title))visit(child);else parts.push(child);
+ }};
+ visit(content);
+ tl.fromTo(parts,{opacity:0,y:18},{opacity:1,y:0,duration:.7,stagger:.07,ease:'power3.out',clearProps:'opacity,transform'},.25);
+ parts.forEach((part,i)=>wordsIn(part,{delay:.25+i*.08}));
+ if(bottom)tl.fromTo(bottom,{opacity:0,y:8},{opacity:1,y:0,duration:.55,clearProps:'opacity,transform'},.55);
+ scene?.resize?.();
 }
