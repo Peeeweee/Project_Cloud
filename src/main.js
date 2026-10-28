@@ -11,6 +11,10 @@ import './lab.css';
 import './experience.css';
 import './lab-fit.css';
 import './mobile-fit.css';
+import './keynote.css';
+import './stage.css';
+import { buildSteps, applyBuild, clearBuilds } from './builds.js';
+import { wordsIn, clearWords } from './choreo.js';
 import {labState,labHTML,labDesign,resetLab} from './lab.js';
 import { directions, composeSlide } from './direction.js';
 import { gsap } from 'gsap';
@@ -26,7 +30,7 @@ const media = matchMedia('(prefers-reduced-motion: reduce)');
 let manualMotion = null;
 const reducedMotion = { get matches() { return manualMotion === null ? media.matches : !manualMotion; } };
 let index = 0, mode = 'gate', pricingPart = false, quizAnswer = null, quality = 'balanced', focusBeforeDialog = null;
-let entered = false, navigationTween, saleDay = false;
+let entered = false, navigationTween, saleDay = false, step = 0;
 let controlsVisible=false;
 try{controlsVisible=localStorage.getItem('group11-controls-visible')==='true';}catch{}
 function updateControls(){
@@ -40,7 +44,7 @@ function updateControls(){
   if(phone){phone.querySelector('[data-action="previous"]').disabled=index===0;phone.querySelector('[data-action="next"]').disabled=index===slides.length-1;phone.querySelector('span').textContent=`${index+1} / ${slides.length}`;}
   if(!controlsVisible&&document.activeElement?.closest('.topnav,.deck-footer,.source-trigger'))toggle.focus({preventScroll:true});
 }
-function toggleControls(){controlsVisible=!controlsVisible;try{localStorage.setItem('group11-controls-visible',String(controlsVisible));}catch{}updateControls();}
+function toggleControls(){controlsVisible=!controlsVisible;try{localStorage.setItem('group11-controls-visible',String(controlsVisible));}catch{}updateControls();requestAnimationFrame(()=>{fitLab();scene.resize();});}
 function fitLab(){
  const lab=main.querySelector('.cloud-lab');if(!lab)return;
  // Phones use the stacked, scrolling lab layout from CSS instead of a shrunken desktop view.
@@ -51,7 +55,7 @@ function fitLab(){
  Object.assign(lab.style,{width:width+'px',height:height+'px',left:(w-width*scale)/2+'px',top:(h-height*scale)/2+'px',transform:`scale(${scale})`});
  lab.scrollTop=0;
 }
-function drawArt() { main.innerHTML = composeSlide(slides[index], index, visualHTML(slides[index]), { pricingPart, saleDay });fitLab(); }
+function drawArt() { stopNavigation(); main.innerHTML = composeSlide(slides[index], index, visualHTML(slides[index]), { pricingPart, saleDay });fitLab();applyBuild(main,directions[index].layout,step,null,{instant:true,scene}); }
 const sceneHost = document.createElement('div');sceneHost.id='scene';sceneHost.setAttribute('aria-hidden','true');document.body.prepend(sceneHost);
 const scene = createScene(sceneHost,reducedMotion);
 
@@ -123,7 +127,34 @@ function visualHTML(slide) {
   }
 }
 
-function stopNavigation(){navigationTween?.kill();document.querySelectorAll('.outgoing-scene').forEach(el=>el.remove());}
+// Follow DOM reading order, including details inside cards, tables and the two covers.
+// Build-controlled content gets its own sequence when Next reveals it.
+function entranceTargets(root,title){
+  const parts=[];if(!root)return parts;
+  const visit=el=>{for(const child of el.children){
+    if(child===title||child.matches('.scene-slot,.kn-dots,[data-build]'))continue;
+    if(getComputedStyle(child).display==='none')continue;
+    const ownText=[...child.childNodes].some(n=>n.nodeType===3&&n.textContent.trim());
+    if(!child.contains(title)&&(ownText||child.matches('svg,input,button'))){parts.push(child);continue;}
+    visit(child);
+  }};
+  visit(root);return parts;
+}
+// Bounds of an element's text rather than its (possibly full-width) box.
+function textBox(el){const range=document.createRange();range.selectNodeContents(el);const r=range.getBoundingClientRect();return r.width?r:el.getBoundingClientRect();}
+// When the background tone changes, the old colour slides away like a curtain instead of fading through grey.
+function toneWipe(color,direction){
+  document.querySelectorAll('.tone-wipe').forEach(el=>el.remove());
+  const wipe=document.createElement('div');wipe.className='tone-wipe';wipe.style.background=color;document.body.prepend(wipe);
+  const edge=direction>0?'inset(0 0 0 100%)':'inset(0 100% 0 0)';
+  gsap.fromTo(wipe,{clipPath:'inset(0 0 0 0%)'},{clipPath:edge,duration:.75,ease:'expo.inOut',onComplete:()=>wipe.remove()});
+}
+function stopNavigation(){
+  navigationTween?.kill();
+  clearWords(main);clearBuilds(main);
+  gsap.killTweensOf('.scene-content, .scene-content *, .slide-bottom');
+  document.querySelectorAll('.outgoing-scene,.tone-wipe').forEach(el=>{gsap.killTweensOf(el);el.remove();});
+}
 
 function gate() {
   stopNavigation();$('#announcement').textContent='Report opening. Enter to begin.';
@@ -134,14 +165,22 @@ function gate() {
   scene.set('planet',true,true); entered=false;
 }
 
-function resetSlideInteractions(){pricingPart=false;saleDay=false;quizAnswer=null;resetLab();}
-function showSlide(nextIndex, { updateHash=true, instant=false, focus=false }={}) {
+function resetSlideInteractions(){pricingPart=false;saleDay=false;quizAnswer=null;step=0;resetLab();}
+// Next/Back play a slide's build steps before changing slides; Back lands on the previous slide's last step.
+function setStep(n){navigationTween?.progress(1);clearWords(main);const prev=step;step=n;applyBuild(main,directions[index].layout,step,prev,{instant:reducedMotion.matches,scene});$('#announcement').textContent=`Slide ${index+1}. Step ${step+1} of ${buildSteps(directions[index].layout)}.`;}
+function advance(){if(mode!=='slides')return showSlide(0,{focus:true});if(step<buildSteps(directions[index].layout)-1)setStep(step+1);else showSlide(index+1);}
+function retreat(){if(mode!=='slides')return;if(step>0)setStep(step-1);else if(index>0)showSlide(index-1,{atEnd:true});}
+function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atEnd=false }={}) {
   const previous=index;
-  if(navigationTween) navigationTween.kill();
-  gsap.killTweensOf('.scene-content, .scene-content *, .slide-bottom');
-  document.querySelectorAll('.outgoing-scene').forEach(el=>el.remove());
+  stopNavigation();
   const outgoing = !instant && !reducedMotion.matches && mode==='slides' ? main.querySelector('.art-slide')?.cloneNode(true) : null;
-  index=Math.max(0,Math.min(slides.length-1,nextIndex));if(index!==previous||mode!=='slides')resetSlideInteractions();const slide=slides[index];
+  // Remember where the current title sits so the next title can "magic move" from it.
+  const oldTitle=outgoing?main.querySelector('#slide-title'):null;
+  const titleFrom=oldTitle?{rect:textBox(oldTitle),size:parseFloat(getComputedStyle(oldTitle).fontSize)||1}:null;
+  const oldTone=document.body.className.match(/tone-(\w+)/)?.[1],bodyBackground=getComputedStyle(document.body).backgroundColor;
+  // Dark tones leave the body transparent and show the page colour behind it.
+  const oldBackground=/rgba\(.*,\s*0\)$|transparent/.test(bodyBackground)?getComputedStyle(document.documentElement).backgroundColor:bodyBackground;
+  index=Math.max(0,Math.min(slides.length-1,nextIndex));if(index!==previous||mode!=='slides'){resetSlideInteractions();window.scrollTo(0,0);}if(atEnd)step=buildSteps(directions[index].layout)-1;const slide=slides[index];
   updateControls();
   mode='slides';entered=true;document.body.className=`presenting chapter-${slide.chapter.toLowerCase()} tone-${directions[index].tone} view-${directions[index].layout}`;
   $('#view-toggle').innerHTML='Read report <span>↗</span>';
@@ -149,6 +188,7 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false }={}
   drawArt();
   if(outgoing) {
     outgoing.classList.add('outgoing-scene');outgoing.setAttribute('aria-hidden','true');outgoing.inert=true;
+    outgoing.querySelector('#slide-title')?.classList.add('outgoing-title');
     outgoing.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
     outgoing.querySelector('.scene-meta')?.remove();
     outgoing.querySelector('.slide-bottom')?.remove();
@@ -162,27 +202,37 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false }={}
   if(updateHash) history.replaceState(null,'',`#${slide.id}`);
   const art = slides[index].kind==='lab'?labDesign(directions[index]):directions[index];
   scene.setDesign(art, instant || reducedMotion.matches);
-  scene.update?.({partTime:pricingPart, saleDay}, true);
+  if(buildSteps(directions[index].layout)===1)scene.update?.({partTime:pricingPart, saleDay}, true);
   if(slide.kind==='lab')scene.lab?.(labState,true);
+  applyBuild(main,directions[index].layout,step,null,{instant:true,scene});
   if(!instant && !reducedMotion.matches) {
     const direction=index>=previous?1:-1;
     const tl=gsap.timeline();navigationTween=tl;
-    if(outgoing) tl.to(outgoing,{opacity:0,x:art.transition==='traverse'?-direction*140:0,y:art.transition==='rise'?-60:0,scale:art.transition==='dive'?1.15:.98,rotationY:art.transition==='split'?-direction*9:0,duration:.22,ease:'power2.in',onComplete:()=>outgoing.remove()},0);
-    // Keep outgoing and incoming copy from competing during the camera move.
-    tl.fromTo(main.querySelector('.scene-content'),{opacity:0},{opacity:1,duration:.25,clearProps:'opacity'},outgoing ? .22 : 0);
-    const heading=main.querySelector('.layout-heading, .finale-heading');
-    const presets={
-      horizon:{y:65,opacity:0,scale:.96},fracture:{x:-55,opacity:0,rotation:-2},
-      assemble:{y:35,opacity:0},orbit:{x:-35,y:15,opacity:0,rotation:-2},
-      scan:{clipPath:'inset(0 100% 0 0)',opacity:.3},traverse:{x:direction*70,opacity:0},
-      rise:{y:70,opacity:0},split:{x:-direction*60,opacity:0},
-      elevate:{y:45,opacity:0,rotationX:-12,transformPerspective:1000},
-      dive:{z:-150,scale:.9,opacity:0},impact:{scale:1.09,opacity:0}
-    };
-    if(heading) tl.fromTo(heading,presets[art.transition]||{opacity:0},{x:0,y:0,z:0,scale:1,rotation:0,rotationX:0,opacity:1,clipPath:'inset(0 0% 0 0)',duration:art.transition==='horizon'?1.1:.7,ease:'power3.out',clearProps:'all'},.22);
-    const reveals=main.querySelectorAll('[data-reveal]');
-    if(reveals.length)tl.fromTo(reveals,{opacity:0,y:art.transition==='split'?0:35,x:art.transition==='split'?direction*40:0},{opacity:1,y:0,x:0,duration:.65,stagger:.09,ease:'power3.out',clearProps:'transform,opacity'},.25);
-    tl.fromTo(main.querySelector('.slide-bottom'),{opacity:0},{opacity:1,duration:.5,clearProps:'opacity'},.45);
+    const title=main.querySelector('#slide-title'),content=main.querySelector('.scene-content');
+    const outTitle=outgoing?.querySelector('.outgoing-title');
+    if(oldTone&&oldTone!==directions[index].tone)toneWipe(oldBackground,direction);
+    if(outgoing) tl.to(outgoing,{opacity:0,x:-direction*36,scale:.97,filter:'blur(10px)',duration:.45,ease:'power2.inOut',onComplete:()=>outgoing.remove()},0);
+    // Every slide plays the same choreography: the title first, then each detail in reading order.
+    const morph=titleFrom&&title&&slide.kind!=='lab'&&!['horizon','finale'].includes(art.layout);
+    if(morph){
+      // Magic move: the new title starts where the old one was, at its size, and glides into place.
+      // Measure the text itself (centred headings sit in full-width boxes) and scale around its corner.
+      const to=textBox(title),box=title.getBoundingClientRect(),size=parseFloat(getComputedStyle(title).fontSize)||1;
+      if(outTitle)tl.to(outTitle,{opacity:0,duration:.18},0);
+      tl.fromTo(title,{x:titleFrom.rect.left-to.left,y:titleFrom.rect.top-to.top,scale:titleFrom.size/size,opacity:.2,transformOrigin:`${to.left-box.left}px ${to.top-box.top}px`},{x:0,y:0,scale:1,opacity:1,duration:1,ease:'expo.inOut',clearProps:'transform,opacity,transformOrigin'},0);
+    }
+    if(title)wordsIn(title,{delay:outgoing?.25:.1,stagger:.045,duration:.8});
+    // Details: each block softens in and its words rise, one block after another.
+    const parts=entranceTargets(content,title);
+    const start=(outgoing?.3:.15)+(morph?.35:.25);
+    parts.forEach((part,i)=>{
+      const at=start+i*.14;
+      tl.fromTo(part,{opacity:0,filter:'blur(5px)'},{opacity:1,filter:'blur(0px)',duration:.7,ease:'power3.out',clearProps:'opacity,filter'},at);
+      wordsIn(part,{delay:at});
+    });
+    // The takeaway line closes the sequence.
+    const last=start+parts.length*.14+.05,bottom=main.querySelector('.slide-bottom');
+    if(bottom){tl.fromTo(bottom,{opacity:0,y:10},{opacity:1,y:0,duration:.6,ease:'power2.out',clearProps:'opacity,transform'},last);wordsIn(bottom,{delay:last});}
     if(art.layout==='signal')tl.fromTo('.chart-line',{strokeDasharray:900,strokeDashoffset:900},{strokeDashoffset:0,duration:1.3,ease:'power2.out'},.25);
     if(art.layout==='proof')tl.fromTo('.proof-signature b',{left:'0%'},{left:'95%',duration:1.3,ease:'power2.inOut'},.25);
   } else outgoing?.remove();
@@ -219,8 +269,8 @@ document.addEventListener('click',async e=>{
   switch(action){
     case 'enter': showSlide(0,{focus:true});break;
     case 'home': if(dialog.open)closePanel();history.replaceState(null,'',location.pathname+location.search);gate();break;
-    case 'next': if(mode==='gate')showSlide(0,{focus:true});else showSlide(index+1);break;
-    case 'previous': showSlide(index-1);break;
+    case 'next': advance();break;
+    case 'previous': retreat();break;
     case 'jump': if(dialog.open)closePanel();showSlide(Number(target.dataset.index),{focus:true});window.scrollTo(0,0);break;
     case 'view': if(mode==='read')showSlide(index,{focus:true});else showReading();break;
     case 'chapters': chapters();break;
@@ -261,15 +311,15 @@ document.addEventListener('keydown',e=>{
   if(e.target.closest('button,a,summary')&&!['ArrowRight','ArrowLeft','ArrowUp','ArrowDown','PageDown','PageUp','Home','End'].includes(e.key)&&!['n','c','r','f'].includes(e.key.toLowerCase()))return;
   if(mode==='read'){if(e.key.toLowerCase()==='r'){e.preventDefault();showSlide(index,{focus:true});}return;}
   const key=e.key.toLowerCase();
-  if(['arrowright','arrowdown',' ','pagedown'].includes(key)){e.preventDefault();mode==='gate'?showSlide(0):showSlide(index+1);}
-  else if(['arrowleft','arrowup','pageup'].includes(key)){e.preventDefault();if(mode==='slides')showSlide(index-1);}
+  if(['arrowright','arrowdown',' ','pagedown'].includes(key)){e.preventDefault();advance();}
+  else if(['arrowleft','arrowup','pageup'].includes(key)){e.preventDefault();retreat();}
   else if(key==='home'){e.preventDefault();showSlide(0);}
   else if(key==='end'){e.preventDefault();showSlide(slides.length-1);}
   else if(key==='n'&&mode==='slides')notes();else if(key==='c')chapters();else if(key==='r')showReading();else if(key==='f')$('[data-action="fullscreen"]').click();
 });
 function route(){let hash;try{hash=decodeURIComponent(location.hash.slice(1));}catch{hash='';}if(hash==='read'||hash.startsWith('read-')||hash==='appendix'){showReading(false);if(hash!=='read')requestAnimationFrame(()=>document.getElementById(hash)?.scrollIntoView());}else{const i=slides.findIndex(s=>s.id===hash);if(i>=0)showSlide(i,{updateHash:false,instant:true});else gate();}}
 addEventListener('hashchange',route);
-media.addEventListener('change',()=>{if(manualMotion===null)document.documentElement.classList.toggle('reduce-motion',media.matches);});
+media.addEventListener('change',()=>{if(manualMotion===null){document.documentElement.classList.toggle('reduce-motion',media.matches);if(media.matches&&mode==='slides')showSlide(index,{instant:true});}});
 document.documentElement.classList.toggle('reduce-motion',reducedMotion.matches);
 route();
 

@@ -15,7 +15,7 @@ Open the URL printed by Vite. `npm run build` creates `dist/`; `npm run preview`
 
 ## Present
 
-- Arrow keys / Space: navigate. Home / End: first / last slide.
+- Arrow keys / Space: navigate. On Earl’s slides 14–17, Next/Back move through the builds first; Back from the next slide returns to the last build. Home / End: first / last slide.
 - N: speaker notes. C: contents. R: reading view. F: fullscreen. H: show/hide controls.
 - Presentation utilities start hidden. The discreet top-right eye button reveals the top menu, source links, and bottom navigation together. Your choice is remembered in this browser. Arrow-key navigation works while controls are hidden. Reading view keeps its navigation available.
 - Escape: close a panel. Focused buttons retain their normal keyboard behavior.
@@ -35,13 +35,17 @@ To set up Pages on a new copy of the repository: in **Settings → Pages → Bui
 
 - `src/content.js`: slide order, presenter, speaker notes, reading text, sources, glossary, defense questions.
 - `src/main.js`: layouts, controls, reading view, print output.
-- `src/direction.js`: twenty-two individual compositions, scene poses, palettes, and transition choices.
+- `src/direction.js`: twenty-two individual compositions, build markup, scene poses, palettes, and transition choices.
+- `src/builds.js`: presenter steps for slides 14–17, cancellable counters, Flip title moves, and 3D scene hooks.
+- `src/choreo.js`: shared masked word reveals, with split cleanup on interruption and navigation.
+- `src/keynote.css`: build visibility, sequenced arrivals, title states, and phone layouts.
+- `src/stage.css`: desktop stage expansion and larger text, with reserved space around diagrams.
 - `src/scene.js`: original procedural Three.js objects, textured Mars and terrain shaders, spatial transitions, interactive resource scenes, quality controls.
 - `src/style.css`: shared interface, reading view, and print styles.
 - `src/redesign.css`: slide-specific editorial layouts and responsive art direction.
 - `src/layout-fixes.css`: reserved scene areas, diagram-caption alignment, contrast, and cross-viewport corrections.
 - `src/branding.css`: reference-inspired typography, cover composition, planet atmosphere, and responsive branding.
-- `src/mobile-fit.css`: loaded last; phone portrait and landscape layout, and the phone Cloud Lab.
+- `src/mobile-fit.css`: phone portrait and landscape layout, and the phone Cloud Lab.
 - `REPORT_BLUEPRINT.md`: design and content plan.
 - `PRESENTATION_AUDIT.md`: screenshot-driven findings, structural fixes, and validation scope.
 
@@ -49,13 +53,13 @@ Illustrative prices are not live quotes. Technical summaries are based on the su
 
 Visual inspiration: *The Martian*. No movie stills, logos, copied branding, or external models are used. Geometry is generated procedurally; the planet uses a bundled NASA/JPL/USGS Viking surface map with artistic lighting and color grading. Asset credits are in `public/credits.txt`. FinOps phase terminology is attributed to the FinOps Foundation. Speaker notes are public content when the site is published.
 
-The second design edition replaces the repeated text/object layout with a horizon title, risk triptych, physical service terraces, orbital operations map, panoramic signal chart, large recovery intervals, incident procedure, split responsibility boundary, privilege comparison, firewall corridor, network-control comparison, authentication path, diagonal key lifecycle, ownership poster, pricing duel, capacity field, FinOps loop, isometric architecture, audience decision, and landscape finale. Motion includes assembly, separation, orbit, traversal, camera dive, elevation, impact, and horizon reveals. The pricing and elasticity controls update actual 3D geometry.
+The second design edition replaces the repeated text/object layout with a horizon title, risk triptych, physical service terraces, orbital operations map, panoramic signal chart, large recovery intervals, incident procedure, split responsibility boundary, privilege comparison, firewall corridor, network-control comparison, authentication path, diagonal key lifecycle, ownership poster, pricing duel, capacity field, FinOps loop, isometric architecture, audience decision, and landscape finale. Motion includes assembly, separation, orbit, traversal, camera dive, elevation, impact, and horizon reveals. The pricing and elasticity builds update actual 3D geometry; Cloud Lab keeps its direct controls.
 
 The October 27 layout audit introduces a shared coordinate contract: each slide's `.scene-slot` defines its WebGL viewport and clipping boundary. Models fit inside that area; object captions use projected anchors below it. Isometric cameras keep diagram sizes consistent, while cinematic scenes retain perspective. Do not position foreground models against the whole window independently of slide copy.
 
 The opening and closing titles share the reference-inspired cover. Syne supplies wide display headings, Instrument Serif Italic supplies editorial subtitles, and Barlow Condensed supplies labels, names, controls, and reading text. These are close visual matches chosen from the reference image; exact fonts cannot be extracted from a bitmap. Font files and their SIL Open Font License notices are bundled locally.
 
-Scene changes now include a 560-point silhouette morph between the previous and next 3D compositions. Mars uses a revolving, shader-deformed reveal that settles into a sphere, followed by slow surface rotation. The planet renders at up to 30 frames per second only while visible and active. Motion off and reduced-motion preferences disable these effects; reading view pauses them.
+Scene changes now include a 560-point silhouette morph between the previous and next 3D compositions. Mars uses a revolving, shader-deformed reveal that settles into a sphere, followed by slow surface rotation. The planet and the cost blocks’ gentle idle bob render at up to 30 frames per second only while their slide is visible and active. Other scenes redraw on demand, including scrolling to keep the fixed canvas aligned with phone content. Motion off and reduced-motion preferences disable these effects; reading view pauses them.
 
 ## Interactive Cloud Lab and mobile navigation
 
@@ -79,4 +83,23 @@ Cloud Lab compares cause and effect with a 0–730 hour pricing slider, animated
 
 The highlighted security and economics scenes use larger explanations and distinct compositions. Phone content scrolls while the safe-area-aware Back/Next navigation stays fixed; on laptops and projectors Cloud Lab uses a fitted single-screen stage, and on upright phones its panels stack and scroll. Hidden supporting 3D viewports are excluded from camera fitting to avoid invalid geometry during responsive changes. Reduced-motion preferences disable the new bar and machine entrances.
 
-All interactive slides start at their initial values on entry. Pricing, elasticity, discussion answers, and lab scenarios remain directly selectable without a reset requirement. Re-selecting a lab mode starts that scenario again; incident navigation cycles through its stages.
+Forward entry and contents jumps start interactive slides at their initial values. Slides 14–17 use 5, 5, 6, and 5 builds respectively, including their opening state. Next reveals the next part; Back reverses it and returns from the next slide to the last build. Quiz answers and lab scenarios remain directly selectable. Re-selecting a lab mode starts that scenario again; incident navigation cycles through its stages.
+
+Every slide, including the cover and title reprise, uses the same arrival sequence: title, details in reading order, then the takeaway. Titles move between compositions, words rise through masks, and background tone changes use a curtain wipe. A single click completes the sequence on Paulo’s and Renan’s slides; only Earl’s slides 14–17 need more clicks. Rapid navigation cancels obsolete splits and counters. Motion off shows the same build states immediately.
+
+The 3D models use three-band toon shading, ink outlines, and soft squash-and-stretch arrivals, without eyes. Desktop slides use more of the available height when controls are hidden. Phone slides scroll under their fixed navigation; changing slides returns to the top.
+
+## Verify the presentation
+
+With the dev server running at port 5199:
+
+```sh
+npx playwright install chromium
+npm run check:interactions
+npm run check:layout
+npx vite build
+```
+
+The interaction check covers all 39 slide/build states, rapid reversals, counters, covers, quiz, lab, reading links, motion settings, and phone scrolling. The layout check captures all states at eight laptop, projector, and phone sizes in ignored `previews/upgrade/`, plus scrolled phone views. It fails on overflow or browser errors and records text-overlap and scene-slot candidates for visual review; font bounding boxes can overlap while the glyphs remain separate. Use `npm run check:layout -- 1366x768` for one size. Both checks accept `PRESENTATION_URL` for a different **dev server** URL; they import source modules and are not production smoke checks.
+
+Phone review preview: https://group11-report-779241214444.asia-southeast1.run.app. This is separate from GitHub Pages; pushing `main` still requires Earl’s explicit approval.

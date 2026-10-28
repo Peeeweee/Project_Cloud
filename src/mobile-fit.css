@@ -9,6 +9,11 @@
  body.view-lab.presenting .art-slide{height:auto;min-height:calc(100svh - 160px);padding-bottom:110px}
  body.view-lab.presenting .art-slide .scene-content{position:relative;inset:auto;flex:1 1 auto;width:auto;min-width:0;margin:55px var(--pad) 0}
  body.view-lab.presenting .cloud-lab{position:relative;inset:auto;width:auto;height:auto;transform:none;overflow:visible}
+ body.view-lab.presenting{overflow-y:auto}
+ body.view-lab.presenting .cloud-lab{display:flex;flex-direction:column}
+ body.view-lab.presenting .lab-heading{flex-direction:column;align-items:flex-start;gap:8px}
+ body.view-lab.presenting .lab-heading h1{font-size:30px!important}
+ body.view-lab.presenting .lab-replay-hint{max-width:none;text-align:left;font-size:16px}
  body.view-lab.presenting .lab-workbench{display:flex;flex-direction:column;gap:16px}
  body.view-lab.presenting .lab-experiment{display:block}
  body.view-lab.presenting .bill-compare,body.view-lab.presenting .fleet-compare{grid-template-columns:1fr 1fr;gap:10px}

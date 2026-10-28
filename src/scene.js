@@ -38,9 +38,9 @@ export function createScene(host, reducedMotion) {
   let camera=perspectiveCamera;
   camera.position.set(0,0,10);
   const pivot = new THREE.Group(); scene.add(pivot);
-  scene.add(new THREE.AmbientLight(0xc8d5df, 1.1));
-  const light = new THREE.DirectionalLight(0xffdfbe, 5); light.position.set(-3, 5, 6); scene.add(light);
-  const rim = new THREE.DirectionalLight(0xff5c2a, 5); rim.position.set(5, -1, -2); scene.add(rim);
+  scene.add(new THREE.AmbientLight(0xfff4e6, 1.15));
+  const light = new THREE.DirectionalLight(0xfff0dc, 2.4); light.position.set(-3, 5, 6); scene.add(light);
+  const rim = new THREE.DirectionalLight(0xffb48a, .5); rim.position.set(5, -1, -2); scene.add(rim);
   let queued = false;
   function render() {
     if(queued)return;queued=true;
@@ -81,9 +81,13 @@ export function createScene(host, reducedMotion) {
     });
   }
 
-  const orange = new THREE.MeshStandardMaterial({ color: 0xb6532f, metalness: .48, roughness: .38 });
-  const pale = new THREE.MeshStandardMaterial({ color: 0xced0c9, metalness: .68, roughness: .3 });
-  const black = new THREE.MeshStandardMaterial({ color: 0x282c30, metalness: .75, roughness: .3 });
+  // Cartoon look: three flat light bands (cel shading) instead of glossy metal, plus ink outlines below.
+  const toonRamp=new THREE.DataTexture(new Uint8Array([105,105,105,255,185,185,185,255,255,255,255,255]),3,1);
+  toonRamp.minFilter=toonRamp.magFilter=THREE.NearestFilter;toonRamp.generateMipmaps=false;toonRamp.needsUpdate=true;
+  const toon=(color,extra={})=>new THREE.MeshToonMaterial({color,gradientMap:toonRamp,...extra});
+  const orange = toon(0xe56f3c);
+  const pale = toon(0xf3e8d3);
+  const black = toon(0x3b3f47);
   const lineMat = new THREE.LineBasicMaterial({ color: 0x8d6c50, transparent: true, opacity: .32 });
   const groups = {};
   const make = name => { const g = new THREE.Group(); groups[name] = g; pivot.add(g); g.visible = false; return g; };
@@ -269,9 +273,14 @@ export function createScene(host, reducedMotion) {
   }
   path(authentication,[[-1.7,0,0],[0,.12,0],[1.7,0,0]],orange,.013);
   const cost=make('cost');
-  [1,1,1,1].forEach((h,i)=>{
-    box(cost,[1.1,h,.9],[(i-1.5)*1.45,h/2-.8,0],i===2?orange:pale);
-    wireBox(cost,[1.25,.08,1.05],[(i-1.5)*1.45,-.88,0],0x6b6a5b);
+  // Chunky, rounded "characters": a soft body and a contact shadow underneath the idle bob.
+  const shadowMat=new THREE.MeshBasicMaterial({color:0x2b2116,transparent:true,opacity:.16,depthWrite:false});
+  const costBoxes=[],costPlates=[],costBodies=[];
+  [0,1,2,3].forEach(i=>{
+    const holder=new THREE.Group();holder.position.set((i-1.5)*1.45,-.3,0);cost.add(holder);
+    const body=mesh(new RoundedBoxGeometry(1.12,1.12,1.12,6,.26),i===2?orange:pale,holder);body.rotation.y=-.5;
+    const shadow=new THREE.Mesh(new THREE.CircleGeometry(.72,40),shadowMat);shadow.rotation.x=-Math.PI/2;shadow.position.set((i-1.5)*1.45,-.9,0);cost.add(shadow);
+    costBoxes.push(holder);costPlates.push(shadow);costBodies.push(body);
   });
   const price=make('price');
   const demandTower=box(price,[1.8,1,1.6],[-2,0,0],orange);
@@ -279,17 +288,17 @@ export function createScene(host, reducedMotion) {
   wireBox(price,[2.2,.06,2],[-2,-1.5,0]);wireBox(price,[2.2,.06,2],[2,-1.5,0]);
   const elastic=make('elastic');const capacityCubes=[];
   for(let i=0;i<20;i++){
-    const block=box(elastic,[.67,.67,.67],[(i%5-2)*.93,0,(Math.floor(i/5)-1.5)*.93],i<2?orange:pale);
+    const block=mesh(new RoundedBoxGeometry(.67,.67,.67,5,.15),i<2?orange:pale,elastic,[(i%5-2)*.93,0,(Math.floor(i/5)-1.5)*.93]);
     capacityCubes.push(block);
   }
-  wireBox(elastic,[5,.035,4],[0,-.4,0]);
-  const finops=make('finops');
-  mesh(new THREE.TorusGeometry(1.95,.035,8,100),black,finops);
+  const fleetPlate=wireBox(elastic,[5,.035,4],[0,-.4,0]);
+  const finops=make('finops');const loopRig=new THREE.Group();finops.add(loopRig);
+  mesh(new THREE.TorusGeometry(1.95,.035,8,100),black,loopRig);
   for(let i=0;i<3;i++){
     const a=Math.PI/2+i*Math.PI*2/3;
-    mesh(new THREE.SphereGeometry(.21,20,16),orange,finops,[Math.cos(a)*1.95,Math.sin(a)*1.95,0]);
+    mesh(new THREE.SphereGeometry(.21,20,16),orange,loopRig,[Math.cos(a)*1.95,Math.sin(a)*1.95,0]);
   }
-  mesh(new THREE.TorusGeometry(1.52,.012,6,80),orange,finops).rotation.y=.3;
+  mesh(new THREE.TorusGeometry(1.52,.012,6,80),orange,loopRig).rotation.y=.3;
   const architecture=make('architecture');
   for(let i=0;i<3;i++){
     const x=(i-1)*3;
@@ -306,8 +315,8 @@ export function createScene(host, reducedMotion) {
   box(alert,[.14,.85,.1],[0,.2,.4],pale);box(alert,[.14,.14,.1],[0,-.5,.4],pale);
 
   const incident=make('lab-incident');
-  const incidentRed=new THREE.MeshStandardMaterial({color:0xe66432,metalness:.45,roughness:.36});
-  const incidentPathMat=new THREE.MeshStandardMaterial({color:0xe66432,transparent:true,opacity:1,metalness:.4,roughness:.4});
+  const incidentRed=toon(0xf0643a);
+  const incidentPathMat=toon(0xf0643a,{transparent:true,opacity:1});
   const exposedKey=new THREE.Group();incident.add(exposedKey);exposedKey.position.set(-3.3,0,0);
   mesh(new THREE.TorusGeometry(.4,.11,12,40),orange,exposedKey,[-.3,.3,0]);
   box(exposedKey,[1,.17,.2],[.4,.3,0],orange);box(exposedKey,[.15,.4,.2],[.7,.15,0],orange);
@@ -320,6 +329,21 @@ export function createScene(host, reducedMotion) {
   for(let i=0;i<6;i++)rogueMachines.push(box(incident,[.55,.55,.55],[2.5+(i%3)*.68,Math.floor(i/3)*.72,0],incidentRed));
   const evidence=new THREE.Group();incident.add(evidence);evidence.position.set(1.3,-1,0);
   for(let i=0;i<3;i++)box(evidence,[.5,.08,.5],[0,i*.16,0],pale);
+
+  // Ink outlines: a slightly larger, back-facing copy of each toon mesh. Smooth shapes push along their
+  // normals; hard-edged shapes are scaled instead so the outline has no gaps at the corners.
+  const ink=new THREE.MeshBasicMaterial({color:0x2a1b12,side:THREE.BackSide});
+  const inkPush=ink.clone();
+  inkPush.onBeforeCompile=shader=>{shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n  transformed+=normal*0.032;');};
+  Object.values(groups).forEach(g=>g.traverse(object=>{
+    if(!object.isMesh||!object.material?.isMeshToonMaterial)return;
+    const geometry=object.geometry,type=geometry.type;
+    if(type==='TubeGeometry'||(type==='TorusGeometry'&&geometry.parameters.tube<.05))return;
+    const smooth=geometry instanceof RoundedBoxGeometry||['SphereGeometry','TorusGeometry','IcosahedronGeometry'].includes(type);
+    const outline=new THREE.Mesh(geometry,smooth?inkPush:ink);
+    if(!smooth)outline.scale.setScalar(1.05);
+    outline.renderOrder=-1;object.add(outline);
+  }));
 
   // Deterministic, sparse distant stars. Render once; no constant particle loop.
   let seed=11; const rand=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
@@ -352,8 +376,8 @@ export function createScene(host, reducedMotion) {
     morphPositions.set(from);morphMaterial.opacity=0;
     morphMaterial.color.set(['paper','split'].includes(currentDesign.tone)?0x9f492a:0xe4a271);
     morphTween=gsap.timeline({onUpdate:render});
-    morphTween.to(state,{progress:1,duration:1.05,ease:'power3.inOut',onUpdate:()=>{
-      const p=state.progress,bend=Math.sin(p*Math.PI)*.12;
+    morphTween.to(state,{progress:1,duration:1.25,ease:'expo.inOut',onUpdate:()=>{
+      const p=state.progress,bend=Math.sin(p*Math.PI)*.16;
       for(let i=0;i<morphCount;i++){
         const k=i*3,angle=i*2.399;
         morphPositions[k]=THREE.MathUtils.lerp(from[k],to[k],p)+Math.cos(angle)*bend;
@@ -395,6 +419,9 @@ export function createScene(host, reducedMotion) {
       }
     }
     if(design.scene==='elastic'){center.set(0,0,0);size.set(5.6,4.8,4.8);}
+    if(design.layout==='keynote-cost'){center.set(0,-.14,0);size.set(6.2,1.9,1.4);}
+    // Builds scale the loop to nothing, so frame it by its designed size, not its current bounds.
+    if(design.layout==='keynote-finops'){center.set(0,0,0);size.set(4.6,4.6,1);}
     if(design.scene==='lab-incident'){center.set(0,0,0);size.set(9.5,3.7,3);}
     current.position.sub(center);
     current.updateWorldMatrix(true,true);
@@ -411,6 +438,12 @@ export function createScene(host, reducedMotion) {
             demandTower.position.x=xs[0];commitTower.position.x=xs[1];price.children[2].position.x=xs[0];price.children[3].position.x=xs[1];
           }else current.children.forEach(child=>{const h=homePositions.get(child);if(h)child.position.x=h.x+(h.x<0?xs[0]+2.3:xs[1]-2.3);});
         }
+      }
+      // Keynote cost slide: stand each block above its ledger label.
+      if(design.layout==='keynote-cost'){
+        const cells=[...document.querySelectorAll('.kn-ledger>div')];
+        const oneRow=cells.length===4&&cells.every(c=>Math.abs(c.getBoundingClientRect().top-cells[0].getBoundingClientRect().top)<4);
+        cells.forEach((cell,i)=>{const r=cell.getBoundingClientRect();const x=oneRow?((r.left+r.width/2-rect.left)/rect.width*2-1)*halfHeight*aspect:(i-1.5)*1.45;costBoxes[i].position.x=x;costPlates[i].position.x=x;});
       }
       return;
     }
@@ -438,7 +471,7 @@ export function createScene(host, reducedMotion) {
     const previousShape=!instant&&!reducedMotion.matches?silhouette(current):null;
     morphTween?.kill();morphMaterial.opacity=0;
     active=true;host.hidden=false;currentDesign=design;
-    camera=['terraces','time','privilege','duality','ownership','price-duel','expansion','cycle','blueprint','proof','horizon','lab'].includes(design.layout)?diagramCamera:perspectiveCamera;
+    camera=['terraces','time','privilege','duality','ownership','keynote-cost','price-duel','keynote-price','expansion','keynote-elastic','keynote-finops','cycle','blueprint','proof','horizon','lab'].includes(design.layout)?diagramCamera:perspectiveCamera;
     spatialTween?.kill();
     gsap.killTweensOf(camera.position);
     const g=groups[design.scene]||planet;
@@ -469,18 +502,28 @@ export function createScene(host, reducedMotion) {
       }else if(type==='split'){
         g.children.slice(0,2).forEach((child,i)=>{const home=homePositions.get(child);if(home)tl.fromTo(child.position,{x:home.x+(i?1.4:-1.4)},{x:home.x,duration:1,ease:'power3.out'},0);});
       }else if(type==='assemble'||type==='fracture'){
-        g.children.forEach((child,i)=>{const home=homePositions.get(child);if(home)tl.fromTo(child.position,{x:home.x*(type==='fracture'?1.6:1),y:home.y+(i%2?-.7:.7),z:home.z-1.2},{x:home.x,y:home.y,z:home.z,duration:.95,ease:'power3.out'},i*.025);});
+        g.children.forEach((child,i)=>{const home=homePositions.get(child);if(home)tl.fromTo(child.position,{x:home.x*(type==='fracture'?1.6:1),y:home.y+(i%2?-.7:.7),z:home.z-1.2},{x:home.x,y:home.y,z:home.z,duration:1,ease:'back.out(1.5)'},i*.035);});
       }else if(type==='traverse'){
         tl.fromTo(g.position,{x:position[0]+1.3},{x:position[0],duration:1.15,ease:'power3.out'},0);
       }else if(type==='impact'){
-        tl.fromTo(g.scale,{x:scale*.65,y:scale*.65,z:scale*.65},{x:scale,y:scale,z:scale,duration:.85,ease:'back.out(1.15)'},0);
+        tl.fromTo(g.scale,{x:scale*.6,y:scale*.6,z:scale*.6},{x:scale,y:scale,z:scale,duration:1,ease:'elastic.out(1,.5)'},0);
       }else{
         tl.fromTo(g.position,{y:position[1]-.8,z:position[2]-.7},{y:position[1],z:position[2],duration:type==='horizon'?1.5:1.1,ease:'power3.out'},0);
+      }
+      // Cartoon arrival: squash wide, stretch tall, then settle with a little wobble.
+      if(design.scene!=='planet'&&type!=='impact'){
+        tl.set(g.scale,{x:scale*.78,y:scale*.78,z:scale*.78},0);
+        tl.to(g.scale,{keyframes:[
+          {x:scale*1.08,y:scale*.9,z:scale*1.08,duration:.34,ease:'power2.out'},
+          {x:scale*.96,y:scale*1.06,z:scale*.96,duration:.24,ease:'sine.inOut'},
+          {x:scale,y:scale,z:scale,duration:.55,ease:'elastic.out(1,.45)'}]},.05);
       }
     }
     render();
   }
+  const showPlates=()=>{[price.children[2],price.children[3]].forEach(p=>{gsap.killTweensOf(p.scale);p.scale.set(1,1,1);});[demandTower,commitTower].forEach(t=>{t.scale.x=1;t.scale.z=1;});fleetPlate.scale.set(1,1,1);};
   function update({partTime=false,saleDay=false},instant=false){
+    showPlates();
     const duration=instant||reducedMotion.matches?0:.8;
     const h=partTime ? 2.4 * 176 / 730 : 2.4;
     gsap.to(demandTower.scale,{y:h,duration,ease:'power3.inOut',onUpdate:render});
@@ -492,6 +535,7 @@ export function createScene(host, reducedMotion) {
     });render();
   }
   function lab(state,instant=false){
+    showPlates();
     const duration=instant||reducedMotion.matches?0:.8;
     if(state.mode==='pricing'){
       const height=2.4*state.hours/730;
@@ -511,6 +555,56 @@ export function createScene(host, reducedMotion) {
     }
     render();
   }
+  // Keynote builds: cost blocks pop in one after another (squash and stretch) and the emphasised ones hop up.
+  let costIdle=false;
+  function costBlocks({count=4,lift=[]},instant=false){
+    const duration=instant||reducedMotion.matches?0:.9;
+    costIdle=count>0;
+    costBoxes.forEach((block,i)=>{
+      const on=i<count,delay=duration&&on?.2+i*.17:0;
+      gsap.killTweensOf(block.scale);
+      if(on&&duration&&block.scale.y<.5){
+        gsap.set(block.scale,{x:.001,y:.001,z:.001});gsap.to(block.scale,{keyframes:[{x:1.18,y:.72,z:1.18,duration:.32,ease:'power2.out'},{x:.9,y:1.16,z:.9,duration:.2,ease:'power2.inOut'},{x:1,y:1,z:1,duration:.45,ease:'elastic.out(1,.45)'}],delay,onUpdate:render});
+      }else gsap.to(block.scale,{x:on?1:.001,y:on?1:.001,z:on?1:.001,duration:duration*.5,onUpdate:render});
+      gsap.to(block.position,{y:-.3+(lift.includes(i)?.3:0),duration,ease:'back.out(2)',overwrite:true,onUpdate:render});
+      gsap.to(costPlates[i].scale,{x:on?1:.001,y:on?1:.001,z:on?1:.001,duration:duration*.6,delay,overwrite:true,onUpdate:render});
+    });
+    render();
+  }
+  // Keynote builds: show `count` fleet cubes, popping in one after another.
+  function fleet({count=2},instant=false){
+    const duration=instant||reducedMotion.matches?0:.6;
+    capacityCubes.forEach((block,i)=>{
+      const on=i<count,size=on?1:.001;
+      gsap.to(block.scale,{x:size,y:size,z:size,duration,delay:duration&&on&&block.scale.x<.5?Math.max(0,i-2)*.05:0,ease:on?'back.out(2.2)':'power2.in',overwrite:true,onUpdate:render});
+    });
+    const plate=count>0?1:.001;
+    gsap.to(fleetPlate.scale,{x:plate,y:plate,z:plate,duration:duration*.6,overwrite:true,onUpdate:render});
+    render();
+  }
+  // Keynote builds: the FinOps loop spins into place, and dims when the closing statement takes over.
+  function loop({show=true},instant=false){
+    const duration=instant||reducedMotion.matches?0:1.4,size=show?1:.001,appearing=show&&loopRig.scale.x<.5;
+    gsap.to(loopRig.scale,{x:size,y:size,z:size,duration:duration*.8,ease:show?'back.out(1.4)':'power2.in',overwrite:true,onUpdate:render});
+    if(appearing&&duration)gsap.fromTo(loopRig.rotation,{z:-Math.PI*1.25},{z:0,duration,ease:'power3.out',onUpdate:render});
+    if(!show)loopRig.rotation.z=0;
+    render();
+  }
+  // Keynote builds: raise, resize or hide the two pricing towers independently.
+  function towers({demandHours=0,commit=false},instant=false){
+    const duration=instant||reducedMotion.matches?0:1.1;
+    const dh=Math.max(.001,2.4*demandHours/730),ch=commit?1.44:.001;
+    // A zero-height box still shows its footprint, so collapse the width too when hidden.
+    const dw=demandHours>0?1:.001,cw=commit?1:.001;
+    gsap.to(demandTower.scale,{x:dw,z:dw,y:dh,duration,ease:'power3.inOut',overwrite:true,onUpdate:render});
+    gsap.to(demandTower.position,{y:-1.5+dh/2,duration,ease:'power3.inOut',overwrite:true,onUpdate:render});
+    gsap.to(commitTower.scale,{x:cw,z:cw,y:ch,duration,delay:duration?.12:0,ease:'power3.inOut',overwrite:true,onUpdate:render});
+    gsap.to(commitTower.position,{y:-1.5+ch/2,duration,delay:duration?.12:0,ease:'power3.inOut',overwrite:true,onUpdate:render});
+    // The base plates belong to the duel too; hide them while the title has the stage.
+    const plate=commit?1:.001;
+    [price.children[2],price.children[3]].forEach(p=>gsap.to(p.scale,{x:plate,y:plate,z:plate,duration:duration*.6,overwrite:true,onUpdate:render}));
+    render();
+  }
   function resize(){
     renderer.setSize(host.clientWidth,host.clientHeight);
     camera.aspect=host.clientWidth/Math.max(host.clientHeight,1);camera.updateProjectionMatrix();
@@ -522,8 +616,16 @@ export function createScene(host, reducedMotion) {
     gsap.to(pivot.rotation,{y:(e.clientX/innerWidth-.5)*.025,x:(e.clientY/innerHeight-.5)*.012,duration:.8,onUpdate:render});
   };
   addEventListener('pointermove',onPointer,{passive:true});addEventListener('resize',resize);
+  // The canvas is fixed while phone slides scroll. Repaint its clipped viewport with the DOM slot.
+  addEventListener('scroll',render,{passive:true});
   let lastPlanetFrame=0;
+  let lastBob=0;
   function revolve(time){
+    if(active&&!document.hidden&&current===cost&&costIdle&&!reducedMotion.matches){
+      if(time-lastBob<1/30)return;lastBob=time;
+      costBodies.forEach((b,i)=>{const s=Math.sin(time*2.1+i*1.1);b.position.y=s*.05;b.rotation.y=-.5+Math.sin(time*1.2+i)*.07;costPlates[i].material.opacity=.16;});
+      render();return;
+    }
     if(!active||document.hidden||current!==planet||reducedMotion.matches)return;
     if(time-lastPlanetFrame<1/30)return;
     const elapsed=Math.min(time-lastPlanetFrame,.05);lastPlanetFrame=time;
@@ -535,11 +637,11 @@ export function createScene(host, reducedMotion) {
   gsap.ticker.add(revolve);
   document.addEventListener('visibilitychange',render);resize();
   return {
-    setDesign,update,lab,
+    setDesign,update,lab,towers,costBlocks,fleet,loop,
     set(name,intro=false,instant=false){setDesign({scene:name,position:intro?[0,-4.6,-2.5]:[3.1,-.65,-2.2],scale:1,rotation:[0,0,0],transition:'horizon',tone:'dark',layout:'gate'},instant);},
     pause(){active=false;host.hidden=true;spatialTween?.kill();morphTween?.kill();morphMaterial.opacity=0;},
     resize,
     quality(value){quality=value;renderer.setPixelRatio(Math.min(devicePixelRatio,quality==='detail'?1.8:1.15));resize();},
-    destroy(){gsap.ticker.remove(revolve);morphTween?.kill();spatialTween?.kill();removeEventListener('pointermove',onPointer);removeEventListener('resize',resize);morphGeometry.dispose();morphMaterial.dispose();renderer.dispose();}
+    destroy(){gsap.ticker.remove(revolve);morphTween?.kill();spatialTween?.kill();removeEventListener('pointermove',onPointer);removeEventListener('resize',resize);removeEventListener('scroll',render);morphGeometry.dispose();morphMaterial.dispose();renderer.dispose();}
   };
 }

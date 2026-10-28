@@ -1,6 +1,8 @@
 # GROUP 11 — CLOUD ECONOMICS, OPERATIONS, AND SECURITY
 
-Latest implementation correction (October 27): model/text layout is governed by reserved `.scene-slot` rectangles, per-scene camera fitting, projected captions, and isometric diagram views. See `PRESENTATION_AUDIT.md` for screenshot-driven findings and the current desktop, projector, tablet, and phone verification. This supersedes any earlier proposal to freely position foreground models behind slide text.
+Current implementation: slides 14–17 use Next/Back builds, every slide uses a shared word-reveal sequence, and desktop type and stage area are larger. Procedural models use toon shading and ink outlines. The script and PDF follow the same 22-slide order.
+
+Layout contract (October 27): model/text layout is governed by reserved `.scene-slot` rectangles, per-scene camera fitting, projected captions, and isometric diagram views. See `PRESENTATION_AUDIT.md` for screenshot-driven findings and the current desktop, projector, tablet, and phone verification. This supersedes any earlier proposal to freely position foreground models behind slide text.
 
 ## Cloud Economics, Operations, and Security
 
@@ -10,7 +12,7 @@ Status: implemented and deployed to GitHub Pages (https://peeeweee.github.io/Pro
 
 Implementation title: **Beyond the cloud.** The academic subtitle remains **Cloud economics, operations & security**. The opening begins in black space with a restrained horizon and a manual Enter control.
 
-User-selected format: approximately 18–22 minutes; slide presentation plus scrolling reading view; balanced rendering for integrated graphics with an optional high-detail setting. Real-time 3D depth and transitions are part of the visual language. The renderer draws on demand rather than running an endless background animation loop.
+User-selected format: approximately 18–22 minutes; slide presentation plus scrolling reading view; balanced rendering for integrated graphics with an optional high-detail setting. Real-time 3D depth and transitions are part of the visual language. The renderer draws on demand for most diagrams; Mars and the cost blocks have a gentle idle animation capped at 30 fps while visible. Reduced motion disables both.
 
 ## Content and branding direction
 
@@ -42,9 +44,9 @@ Core line: Keep it running. Protect access. Make resources count.
 
 Opening: begin on near-total black (#050607), with generous empty space and hidden navigation chrome. A small, accessible Begin control is available. On activation, a subtle light edge or planetary horizon appears, followed by the actual academic title and GROUP 11. The opening is skippable and requires no timed wait. No opening habitat or fictional mission premise.
 
-No terminal startup, scrolling code, typewriter text, simulated command execution, mandatory loading sequence, automatic slide advance, or continuously moving backgrounds.
+No terminal startup, scrolling code, typewriter text, simulated command execution, mandatory loading sequence, or automatic slide advance.
 
-Transition vocabulary: a slow-feeling but brief cinematic fade for the opening (roughly 700–1000ms, skippable); restrained crossfades or short spatial shifts (roughly 250–450ms) within sections; a horizon or surface crop change for speaker handoffs. Avoid flashes, spinning objects, particle storms, and ornamental animations on every element. Cancel pending transitions on rapid navigation and remove all nonessential motion in reduced-motion mode.
+Transition vocabulary: a common title entrance or magic move, then details in reading order with masked word rises and the takeaway last. Tone changes use a curtain wipe. The 3D objects use toon shading, ink outlines, and squash-and-stretch arrivals; no eyes. One click plays each slide’s sequence, including the first and last. Only Earl’s slides 14–17 use multiple presenter-controlled steps. Cancel obsolete text splits, counters, and title moves on rapid navigation; reduced motion changes the same states immediately.
 
 Slides must look finished when paused. Use short fades or position changes only to explain relationships. All important reveals are presenter controlled. Reduced-motion mode shows content immediately. Interactive controls must not also advance the slide.
 
@@ -118,7 +120,7 @@ All 22 slides have a clear message and correct presenter; no code or terminal gi
 
 ## Second design edition — implemented
 
-The repeated text-left/object-right composition has been replaced by individually composed slides (twenty in this edition; the Cloud Lab and title reprise were added later, for twenty-two), nineteen scene configurations, eleven transition families, and four palette treatments. This implementation table supersedes the earlier visual composition column. Speaker order and technical content are retained. The black-space opening is retained. Pricing controls adjust physical tower height; the elasticity control assembles 2 or 20 instances. Motion is presenter-controlled and respects reduced-motion settings.
+The repeated text-left/object-right composition has been replaced by individually composed slides (twenty in this edition; the Cloud Lab and title reprise were added later, for twenty-two), nineteen scene configurations, eleven transition families, and four palette treatments. This implementation table supersedes the earlier visual composition column. Speaker order and technical content are retained. The black-space opening is retained. Pricing builds adjust physical tower height; elasticity builds assemble 2 or 20 instances. Direct controls remain in Cloud Lab. Motion is presenter-controlled and respects reduced-motion settings.
 
 | Slide | Presenter | Composition | 3D scene | Entrance | Palette |
 |---|---|---|---|---|---|
@@ -135,10 +137,10 @@ The repeated text-left/object-right composition has been replaced by individuall
 | 11 | Renan | duality | boundaries | split | paper |
 | 12 | Renan | proof | authentication | traverse | dark |
 | 13 | Renan | lifecycle | key | orbit | dark |
-| 14 | Earl | ownership | cost | rise | paper |
-| 15 | Earl | price-duel | price | elevate | dark |
-| 16 | Earl | expansion | elastic | assemble | dark |
-| 17 | Earl | cycle | finops | orbit | paper |
+| 14 | Earl | keynote-cost | cost | rise | paper |
+| 15 | Earl | keynote-price | price | elevate | dark |
+| 16 | Earl | keynote-elastic | elastic | assemble | dark |
+| 17 | Earl | keynote-finops | finops | orbit | paper |
 | 18 | Earl | blueprint | architecture | assemble | dark |
 | 19 | Earl | decision | alert | impact | rust |
 | 20 | All | finale | planet | horizon | dark |
