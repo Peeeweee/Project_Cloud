@@ -2,31 +2,31 @@
 
 Cloud economics, operations & security
 
-**Speaking order: Paulo -> Earl -> Renan**
+**Speaking order: Paulo -> Renan -> Earl**
 
-Timed delivery: about 20-22 minutes, excluding questions.
+Timed delivery: about 20-22 minutes, excluding questions. The optional Cloud Lab (slide 21) adds two to three minutes.
 
 ## How to use this script
 
 Read only the spoken paragraphs aloud. Guide notes and bracketed cues are delivery instructions. Study notes and defense answers are preparation material.
 
-Current deck route: **1-7 -> 14-17 -> 8-13 -> 18-21**. Use Contents at 7 -> 14, 17 -> 8, and 13 -> 18. The website order and embedded notes have not been changed by this script.
+Slides run **1 to 22 in order**, matching the website: use Next only, with no Contents jumps. Slide numbers and speakers match the website's speaker notes (N key).
 
 ## PART 1: PAULO - OPERATIONS
 
-### Slide 1: Beyond the cloud (deck 1)
+### Slide 1: Beyond the cloud
 
 **Guide:** Open #introduction. Hide controls with H. Let the planet settle, then face the audience. Do not wait for a full revolution.
 
-Good day, everyone. We are Group 11: Kent Paulo Delgado, Earl Josh Delgado, and John Renan Labay. Our report is about cloud economics, operations, and security.
+Good day, everyone. We are Group 11: Kent Paulo Delgado, John Renan Labay, and Earl Josh Delgado. Our report is about cloud economics, operations, and security.
 
 Our visual theme takes inspiration from The Martian: keeping essential systems working and making limited resources count. We use that atmosphere to frame the report; our discussion stays on cloud computing.
 
-I will begin with operations: how we run, observe, and recover a system. Earl will explain economics: how we match resources to demand and evaluate spending. Renan will cover security: how we control access and protect those resources.
+I will begin with operations: how we run, observe, and recover a system. Renan will cover security: how we control access and protect the system. Earl will explain economics: how we match resources to demand and make spending accountable.
 
 Our central question is simple: after we put an application in the cloud, what does it take to keep it dependable?
 
-### Slide 2: Online is not enough (deck 2)
+### Slide 2: Online is not enough
 
 **Guide:** Point to recovery, access, and spending in turn. Give the audience two seconds to consider the scenario.
 
@@ -36,7 +36,7 @@ This is a fictional example, but it shows why being online is only part of the p
 
 We need to ask three questions: can we recover it, who can control it, and what are we paying for? Those questions connect the three parts of our report. We will keep returning to this same application as we explain the decisions behind it.
 
-### Slide 3: Resources on demand (deck 3)
+### Slide 3: Resources on demand
 
 **Guide:** Move across IaaS, PaaS, and SaaS. Explain the change in management responsibility, rather than reading only their names.
 
@@ -48,7 +48,7 @@ The responsibility does not disappear as we move toward managed services. It cha
 
 For the server and network examples that follow, imagine a web application running on virtual infrastructure with a database behind it.
 
-### Slide 4: Keep it working (deck 4)
+### Slide 4: Keep it working
 
 **Guide:** Follow the four stages: Observe, Maintain, Automate, Recover. Keep the explanation practical.
 
@@ -60,7 +60,7 @@ Infrastructure as Code records infrastructure configuration in version-controlle
 
 But automation can also repeat a mistake quickly. It still needs appropriate permissions, validation, and a recovery plan. Operations means owning the result, whether a person or an automated process performs the task.
 
-### Slide 5: See the signal find the cause (deck 5)
+### Slide 5: See the signal find the cause
 
 **Guide:** Trace the simulated chart. Distinguish the alert from the explanation. Do not describe the graph as measured production data.
 
@@ -72,7 +72,7 @@ For example, a sudden cost increase could come from a legitimate event, an accid
 
 The chart here is simulated. Its lesson is the process: alert, investigate, act. Every useful alert should also have an owner who knows what to check and when to escalate.
 
-### Slide 6: Plan for the gap (deck 6)
+### Slide 6: Plan for the gap
 
 **Guide:** Point to 1 hour for RPO, then 4 hours for RTO. Pause between the two definitions. Treat the numbers as objectives.
 
@@ -86,9 +86,9 @@ These numbers are objectives, not proof of performance. We need suitable backup 
 
 A backup job marked successful is encouraging. A tested restoration gives us stronger evidence that the application can actually return.
 
-### Slide 7: Be ready for the bad day (deck 7)
+### Slide 7: Be ready for the bad day
 
-**Guide:** Follow Detect, Contain, Investigate, Recover, Improve. After the last line, the controller jumps to deck slide 14 using Contents.
+**Guide:** Follow Detect, Contain, Investigate, Recover, Improve, then hand over to Renan.
 
 Incident response works better when responsibilities are agreed before an emergency. The process is to detect, contain, investigate, recover, and improve.
 
@@ -96,69 +96,15 @@ If a cloud credential leaks, containment means limiting its ability to cause fur
 
 After recovery, we ask what allowed the problem, whether detection worked, and what should change. We rehearse that process so people know whom to contact and what evidence to collect.
 
-That completes the operations foundation. But reliability has a cost: backups, monitoring, and capacity all consume resources. Earl will now explain how we evaluate those choices and make spending accountable.
+That completes the operations foundation. We know how to watch the system and recover when it fails. Renan will now explain who should be able to reach and control it.
 
-## PART 2: EARL - ECONOMICS
+## PART 2: RENAN - SECURITY
 
-### Slide 8: The full cost not just the fee (deck 14)
-
-**Guide:** Begin immediately after Paulo. Compare the two choices over the same period and workload.
-
-Thank you, Paulo. Cloud economics asks whether our spending supports the service we actually need.
-
-Capital expenditure, or CapEx, includes buying an asset such as physical hardware. Operating expenditure, or OpEx, includes ongoing costs such as usage-based services. The shift toward ongoing spending can reduce the need to buy capacity in advance, but it does not automatically make the total lower.
-
-Total cost of ownership includes the wider picture: computing, storage, transfer, maintenance, support, and people. We should compare equivalent workloads, performance, reliability, and time periods.
-
-A low server price can hide expensive data transfer or operational work. Equally, a higher service fee may remove work we would otherwise perform ourselves. The right comparison is the complete cost of meeting the same requirement.
-
-### Slide 9: A lower rate a bigger bill (deck 15)
-
-**Guide:** Show Always on first. Read the totals, then switch to Part time. Let the verdict change before explaining break-even.
-
-This example shows why a lower hourly rate can still produce a larger bill. These are teaching assumptions, not current provider quotations.
-
-Assume ten cents per hour, a 730-hour month, and a commitment rate forty percent lower that covers the whole month. At continuous use, On-Demand costs seventy-three dollars. The commitment costs forty-three dollars and eighty cents.
-
-Now switch to part-time use: 176 hours. On-Demand falls to seventeen dollars and sixty cents. The assumed full-month commitment remains forty-three dollars and eighty cents, including hours we do not use.
-
-Under these assumptions, break-even is 438 usage hours, or sixty percent of the month. Above that, the commitment is cheaper; below it, On-Demand is cheaper.
-
-So we match commitments to predictable demand, rather than choosing a discount just because its percentage looks attractive.
-
-### Slide 10: Meet the peak then let go (deck 16)
-
-**Guide:** Switch Normal day to Sale day, then back. Point out that the extra blocks disappear when demand falls.
-
-Elasticity means adding capacity when demand rises and releasing it afterward. The release is part of the saving.
-
-Assume two instances run for 730 hours. For a one-day sale, eighteen additional instances run for twenty-four hours. At ten cents per instance-hour, the baseline costs 146 dollars and the additional capacity costs forty-three dollars and twenty cents. The total is 189 dollars and twenty cents.
-
-Keeping twenty equivalent instances running all month would cost 1,460 dollars. Both figures refer to rented compute under the same teaching assumptions; this is not the purchase price of physical hardware.
-
-Actual savings depend on how the application scales and on supporting costs. Autoscaling also needs sensible limits and performance checks. We want capacity to follow useful work, including scaling back down.
-
-### Slide 11: Give every resource an owner (deck 17)
-
-**Guide:** Follow Inform, Optimize, Operate. After the handoff, jump to deck slide 8 using Contents.
-
-Financial accountability is a shared practice. FinOps connects engineering, finance, and business decisions so that spending can be understood and tied to value.
-
-The FinOps Foundation describes repeating phases: Inform, Optimize, and Operate. Inform means understanding and allocating spending. Optimize means evaluating better usage and purchasing choices. Operate means applying those decisions and reviewing the results.
-
-In practice, give resources owners, use useful project tags, review capacity, and remove resources that no longer have a purpose. An owner should be able to explain what a resource supports.
-
-Budget notifications help us notice actual or forecast spending. They are not guaranteed immediate spending caps.
-
-And accountability also depends on who can create and change resources. Renan will now explain the access and security controls behind that responsibility.
-
-## PART 3: RENAN - SECURITY AND SYNTHESIS
-
-### Slide 12: Know your side (deck 8)
+### Slide 8: Know your side
 
 **Guide:** Begin immediately. Identify the provider side and customer side, then connect both to confidentiality, integrity, and availability.
 
-Thank you, Earl. Cost ownership becomes more meaningful when access is controlled. Cloud security starts with knowing which responsibilities belong to us.
+Thank you, Paulo. Recovery depends on trustworthy access. Cloud security starts with knowing which responsibilities belong to us.
 
 In our IaaS example, the provider manages facilities, hardware, and the underlying virtualization infrastructure. We manage guest software, identities, application data, and the access configuration available to us. With managed services, parts of that boundary move.
 
@@ -166,7 +112,7 @@ The goals are confidentiality, integrity, and availability. Confidentiality mean
 
 Shared responsibility does not mean either side can assume the other handles everything. We must understand the specific service and configure our part correctly. Security therefore begins before a firewall rule: it begins with a clear responsibility boundary.
 
-### Slide 13: Power needs limits (deck 9)
+### Slide 9: Power needs limits
 
 **Guide:** Emphasize the two meanings of root. Do not imply that Linux root and AWS root are the same account.
 
@@ -178,7 +124,7 @@ Protect root credentials and recovery channels, use MFA where credentials exist,
 
 The practical principle is least privilege: limit what an identity can do, and make its activity attributable to a responsible person.
 
-### Slide 14: Every path needs a rule (deck 10)
+### Slide 10: Every path needs a rule
 
 **Guide:** Trace public HTTPS, controlled administration, and the blocked public database path. Use the diagram rather than commands.
 
@@ -190,7 +136,7 @@ Default deny is the policy we aim to design: permit the required paths and rejec
 
 We also review rules as the system changes. A rule that was temporarily necessary can become stale. Network access should follow the current application architecture and the actual duties of its administrators.
 
-### Slide 15: Two layers different rules (deck 11)
+### Slide 11: Two layers different rules
 
 **Guide:** Compare scope first, state second, and rule behavior third. Leave a short pause before explaining defaults.
 
@@ -204,7 +150,7 @@ Defaults also differ. A newly created security group has no inbound rules and no
 
 So the correct habit is to inspect the actual configuration. Stateful and stateless explain behavior; neither word means the control is universally better.
 
-### Slide 16: Prove it keep it secret (deck 12)
+### Slide 12: Prove it keep it secret
 
 **Guide:** Point from user device to server. Distinguish the user public key from the server host key.
 
@@ -216,9 +162,9 @@ There is another question: are we connecting to the intended server? The client 
 
 A normal SSH key is not automatically multi-factor authentication. Also, password-based SSH still uses the encrypted transport. The advantage of key authentication is not that ordinary SSH passwords otherwise travel in plaintext.
 
-### Slide 17: Security lasts a lifecycle (deck 13)
+### Slide 13: Security lasts a lifecycle
 
-**Guide:** Follow Create, Protect, Review, Revoke. Afterward, jump to deck slide 18 for the integrated example.
+**Guide:** Follow Create, Protect, Review, Revoke, then hand over to Earl.
 
 A strong key still needs careful handling throughout its life. Create individual keys, protect their storage and permissions, review whether access is still needed, and revoke access when it is no longer appropriate.
 
@@ -228,23 +174,77 @@ If a private key leaks, deleting the exposed file is not enough. Remove or repla
 
 When changing SSH settings, test a new working connection before closing the existing one, and keep a recovery path. A security improvement that locks out the administrators creates an availability problem.
 
-We can now bring operations, economics, and security together in one application.
+Controlled access protects the system and its resources. Earl will now explain how we choose capacity and manage the cost.
 
-### Slide 18: One system every layer matters (deck 18)
+## PART 3: EARL - ECONOMICS AND SYNTHESIS
+
+### Slide 14: The full cost not just the fee
+
+**Guide:** Begin immediately after Renan. Compare the two choices over the same period and workload.
+
+Thank you, Renan. Cloud economics asks whether our spending supports the service we actually need.
+
+Capital expenditure, or CapEx, includes buying an asset such as physical hardware. Operating expenditure, or OpEx, includes ongoing costs such as usage-based services. The shift toward ongoing spending can reduce the need to buy capacity in advance, but it does not automatically make the total lower.
+
+Total cost of ownership includes the wider picture: computing, storage, transfer, maintenance, support, and people. We should compare equivalent workloads, performance, reliability, and time periods.
+
+A low server price can hide expensive data transfer or operational work. Equally, a higher service fee may remove work we would otherwise perform ourselves. The right comparison is the complete cost of meeting the same requirement.
+
+### Slide 15: A lower rate a bigger bill
+
+**Guide:** Show Always on first. Read the totals, then switch to Part time. Let the verdict change before explaining break-even.
+
+This example shows why a lower hourly rate can still produce a larger bill. These are teaching assumptions, not current provider quotations.
+
+Assume ten cents per hour, a 730-hour month, and a commitment rate forty percent lower that covers the whole month. At continuous use, On-Demand costs seventy-three dollars. The commitment costs forty-three dollars and eighty cents.
+
+Now switch to part-time use: 176 hours. On-Demand falls to seventeen dollars and sixty cents. The assumed full-month commitment remains forty-three dollars and eighty cents, including hours we do not use.
+
+Under these assumptions, break-even is 438 usage hours, or sixty percent of the month. Above that, the commitment is cheaper; below it, On-Demand is cheaper.
+
+So we match commitments to predictable demand, rather than choosing a discount just because its percentage looks attractive.
+
+### Slide 16: Meet the peak then let go
+
+**Guide:** Switch Normal day to Sale day, then back. Point out that the extra blocks disappear when demand falls.
+
+Elasticity means adding capacity when demand rises and releasing it afterward. The release is part of the saving.
+
+Assume two instances run for 730 hours. For a one-day sale, eighteen additional instances run for twenty-four hours. At ten cents per instance-hour, the baseline costs 146 dollars and the additional capacity costs forty-three dollars and twenty cents. The total is 189 dollars and twenty cents.
+
+Keeping twenty equivalent instances running all month would cost 1,460 dollars. Both figures refer to rented compute under the same teaching assumptions; this is not the purchase price of physical hardware.
+
+Actual savings depend on how the application scales and on supporting costs. Autoscaling also needs sensible limits and performance checks. We want capacity to follow useful work, including scaling back down.
+
+### Slide 17: Give every resource an owner
+
+**Guide:** Follow Inform, Optimize, Operate, then continue straight to the integrated example.
+
+Financial accountability is a shared practice. FinOps connects engineering, finance, and business decisions so that spending can be understood and tied to value.
+
+The FinOps Foundation describes repeating phases: Inform, Optimize, and Operate. Inform means understanding and allocating spending. Optimize means evaluating better usage and purchasing choices. Operate means applying those decisions and reviewing the results.
+
+In practice, give resources owners, use useful project tags, review capacity, and remove resources that no longer have a purpose. An owner should be able to explain what a resource supports.
+
+Budget notifications help us notice actual or forecast spending. They are not guaranteed immediate spending caps.
+
+We can now bring operations, security, and economics together in one application.
+
+### Slide 18: One system every layer matters
 
 **Guide:** Walk left to right through HTTPS, application, and private database. Then identify management, backups, monitoring, and ownership.
 
 Here is the complete connection. Visitors enter through HTTPS. The application uses a restricted path to the private database. Administrators use a separate controlled management path.
 
-Paulo's operations practices tell us how the system behaves, how to maintain it, and how to recover its information. Earl's economics practices tell us whether capacity matches demand and who is accountable for spending. Security controls limit who can reach and change the system.
+Paulo's operations practices tell us how the system behaves, how to maintain it, and how to recover its information. Renan's security controls limit who can reach and change the system. Our economics practices tell us whether capacity matches demand and who is accountable for spending.
 
 These practices support one another. A compromised identity can create unexpected resources. A cost anomaly can prompt an investigation. Protected backups can support recovery after an incident.
 
 This diagram is an instructional sketch, not a complete production design. Real implementation also needs service-specific routing, identity, encryption, and recovery decisions. The lesson is that these decisions should be designed together.
 
-### Slide 19: A key leaks what comes first (deck 19)
+### Slide 19: A key leaks what comes first
 
-**Guide:** Ask the audience, wait three to five seconds, then select the containment answer. Renan leads; avoid another full speaker rotation.
+**Guide:** Ask the audience, wait three to five seconds, then select the containment answer. Earl leads; avoid another full speaker rotation. Answers can be switched at any time and each shows its own explanation, so you can briefly select an answer the audience suggests before choosing containment.
 
 Let us test the connection with a final scenario. A cloud credential appears in a public repository. Unknown instances are running, and spending has increased. What comes first?
 
@@ -256,27 +256,41 @@ While containing the incident, we preserve relevant evidence, investigate activi
 
 This scenario brings the report together: operations detects and responds, economics reveals and accounts for resource use, and security controls the authorization that made those actions possible. None of the three can replace the others.
 
-### Slide 20: Keep it running protect access make it count (deck 20)
+## PART 4: ALL - CLOSING, CLOUD LAB AND QUESTIONS
 
-**Guide:** Deliver the three short lines in Paulo, Earl, Renan order. Each speaker faces the audience. Advance only after Renan finishes.
+### Slide 20: Keep it running protect access make it count
+
+**Guide:** Deliver the three short lines in Paulo, Renan, Earl order, matching the slide: Keep it running, Protect access, Make it count. Each speaker faces the audience. Advance only after Earl finishes.
 
 PAULO: Good operations help us observe behavior, maintain systems, and recover when something fails. A dependable cloud service requires preparation, not only a successful deployment.
 
-EARL: Good economics matches resources to demand and makes their cost explainable. A smaller bill matters only when the service still delivers the value and reliability we need.
+RENAN: Good security limits access, protects credentials, and checks the paths between components.
 
-RENAN: Good security limits access, protects credentials, and checks the paths between components. Together, these practices help us keep the system running, make resources count, and protect what matters.
+EARL: Good economics matches resources to demand and makes their cost explainable. A smaller bill matters only when the service still delivers the value and reliability we need. Together, these practices help us keep the system running, protect what matters, and make resources count.
 
-### Slide 21: Beyond the cloud closing reprise (deck 21)
+### Slide 21: Cloud in your hands
 
-**Guide:** Show the matching title planet. Pause, look at the audience, and leave this slide on screen throughout questions.
+**Guide:** Optional, about two to three minutes; skip it if time is short. Each tab starts fresh when selected, and selecting it again replays it. Earl runs Pricing and Elasticity, Renan and Paulo share Incident response. No real cloud account is connected.
+
+EARL: Let us put the examples in your hands. In Pricing, we change how long one machine runs. At 176 hours, On-Demand costs seventeen dollars and sixty cents, below the forty-three dollar and eighty cent commitment. At 438 hours the two totals match. At 730 hours the commitment wins.
+
+EARL: In Elasticity, we send a rush of demand. Eighteen temporary machines join the two baseline machines, and then we release them. The month costs 189 dollars and twenty cents, compared with 1,460 dollars for keeping all twenty machines running.
+
+RENAN: In Incident response, a leaked key starts six unauthorized machines. Step two blocks access, but the run rate stays at eighty cents an hour: blocking access does not stop machines that are already running. Step three preserves the logs and traces what happened.
+
+PAULO: Step four removes the unauthorized machines and verifies the trusted service. The run rate returns to twenty cents an hour. Recovery means restoring both trust and the baseline cost.
+
+### Slide 22: Beyond the cloud closing reprise
+
+**Guide:** Earl speaks. Show the matching title planet. Pause, look at the audience, and leave this slide on screen throughout questions.
 
 We began by asking what happens after deployment. Our answer is ongoing responsibility: understand the service, account for its resources, and control access to it.
 
-We are Group 11: Paulo, Earl, and Renan. Thank you for listening. We welcome your questions.
+We are Group 11: Paulo, Renan, and Earl. Thank you for listening. We welcome your questions.
 
 ## In depth slide notes
 
-### Slide 1: Beyond the cloud | Paulo | deck 1
+### Slide 1: Beyond the cloud | Paulo
 
 Treat the film reference as one short acknowledgment. Do not build later explanations around astronauts, oxygen, or invented missions. Cloud operations, economics, and security are the academic subjects.
 
@@ -284,7 +298,7 @@ The term cloud covers multiple services and management boundaries. The detailed 
 
 **Check your understanding:** What remains our responsibility after deployment? Explain operation, spending ownership, and access configuration without claiming that every cloud service has the same boundary.
 
-### Slide 2: Online is not enough | Paulo | deck 2
+### Slide 2: Online is not enough | Paulo
 
 Separate service availability from operational readiness. An application may currently serve requests while carrying recovery, access, or financial risks that have not yet caused an outage.
 
@@ -292,7 +306,7 @@ Do not call the example a real breach or attach invented loss figures. A former 
 
 **Check your understanding:** Why might an idle resource be justified? A tested standby system can support a recovery requirement; evaluate its purpose before removing it.
 
-### Slide 3: Resources on demand | Paulo | deck 3
+### Slide 3: Resources on demand | Paulo
 
 IaaS, PaaS, and SaaS are management models, not interchangeable price categories. A virtual machine offers flexibility but brings operating-system maintenance. A managed platform may reduce that work while imposing runtime or deployment constraints. SaaS can simplify delivery while leaving organization-specific identity, sharing, and data decisions.
 
@@ -300,7 +314,7 @@ A region is a geographic placement choice, whereas an availability zone is an is
 
 **Check your understanding:** Does a managed database remove all customer responsibility? No. Customers still configure identities, connectivity, data handling, and supported service settings.
 
-### Slide 4: Keep it working | Paulo | deck 4
+### Slide 4: Keep it working | Paulo
 
 Distinguish routine maintenance from change management. A patch should be assessed, tested where practical, scheduled appropriately, and checked afterward. Rollback planning is part of the change, not an afterthought.
 
@@ -308,7 +322,7 @@ Infrastructure as Code improves repeatability but is not a complete backup. It m
 
 **Check your understanding:** Can Infrastructure as Code restore deleted customer data? Only if a separate data-recovery mechanism supplies it; configuration files alone do not contain the application data.
 
-### Slide 5: See the signal find the cause | Paulo | deck 5
+### Slide 5: See the signal find the cause | Paulo
 
 Metrics answer how much, how often, and how quickly. Logs answer what event occurred and provide contextual fields such as time, identity, operation, and resource. Traces can follow a request across services, although the current slide concentrates on metrics and logs.
 
@@ -316,7 +330,7 @@ Choose actionable alerts rather than collecting notifications with no response p
 
 **Check your understanding:** What would you check after a cost spike? Identify the service, resource, region, time window, owner, recent changes, and account activity before attributing a cause.
 
-### Slide 6: Plan for the gap | Paulo | deck 6
+### Slide 6: Plan for the gap | Paulo
 
 Suppose a disruption occurs at noon and the latest usable recovery point is 11:30 a.m. The recovery point is thirty minutes old, which is within a one-hour RPO. If the agreed service is restored at 3 p.m., elapsed recovery time is three hours, within a four-hour RTO. This is an illustration; real measurement requires agreed start and completion criteria.
 
@@ -324,7 +338,7 @@ Replication, snapshots, and persistent volumes are not interchangeable with inde
 
 **Check your understanding:** Can a backup satisfy RPO but fail RTO? Yes. It may contain sufficiently recent data but take too long to restore and validate.
 
-### Slide 7: Be ready for the bad day | Paulo | deck 7
+### Slide 7: Be ready for the bad day | Paulo
 
 An incident runbook should identify the decision maker, technical responders, escalation route, evidence sources, and restoration criteria. Different incidents need different containment actions. A compromised cloud access key and an exposed SSH private key are not the same control problem.
 
@@ -332,39 +346,7 @@ Preserve useful logs and identifiers while preventing ongoing misuse. Do not des
 
 **Check your understanding:** Must investigation wait until containment is completely finished? No. Coordinated containment and evidence collection often occur in parallel.
 
-### Slide 8: The full cost not just the fee | Earl | deck 14
-
-CapEx and OpEx are useful teaching distinctions, but accounting treatment depends on the arrangement and applicable accounting policy. Do not present every cloud contract or infrastructure purchase as identical.
-
-Build a TCO comparison with a stated workload, demand pattern, ownership period, reliability requirement, labor assumption, and cost boundary. Include supporting items such as snapshots, network services, licenses, and data transfer when applicable. Staff time is not free because it does not appear on the cloud invoice. Conversely, moving to cloud does not make all operational labor disappear.
-
-**Check your understanding:** What makes a TCO comparison unfair? Comparing different performance, uptime, support, staffing, or time horizons while treating the final totals as equivalent.
-
-### Slide 9: A lower rate a bigger bill | Earl | deck 15
-
-The simplified equations are On-Demand = 0.10 times used hours and commitment = 0.10 times 730 times 0.60 = 43.80 dollars. Equality occurs at 43.80 / 0.10 = 438 hours. At 730 hours, savings are 29.20 dollars; at 176 hours, the commitment costs 26.20 dollars more.
-
-This is not a universal description of every Reserved Instance or Savings Plan. Real products have term, payment, coverage, and usage-matching rules. Spot is another purchasing approach for interruption-tolerant work, not guaranteed uninterrupted capacity. Storage, transfer, taxes, and other charges are excluded here. Do not compare only the compute rate when making a real purchasing decision.
-
-**Check your understanding:** Why is a forty percent discount not automatically a forty percent reduction in our actual bill? Because the obligation may cover capacity or hours beyond actual demand, and other bill components remain.
-
-### Slide 10: Meet the peak then let go | Earl | deck 16
-
-The elastic example uses 2 times 730 = 1,460 baseline instance-hours and 18 times 24 = 432 additional instance-hours. Total use is 1,892 instance-hours, costing 189.20 dollars. The fixed peak fleet uses 20 times 730 = 14,600 instance-hours, costing 1,460 dollars. The illustrative difference is 1,270.80 dollars, about 87.0 percent of the fixed compute total.
-
-This result assumes equivalent instances, enough capacity, and an application that can distribute work effectively. Scaling delays, database bottlenecks, load balancing, storage, and network charges can change the result. A scaling ceiling limits exposure but may also restrict service during a genuine surge.
-
-**Check your understanding:** Is scalability the same as elasticity? Scalability is the ability to handle increased work; elasticity also includes adjusting resources downward as demand drops.
-
-### Slide 11: Give every resource an owner | Earl | deck 17
-
-A useful tag scheme might identify project, environment, and owner, but tagging alone does not reduce a bill. Someone must review allocations, investigate anomalies, and take agreed actions. Evaluate service value alongside cost: an apparently expensive control may satisfy an important recovery or security requirement.
-
-Budget notifications depend on billing data and can be delayed. Configured actions can apply particular restrictions, but they do not make every charge disappear or guarantee an exact account-wide ceiling. Technical limits can also affect legitimate demand. The goal is a managed balance between financial exposure, service quality, and risk.
-
-**Check your understanding:** Who owns FinOps? It is collaborative: engineers understand technical usage, finance supports allocation and planning, and business owners explain the value and priorities.
-
-### Slide 12: Know your side | Renan | deck 8
+### Slide 8: Know your side | Renan
 
 In IaaS, customers generally perform guest operating-system maintenance and application configuration. Managed services can move parts of the infrastructure and platform work to the provider. The customer still retains service-specific choices about access, data, and supported configuration.
 
@@ -372,7 +354,7 @@ CIA goals can create trade-offs. Restricting a risky connection may protect conf
 
 **Check your understanding:** If AWS protects its facilities, why can a customer still expose data? Provider infrastructure protection does not automatically correct a customer-controlled permission or application configuration.
 
-### Slide 13: Power needs limits | Renan | deck 9
+### Slide 9: Power needs limits | Renan
 
 Least privilege has scope and duration. An account that can read one application bucket does not necessarily need permission to change identities or delete backups. Temporary access can reduce standing privilege when implemented appropriately.
 
@@ -380,7 +362,7 @@ Sudo is not automatically a full recording of every action in a privileged shell
 
 **Check your understanding:** Does using sudo make every administrative action fully auditable? No. Command, session, and system logging must be assessed explicitly; a privileged shell can change what is captured.
 
-### Slide 14: Every path needs a rule | Renan | deck 10
+### Slide 10: Every path needs a rule | Renan
 
 A port identifies a transport endpoint; it does not authenticate the application or prove that traffic is harmless. HTTPS adds transport protection when configured correctly, but application authorization and vulnerability management remain necessary.
 
@@ -388,7 +370,7 @@ A bastion, VPN, or managed session service can support controlled administration
 
 **Check your understanding:** Is port 443 automatically safe? No. It commonly carries HTTPS, but safe operation still depends on configuration, identity, application controls, and the traffic being handled.
 
-### Slide 15: Two layers different rules | Renan | deck 11
+### Slide 11: Two layers different rules | Renan
 
 Security-group rules are evaluated collectively to determine allowed traffic; they are not an ordered deny-rule list. For network ACLs, the lowest-numbered matching rule determines the result, with an unmatched case ultimately denied. Stateless evaluation means the response needs a permitted path as well.
 
@@ -396,7 +378,7 @@ For an illustrative web connection, a client may initiate toward server port 443
 
 **Check your understanding:** Why can a stateless ACL allow a request but still break the connection? Its separate outbound or return-path rules may deny the response.
 
-### Slide 16: Prove it keep it secret | Renan | deck 12
+### Slide 12: Prove it keep it secret | Renan
 
 There are three separate concepts: encrypted transport, user authentication, and server authentication. SSH handles an encrypted session; user keys can prove possession of a private key; host keys help identify the remote server. A passphrase protects the stored private-key file but should not be casually equated with a separately enforced server-side second factor.
 
@@ -404,7 +386,7 @@ Do not describe SSH as encrypting a password with the user's private key. The pu
 
 **Check your understanding:** Can we send the private key to the server for convenience? No. Authorize the matching public key while protecting the private key on its owner-controlled device.
 
-### Slide 17: Security lasts a lifecycle | Renan | deck 13
+### Slide 13: Security lasts a lifecycle | Renan
 
 Revocation happens at the authorization point. For a directly authorized SSH key, removing the matching authorized public key is part of stopping its future authentication, while any existing sessions or alternative credentials need separate review. A leaked cloud API credential requires action in cloud identity controls instead.
 
@@ -412,7 +394,39 @@ Keys should be associated with a person, device, and purpose. Review offboarding
 
 **Check your understanding:** Why does deleting a repository file not revoke a key? A copy may already exist; trust must be removed from the system that accepts the credential.
 
-### Slide 18: One system every layer matters | Renan | deck 18
+### Slide 14: The full cost not just the fee | Earl
+
+CapEx and OpEx are useful teaching distinctions, but accounting treatment depends on the arrangement and applicable accounting policy. Do not present every cloud contract or infrastructure purchase as identical.
+
+Build a TCO comparison with a stated workload, demand pattern, ownership period, reliability requirement, labor assumption, and cost boundary. Include supporting items such as snapshots, network services, licenses, and data transfer when applicable. Staff time is not free because it does not appear on the cloud invoice. Conversely, moving to cloud does not make all operational labor disappear.
+
+**Check your understanding:** What makes a TCO comparison unfair? Comparing different performance, uptime, support, staffing, or time horizons while treating the final totals as equivalent.
+
+### Slide 15: A lower rate a bigger bill | Earl
+
+The simplified equations are On-Demand = 0.10 times used hours and commitment = 0.10 times 730 times 0.60 = 43.80 dollars. Equality occurs at 43.80 / 0.10 = 438 hours. At 730 hours, savings are 29.20 dollars; at 176 hours, the commitment costs 26.20 dollars more.
+
+This is not a universal description of every Reserved Instance or Savings Plan. Real products have term, payment, coverage, and usage-matching rules. Spot is another purchasing approach for interruption-tolerant work, not guaranteed uninterrupted capacity. Storage, transfer, taxes, and other charges are excluded here. Do not compare only the compute rate when making a real purchasing decision.
+
+**Check your understanding:** Why is a forty percent discount not automatically a forty percent reduction in our actual bill? Because the obligation may cover capacity or hours beyond actual demand, and other bill components remain.
+
+### Slide 16: Meet the peak then let go | Earl
+
+The elastic example uses 2 times 730 = 1,460 baseline instance-hours and 18 times 24 = 432 additional instance-hours. Total use is 1,892 instance-hours, costing 189.20 dollars. The fixed peak fleet uses 20 times 730 = 14,600 instance-hours, costing 1,460 dollars. The illustrative difference is 1,270.80 dollars, about 87.0 percent of the fixed compute total.
+
+This result assumes equivalent instances, enough capacity, and an application that can distribute work effectively. Scaling delays, database bottlenecks, load balancing, storage, and network charges can change the result. A scaling ceiling limits exposure but may also restrict service during a genuine surge.
+
+**Check your understanding:** Is scalability the same as elasticity? Scalability is the ability to handle increased work; elasticity also includes adjusting resources downward as demand drops.
+
+### Slide 17: Give every resource an owner | Earl
+
+A useful tag scheme might identify project, environment, and owner, but tagging alone does not reduce a bill. Someone must review allocations, investigate anomalies, and take agreed actions. Evaluate service value alongside cost: an apparently expensive control may satisfy an important recovery or security requirement.
+
+Budget notifications depend on billing data and can be delayed. Configured actions can apply particular restrictions, but they do not make every charge disappear or guarantee an exact account-wide ceiling. Technical limits can also affect legitimate demand. The goal is a managed balance between financial exposure, service quality, and risk.
+
+**Check your understanding:** Who owns FinOps? It is collaborative: engineers understand technical usage, finance supports allocation and planning, and business owners explain the value and priorities.
+
+### Slide 18: One system every layer matters | Earl
 
 Avoid treating a private database label as proof that the database is secured. Confirm routes, endpoint exposure, authentication, authorization, encryption, and the application identities that can reach it. A compromised application can become a path to its database even if the database has no direct public endpoint.
 
@@ -420,7 +434,7 @@ Likewise, HTTPS does not establish backup quality, and a budget alert does not p
 
 **Check your understanding:** Why are the three topics connected? Access misuse can affect availability and cost, and recovery or financial decisions can change the required architecture and risk.
 
-### Slide 19: A key leaks what comes first | Renan | deck 19
+### Slide 19: A key leaks what comes first | Earl
 
 The scenario concerns a cloud credential, not automatically an SSH private key. The identity provider, credential type, active sessions, and permissions determine the specific containment action. Do not promise that changing a password necessarily invalidates every API key or session.
 
@@ -428,15 +442,23 @@ Investigation should identify affected resources, account activity, regions, ide
 
 **Check your understanding:** Why is a larger budget the wrong first response? It may permit more spending without addressing the compromised access or unauthorized activity.
 
-### Slide 20: Keep it running protect access make it count | All | deck 20
+### Slide 20: Keep it running protect access make it count | All
 
-This conclusion uses the latest speaker order even though the slide's three visual ideas may appear in a different order. Do not introduce new definitions or repeat the numerical examples here. Each speaker should own one concise message.
+The three lines follow the slide: Keep it running (Paulo), Protect access (Renan), Make it count (Earl). Do not introduce new definitions or repeat the numerical examples here. Each speaker should own one concise message.
 
 The phrase dependable cloud does not imply zero incidents or zero risk. It means making requirements explicit, applying appropriate controls, and checking the results. End with the connection among the disciplines rather than claiming that any single best practice guarantees security or the lowest possible cost.
 
 **Check your understanding:** Can stronger controls add cost? Yes. Evaluate their risk reduction and recovery value rather than minimizing cost in isolation.
 
-### Slide 21: Beyond the cloud closing reprise | Renan | deck 21
+### Slide 21: Cloud in your hands | All
+
+The lab is a deterministic teaching simulation, not a live billing dashboard or security tool. Pricing assumes $0.10 per hour, a 730-hour month, and a 40% commitment discount, so the commitment costs $43.80 and the break-even is 438 hours. Elasticity assumes two baseline instances for 730 hours plus eighteen additions for 24 hours: $189.20 against $1,460 for a fixed fleet of twenty.
+
+The incident model uses two trusted and six unauthorized machines at an illustrative $0.10 each per hour: $0.80 per hour until cleanup and $0.20 afterward. Its point is that revoking or blocking a credential does not by itself terminate resources that already exist, and does not guarantee that every session is invalidated. Containment, investigation, and cleanup solve different problems.
+
+**Check your understanding:** Why does the run rate stay at $0.80 after access is blocked? Blocking stops new actions by the credential; the six unauthorized machines keep running and billing until they are found and removed.
+
+### Slide 22: Beyond the cloud closing reprise | Earl
 
 Keep the title reprise on screen while answering. Direct questions to the topic owner: Paulo for operations and recovery, Earl for cost assumptions and FinOps, Renan for identity and network controls. Another speaker may add a brief connection after the main answer.
 
@@ -764,39 +786,35 @@ Open the presentation and confirm that local or hosted assets load. Rehearse ful
 
 ### Speaking pace
 
-The live script contains about 2,500 words. At 130-140 words per minute, speech takes roughly 18-19.5 minutes; pauses, handoffs, and interaction bring the target to about 20-22 minutes. This is a planning estimate, not a guaranteed duration. Time a full rehearsal and trim repeated explanations before speaking faster.
+The live script contains about 2,500 words, plus about 160 for the optional Cloud Lab. At 130-140 words per minute, the main talk takes roughly 18-19.5 minutes; pauses, handoffs, and interaction bring the target to about 20-22 minutes. This is a planning estimate, not a guaranteed duration. Time a full rehearsal and trim repeated explanations before speaking faster.
 
-### Paulo to Earl
+### Paulo to Renan
 
-Finish deck slide 7. Earl waits until the controller opens deck slide 14, The full cost. Earl begins with the written thank-you and moves straight into TCO. Do not leave the security slide on screen while explaining costs.
+Finish slide 7 and press Next. Renan begins slide 8, Know your side, with the written thank-you and shared responsibility.
 
-### Earl to Renan
+### Renan to Earl
 
-Finish deck slide 17. The controller opens deck slide 8, Know your side. Renan begins with the written thank-you and shared responsibility. Confirm that the displayed speaker name matches the person speaking.
-
-### Security to the integrated example
-
-After deck slide 13, jump to deck slide 18. Renan continues without introducing a new speaker. Deck slides 18-21 then run in normal sequence.
+Finish slide 13 and press Next. Earl begins slide 14, The full cost, with the written thank-you and moves straight into TCO. Earl continues through slides 18 and 19 without introducing a new speaker. Confirm that the displayed speaker name matches the person speaking.
 
 ### Interactive pricing
 
-On deck slide 15, explain Always on before selecting Part time. Point to $73.00 and $43.80, then $17.60 and $43.80. Return to a known starting state during rehearsal; do not assume a previous selection has reset.
+On slide 15, explain Always on before selecting Part time. Point to $73.00 and $43.80, then $17.60 and $43.80. Interactive slides return to their starting state each time you arrive, so Always on is always shown first.
 
 ### Interactive elasticity
 
-On deck slide 16, use Normal day, Sale day, and Normal day again. The extra eighteen instances explain the changing capacity. The figures represent the monthly example, not a live cloud account.
+On slide 16, use Normal day, Sale day, and Normal day again. The extra eighteen instances explain the changing capacity. The figures represent the monthly example, not a live cloud account.
 
 ### Audience question
 
-On deck slide 19, ask the question, wait three to five seconds, then select containment. If no one answers, say Let us walk through the safest priority, and continue. Avoid shaming an incorrect answer; explain why deleting the file or raising the budget does not stop a copied credential.
+On slide 19, ask the question, wait three to five seconds, then select containment. Answers can be switched freely and each one shows its own explanation. If no one answers, say Let us walk through the safest priority, and continue. Avoid shaming an incorrect answer; explain why deleting the file or raising the budget does not stop a copied credential.
 
 ### Shared closing
 
-On deck slide 20, speak Paulo, Earl, Renan in that order. On deck slide 21, Renan delivers the final invitation. All three stay ready for questions; the title planet remains on screen.
+On slide 20, speak Paulo, Renan, Earl in that order. Slide 21, the Cloud Lab, is optional. On slide 22, Earl delivers the final invitation. All three stay ready for questions; the title planet remains on screen.
 
 ### If time runs short
 
-Keep the definitions of RPO and RTO, the two pricing states, the SG versus NACL distinction, and credential containment. Trim extra examples and audience waiting time. Do not cut the assumptions that make a calculation or technical statement accurate.
+Keep the definitions of RPO and RTO, the two pricing states, the SG versus NACL distinction, and credential containment. Skip the Cloud Lab first, then trim extra examples and audience waiting time. Do not cut the assumptions that make a calculation or technical statement accurate.
 
 ### If a visual or control fails
 

@@ -68,7 +68,7 @@ Phone layouts (`src/mobile-fit.css`):
 - **Upright (≤760 px wide):** each slide is a stacked page that scrolls under the fixed Back/Next bar. The Cloud Lab is not scaled down on phones; its panels stack at readable size.
 - **Sideways (≤500 px tall):** wider phones keep the desktop composition at a fixed 640 px slide height and scroll; narrower ones use the upright layout. The title cover never scrolls; it compacts its title and hides secondary captions instead.
 
-The site is the authoritative running order: Paulo → Renan → Earl, 22 slides, with the Cloud Lab at 21 and the title reprise at 22. `output/script/` still uses an older order (Paulo → Earl → Renan) and numbering from before the lab was added; update it before rehearsing from it.
+The site is the authoritative running order: Paulo → Renan → Earl, 22 slides, with the Cloud Lab at 21 and the title reprise at 22. The speaker script (`output/script/`) and its PDF (`output/pdf/`) follow the same order and numbering.
 
 - `src/lab.js`: lab state, calculation model, labels, and stage controls.
 - `src/lab.css`: lab layout and mobile navigation placement.
