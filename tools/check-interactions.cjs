@@ -35,7 +35,7 @@ await press('r',120);assert.ok(await p.locator('body').evaluate(e=>e.classList.c
 await p.emulateMedia({reducedMotion:'reduce'}); // New context also exercises the device default without a manual override.
 const r=await b.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});r.on('pageerror',e=>errors.push(e.message));await r.goto(base+'/#total-cost');await r.click('[data-action="begin-chapter"]');
 for(let i=0;i<4;i++)await r.click('.phone-nav [data-action="next"]');assert.equal(await r.locator('main .art-slide').getAttribute('data-step'),'4');assert.equal(await r.locator('#slide-title div').count(),0);await r.click('.phone-nav [data-action="next"]');assert.equal(new URL(r.url()).hash,'#pricing');await r.click('.phone-nav [data-action="previous"]');assert.equal(await r.locator('main .art-slide').getAttribute('data-step'),'4');console.log('PASS reduced motion and phone Next/Back builds');
-await r.evaluate(()=>{location.hash='cloud-basics'});await r.waitForTimeout(200);await r.click('[data-action="begin-chapter"]');await r.keyboard.press('ArrowRight');
+await r.evaluate(()=>{location.hash='cloud-basics'});await r.waitForTimeout(200);await r.keyboard.press('ArrowRight');
 const before=await r.locator('#scene').screenshot();await r.evaluate(()=>scrollTo(0,140));await r.waitForTimeout(150);
 assert.ok(await r.evaluate(()=>scrollY>0));assert.notDeepEqual(await r.locator('#scene').screenshot(),before,'scroll must repaint the fixed canvas');
 await r.click('.phone-nav [data-action="next"]');assert.equal(await r.evaluate(()=>scrollY),0,'new slide starts at the top');
