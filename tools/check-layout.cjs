@@ -14,7 +14,7 @@ for(const [width,height] of sizes){
  const slides=await p.evaluate(async()=>{const {slides}=await import('/src/content.js');const {directions}=await import('/src/direction.js');const {buildSteps}=await import('/src/builds.js');return slides.map((s,i)=>({id:s.id,steps:buildSteps(directions[i].layout)}));});
  const report=[];
  for(const [i,s] of slides.entries()){
-  await p.evaluate(id=>{location.hash=id;scrollTo(0,0)},s.id);
+  await p.evaluate(id=>{location.hash=id;scrollTo(0,0)},s.id);await p.waitForTimeout(80);if(await p.locator('.chapter-cinematic').count()){await p.screenshot({path:`${dir}/${String(i+1).padStart(2,'0')}-chapter.png`});await p.click('[data-action="begin-chapter"]');}
   for(let step=0;step<s.steps;step++){
    if(step)await p.keyboard.press('ArrowRight');await p.waitForTimeout(140);
    const issues=await p.evaluate(()=>{
@@ -26,7 +26,7 @@ for(const [width,height] of sizes){
      for(const r of range.getClientRects()){
       if(r.width<2||r.height<2)continue;const txt=node.textContent.trim().slice(0,48);runs.push({el,r,txt});
       if(r.left< -2||r.right>innerWidth+2||(innerHeight>500&&innerWidth>760&&r.bottom>innerHeight+2))overflow.push(txt);
-      if(scene&&!document.body.classList.contains('view-horizon')&&!el.closest('.cloud-lab')&&Math.min(r.right,scene.right)-Math.max(r.left,scene.left)>4&&Math.min(r.bottom,scene.bottom)-Math.max(r.top,scene.top)>4)sceneHits.push(txt);
+      if(scene&&!document.body.classList.contains('title-only')&&!document.body.classList.contains('view-horizon')&&!el.closest('.cloud-lab')&&Math.min(r.right,scene.right)-Math.max(r.left,scene.left)>4&&Math.min(r.bottom,scene.bottom)-Math.max(r.top,scene.top)>4)sceneHits.push(txt);
      }
     }
     const overlap=[];
