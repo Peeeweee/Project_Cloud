@@ -1,3 +1,5 @@
+import {securityAdditions,securityScene} from './security-additions.js';
+import {slides} from './content.js';
 import {operationsScene} from './operations-scenes.js';
 import {foundationScene} from './foundation-scenes.js';
 import {foundations,operationsRecap} from './additions.js';
@@ -34,6 +36,8 @@ directions.push({ ...directions[0] });
 directions.splice(1,0,...foundations.map(s=>s.design));
 directions.splice(7+foundations.length,0,...operationsRecap.map(s=>s.design));
 
+for(const addition of securityAdditions)directions.splice(slides.findIndex(s=>s.id===addition.id),0,addition.design);
+
 const iconArrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>';
 const safe = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number = i=>String(i+1).padStart(2,'0');
@@ -45,7 +49,7 @@ export function composeSlide(s, i, visual, state) {
   const bottom=`<div class="slide-bottom"><p>${safe(s.takeaway)}</p><button class="source-trigger" data-action="sources" aria-label="View sources and assumptions for this slide">${s.refs.length?'Sources & context ↗':'About this report ↗'}</button></div>`;
   let content='';
   switch(d.layout){
-    case 'briefing':content=foundationScene(s,head(s),safe)||operationsScene(s,head(s),safe)||`<div class="briefing-heading">${head(s)}</div><div class="briefing-scene briefing-${safe(s.variant)}">${s.items.map(([label,copy,note],j)=>`<section class="briefing-card" data-reveal style="--i:${j}"><span class="briefing-index">0${j+1}</span>${['resources','everyday','scale','elastic'].includes(s.variant)?'<div class="briefing-object" aria-hidden="true"><i></i><i></i><i></i></div>':''}<h2>${safe(label)}</h2>${s.variant==='mistakes'?`<ul>${copy.split('|').map(t=>`<li>${safe(t)}</li>`).join('')}</ul>`:`<p>${safe(copy)}</p>`}${note?`<span class="briefing-note">${safe(note)}</span>`:''}</section>`).join('')}</div>${s.variant==='recovery'?'<p class="briefing-footnote">*365-day arithmetic. SLA periods and exclusions vary. Test restores.</p>':''}${s.variant==='elastic'?'<p class="briefing-footnote">ILLUSTRATIVE CAPACITY · SCALE OUT → SCALE IN</p>':''}`;break;
+    case 'briefing':content=foundationScene(s,head(s),safe)||operationsScene(s,head(s),safe)||securityScene(s,head(s),safe)||`<div class="briefing-heading">${head(s)}</div><div class="briefing-scene briefing-${safe(s.variant)}">${s.items.map(([label,copy,note],j)=>`<section class="briefing-card" data-reveal style="--i:${j}"><span class="briefing-index">0${j+1}</span>${['resources','everyday','scale','elastic'].includes(s.variant)?'<div class="briefing-object" aria-hidden="true"><i></i><i></i><i></i></div>':''}<h2>${safe(label)}</h2>${s.variant==='mistakes'?`<ul>${copy.split('|').map(t=>`<li>${safe(t)}</li>`).join('')}</ul>`:`<p>${safe(copy)}</p>`}${note?`<span class="briefing-note">${safe(note)}</span>`:''}</section>`).join('')}</div>${s.variant==='recovery'?'<p class="briefing-footnote">*365-day arithmetic. SLA periods and exclusions vary. Test restores.</p>':''}${s.variant==='elastic'?'<p class="briefing-footnote">ILLUSTRATIVE CAPACITY · SCALE OUT → SCALE IN</p>':''}`;break;
     case 'lab':content=visual;break;
     case 'horizon': content=`<div class="cover-orbit" aria-hidden="true"><span>11</span><i></i></div><div class="cover-title"><div class="layout-heading"><h1 id="slide-title">Beyond<br>the cloud<span class="brand-period">.</span></h1><div class="cover-disciplines" aria-label="Cloud report disciplines"><span><small>01</small>Operations</span><span><small>02</small>Security</span><span><small>03</small>Economics</span></div></div><span class="cover-edition">A STUDY IN RELIABILITY, SECURITY & VALUE</span></div><div class="crew-line"><span>KENT PAULO DELGADO</span><span>JOHN RENAN LABAY</span><span>EARL JOSH DELGADO</span></div><div class="horizon-caption micro">THREE DISCIPLINES / ONE CONNECTED SYSTEM</div>`;break;
     case 'faults':content=`<div class="faults-title">${head(s)}<span class="status-online"><i></i> SYSTEM ONLINE</span></div><div class="fault-triptych">${s.items.map(([a,b],j)=>`<div class="fault-tile" data-reveal><span class="fault-number">0${j+1}</span><div><span class="micro">${a.toUpperCase()}</span><h2>${b}</h2></div><span class="fault-cross">+</span></div>`).join('')}</div>`;break;
