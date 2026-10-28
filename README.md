@@ -110,3 +110,5 @@ Phone review preview: https://group11-report-779241214444.asia-southeast1.run.ap
 Every content slide now opens with its title before Next reveals the original composition. The four economics slides retain their existing multi-step keynote builds. Opening and closing covers use larger type and emphasize Operations, Security, and Economics.
 
 The Operations, Security, and Economics sections each begin with a distinct full-screen animated chapter card. Operations appears immediately after the opening cover, before “Online isn’t enough”; it does not repeat at “Resources. On demand.” Next, Space, or the Begin button opens the first title; Next again reveals the content. Back reverses those stages. Chapter cards do not add slide numbers or change existing slide URLs. The order remains Paulo → Renan → Earl. Reduced-motion mode preserves presenter control with immediate state changes.
+
+Paulo’s and Renan’s title reveals move the same live heading from the centered statement into its content position using GSAP Flip, matching the economics build approach. Content animates separately; the heading does not fade out, duplicate, or replay its word reveal after docking.
