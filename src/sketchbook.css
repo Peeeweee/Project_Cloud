@@ -209,3 +209,5 @@ html.sketch .key-passport svg { transform: none !important; height: clamp(220px,
 html.sketch .key-passport .key-spin { transform-box: view-box; transform-origin: 75px 85px; animation: sk-key-turn 12s linear infinite; }
 @keyframes sk-key-turn { to { rotate: 360deg; } }
 @media (prefers-reduced-motion: reduce) { html.sketch .key-passport .key-spin { animation: none; rotate: -12deg; } }
+/* slide 29: a little more air between the tag card and its caption */
+html.sketch .layout-keynote-finops .kn-tag-note { top: 74%; }

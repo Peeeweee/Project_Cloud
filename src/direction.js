@@ -86,7 +86,7 @@ export function composeSlide(s, i, visual, state) {
       const [line1,line2]=s.title.split('\n');
       const phases=[['Inform.','See and allocate spending.'],['Optimize.','Improve rates and usage.'],['Operate.','Act, review, repeat.']];
       content=`<div class="kn-head"><h1 id="slide-title" class="kn-title"><span class="kn-l1">${safe(line1)}</span> <span class="kn-l2" data-build="1">${safe(line2)}</span></h1><div class="kn-subline"><p class="kn-sub" data-build="2" data-until="3">${safe(s.subtitle)}</p></div></div>
-<div class="kn-tag" data-build="2" data-until="2"><i class="kn-tag-hole" aria-hidden="true"></i><div><span>owner</span><b>group-11</b></div><div><span>project</span><b>cloud-report</b></div><div><span>env</span><b>production</b></div></div>
+<div class="kn-tag" data-build="2" data-until="2"><i class="kn-tag-hole" aria-hidden="true"></i><div><span>resource</span><b>web-server-02</b></div><div><span>owner</span><b>shop-team</b></div><div><span>project</span><b>online-shop</b></div><div><span>env</span><b>test</b></div></div>
 <p class="kn-tag-note" data-build="2" data-until="2">A tag turns a mystery charge into a <b>named owner</b>.</p>
 ${phases.map(([name,detail],j)=>`<div class="kn-phase kn-phase-${j}" data-build="3" data-until="3" style="--i:${j}"><span class="micro">0${j+1}</span><b>${name}</b><p>${detail}</p></div>`).join('')}
 <div class="kn-brake" data-build="4"><strong>A budget alert<br><span>is not a brake.</span></strong><p>Alerts warn about actual or forecast spending. They do not stop it.</p></div>
