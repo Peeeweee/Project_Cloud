@@ -4,6 +4,7 @@
 import { gsap } from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 import { sketch } from './theme.js';
+import { inkWrite } from './ink.js';
 gsap.registerPlugin(SplitText);
 
 // Topmost elements inside `root` that hold their own visible text. Animated counters are
@@ -27,7 +28,7 @@ export function clearWords(root) {
   for (const [leaf, entry] of live) {
     if (root === leaf || root.contains(leaf)) {
       gsap.killTweensOf(pieces(entry.split));
-      entry.timer?.kill();
+      entry.timer?.kill(); entry.tl?.kill();
       entry.split.revert();
       live.delete(leaf);
     }
@@ -35,7 +36,7 @@ export function clearWords(root) {
 }
 function freshSplit(leaf) {
   const old = live.get(leaf);
-  if (old) { gsap.killTweensOf(pieces(old.split)); old.timer?.kill(); old.split.revert(); }
+  if (old) { gsap.killTweensOf(pieces(old.split)); old.timer?.kill(); old.tl?.kill(); old.split.revert(); }
   const split = SplitText.create(leaf, { type: 'words', mask: 'words', aria: 'none' });
   const entry = { split };
   live.set(leaf, entry);
@@ -51,12 +52,17 @@ const isHeading = leaf => leaf.matches('h1,h2,h3,strong,.kn-l1,.kn-l2') || !!lea
   || parseFloat(getComputedStyle(leaf).fontSize) >= 26;
 function writeIn(leaf, delay) {
   const old = live.get(leaf);
-  if (old) { gsap.killTweensOf(pieces(old.split)); old.timer?.kill(); old.split.revert(); }
+  if (old) { gsap.killTweensOf(pieces(old.split)); old.timer?.kill(); old.tl?.kill(); old.split.revert(); }
   const split = SplitText.create(leaf, { type: 'words,chars', aria: 'none' });
   const entry = { split };
   live.set(leaf, entry);
-  const chars = split.chars, per = Math.min(.03, .45 / Math.max(chars.length, 1));
+  const chars = split.chars;
   const done = () => { if (live.get(leaf) === entry) { split.revert(); live.delete(leaf); } };
+  // Preferred: each letter traced in ink along its real outline, then filled (ink.js).
+  const ink = inkWrite(leaf, chars, delay, done);
+  if (ink) { entry.tl = ink.tl; return ink.duration; }
+  // Fallback while the font outlines are still loading: a left-to-right reveal per letter.
+  const per = Math.min(.03, .45 / Math.max(chars.length, 1));
   gsap.fromTo(chars, { clipPath: 'inset(-30% 100% -30% -10%)' },
     { clipPath: 'inset(-30% -10% -30% -10%)', duration: .14, ease: 'none', delay, stagger: per, onComplete: done });
   return chars.length * per + .14;
@@ -65,7 +71,7 @@ function sketchIn(root, delay) {
   clearWords(root);
   let at = delay;
   textLeaves(root).forEach(leaf => {
-    if (isHeading(leaf)) at += writeIn(leaf, at) * .8;
+    if (isHeading(leaf)) at += Math.min(.5, writeIn(leaf, at) * .5);
     else gsap.fromTo(leaf, { opacity: 0 }, { opacity: 1, duration: .3, delay: at, ease: 'power1.out', clearProps: 'opacity' });
   });
   return at - delay;
