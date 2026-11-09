@@ -20,6 +20,7 @@ function fontFor(style) {
 }
 
 const SVG = 'http://www.w3.org/2000/svg';
+let uid = 0;
 
 // Returns { paths, duration } after starting the animation, or null when the font is not loaded
 // (the caller then uses the simpler reveal). `chars` are SplitText character elements.
@@ -42,28 +43,34 @@ export function inkWrite(leaf, chars, delay, onDone) {
     let text = ch.textContent; if (upper) text = text.toUpperCase();
     const d = font.getPath(text, 0, baselines[i], size).toPathData(2);
     if (!d) return;
+    // A fat pen moves along the letter's own outline, clipped to the letter, so the solid letter is
+    // painted in exactly its final shape: no hollow stage, no extra outline, no change in weight.
+    const id = `sk-ink-${++uid}`;
     const svg = document.createElementNS(SVG, 'svg');
     svg.setAttribute('class', 'sk-ink'); svg.setAttribute('aria-hidden', 'true');
     svg.style.cssText = 'position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none';
+    svg.innerHTML = `<clipPath id="${id}"><path d="${d}"/></clipPath>`;
     const path = document.createElementNS(SVG, 'path');
-    path.setAttribute('d', d);
-    path.style.cssText = `fill:${ink};fill-opacity:0;stroke:${ink};stroke-width:${Math.max(1, size * .028)}px;stroke-linejoin:round;stroke-linecap:round`;
+    path.setAttribute('d', d); path.setAttribute('clip-path', `url(#${id})`);
+    path.style.cssText = `fill:${ink};fill-opacity:0;stroke:${ink};stroke-width:${size * .3}px;stroke-linejoin:round;stroke-linecap:round`;
     svg.append(path); ch.append(svg);
     ch.style.color = 'transparent'; ch.style.webkitTextFillColor = 'transparent';
     paths.push(path);
   });
   if (!paths.length) return null;
   const lengths = paths.map(p => p.getTotalLength() || 1);
-  paths.forEach((p, i) => { p.style.strokeDasharray = lengths[i]; p.style.strokeDashoffset = lengths[i]; });
-  // One steady pen: each letter takes about a quarter second and the next starts before it ends,
-  // so two or three letters are in progress at once; a whole line stays within about 1.2 s.
-  const per = Math.min(.085, 1 / paths.length), draw = .26;
+  paths.forEach((p, i) => { p.style.strokeDasharray = `${lengths[i]} ${lengths[i]}`; p.style.strokeDashoffset = lengths[i]; });
+  // An even pen: longer letters take a little longer, and the next letter starts as this one is
+  // finishing. A whole line stays within about 1.2 s.
+  const per = Math.min(.075, .95 / paths.length);
   const tl = gsap.timeline({ delay, onComplete: onDone });
   paths.forEach((p, i) => {
-    tl.to(p, { strokeDashoffset: 0, duration: draw, ease: 'power1.inOut' }, i * per);
-    tl.to(p, { fillOpacity: 1, duration: .22, ease: 'power1.out' }, i * per + draw * .7);
+    const draw = Math.max(.16, Math.min(.36, lengths[i] / size * .045));
+    tl.to(p, { strokeDashoffset: 0, duration: draw, ease: 'sine.inOut' }, i * per);
+    // seal any tiny gap the pen missed, right as it lifts
+    tl.to(p, { fillOpacity: 1, duration: .08, ease: 'none' }, i * per + draw * .9);
   });
-  return { tl, paths, duration: (paths.length - 1) * per + draw + .1 };
+  return { tl, paths, duration: tl.duration() + .05 };
 }
 
 // Put the live text back and remove the drawings.
