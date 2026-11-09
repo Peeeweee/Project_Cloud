@@ -174,7 +174,8 @@ html.sketch .chart-runner path { fill: #2f63bf; stroke: #fdf6f2; stroke-width: 1
 @media (prefers-reduced-motion: reduce) { html.sketch .chart-flow { animation: none; } html.sketch .chart-runner { display: none; } }
 
 /* small fits for the bigger handwriting (desktop) */
-html.sketch .cover-edition { display: none !important; }
+html.sketch :is(.cover-edition, .horizon-caption) { display: none !important; }
+html.sketch body.view-horizon .slide-bottom { display: none !important; }
 @media (min-width: 761px) {
   html.sketch .root-routine section { padding-top: 8px !important; padding-bottom: 6px !important; }
   html.sketch .root-routine section h2 { margin: 2px 0 4px !important; }

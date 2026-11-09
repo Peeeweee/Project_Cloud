@@ -189,13 +189,12 @@ function retreat(){if(mode!=='slides')return;if(chapterActive){if(index>0)showSl
 function sketchArrival(outgoing,slide,art,atEnd){
   const tl=gsap.timeline();navigationTween=tl;
   const title=main.querySelector('#slide-title'),content=main.querySelector('.scene-content');
-  if(outgoing){
-    tl.to(outgoing,{opacity:0,duration:.16,ease:'power1.out',onComplete:()=>outgoing.remove()},0);
-    // the new page waits for the old one, so the two never show at once
-    const page=main.querySelector('.art-slide');
-    if(page)tl.fromTo(page,{opacity:0},{opacity:1,duration:.12,ease:'none',clearProps:'opacity'},.13);
-  }
-  const t0=outgoing?.14:.05;
+  // The old page leaves at once (a copy of it would lose its slide's styling and flash at a
+  // different size); the new page fades in on clean paper.
+  outgoing?.remove();
+  const page=main.querySelector('.art-slide');
+  if(page)tl.fromTo(page,{opacity:0},{opacity:1,duration:.2,ease:'power1.out',clearProps:'opacity'},0);
+  const t0=.06;
   const heroOnly=Boolean(main.querySelector('.has-title-entrance'))&&step===0;
   let at=t0;
   if(title&&!(chapterFor(slide.id)&&!atEnd))at+=Math.min(.35,wordsIn(title,{delay:t0})*.6);
