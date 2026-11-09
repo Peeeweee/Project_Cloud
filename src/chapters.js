@@ -1,4 +1,6 @@
 import {gsap} from 'gsap';
+import {sketch} from './theme.js';
+import {wordsIn} from './choreo.js';
 export const chapterFor=id=>({
  'online-is-not-enough':{key:'operations',number:'01',title:'Operations',speaker:'Kent Paulo R. Delgado',line:'Keep it running.',verb:'Observe / Maintain / Recover'},
  'shared-responsibility':{key:'security',number:'02',title:'Security',speaker:'John Renan Labay',line:'Protect what matters.',verb:'Identity / Boundaries / Trust'},
@@ -13,7 +15,12 @@ export function mountChapter(root,chapter,{instant=false}={}){
  const art=chapter.key==='operations'?'<div class="chapter-assembly">'+Array.from({length:7},(_,i)=>`<i style="--i:${i}"></i>`).join('')+'</div>':chapter.key==='security'?'<div class="chapter-iris"><i></i><i></i><i></i><b>◎</b></div>':'<div class="chapter-columns">'+Array.from({length:8},(_,i)=>`<i style="--i:${i}"></i>`).join('')+'</div>';
  panel.innerHTML=`<span class="chapter-part">GROUP ELEVEN / PART ${chapter.number}</span><span class="chapter-person">${chapter.speaker}</span><div class="chapter-art" aria-hidden="true">${art}</div><div class="chapter-copy"><span class="chapter-verb">${chapter.verb}</span><h1 id="chapter-title">${chapter.title}<span>.</span></h1><p>${chapter.line}</p></div><button data-action="begin-chapter" class="chapter-begin">Begin ${chapter.title} <span>→</span></button><span class="chapter-navigation">Next / Space to continue</span>`;
  root.append(panel);root.querySelector('.art-slide').inert=true;document.body.classList.add('chapter-is-active');
- if(!instant){chapterTween=gsap.timeline();chapterTween.fromTo(panel,{opacity:0},{opacity:1,duration:.35}).fromTo(panel.querySelectorAll('.chapter-part,.chapter-person,.chapter-verb'),{opacity:0,y:15},{opacity:1,y:0,duration:.65,stagger:.08},.15).fromTo(panel.querySelector('h1'),{opacity:0,y:65,rotationX:-30},{opacity:1,y:0,rotationX:0,duration:1.1,ease:'expo.out'},.35).fromTo(panel.querySelectorAll('p,.chapter-begin,.chapter-navigation'),{opacity:0},{opacity:1,duration:.65,stagger:.1},.75);}
+ if(!instant&&sketch){
+  // Sketchbook: a quick fade, the chapter name is written in, the rest follows.
+  chapterTween=gsap.timeline();chapterTween.fromTo(panel,{opacity:0},{opacity:1,duration:.2}).fromTo(panel.querySelectorAll('.chapter-part,.chapter-person,.chapter-verb,.chapter-art'),{opacity:0},{opacity:1,duration:.3,stagger:.05},.1).fromTo(panel.querySelectorAll('p,.chapter-begin,.chapter-navigation'),{opacity:0},{opacity:1,duration:.3,stagger:.06},.55);
+  wordsIn(panel.querySelector('h1'),{delay:.12});
+ }
+ else if(!instant){chapterTween=gsap.timeline();chapterTween.fromTo(panel,{opacity:0},{opacity:1,duration:.35}).fromTo(panel.querySelectorAll('.chapter-part,.chapter-person,.chapter-verb'),{opacity:0,y:15},{opacity:1,y:0,duration:.65,stagger:.08},.15).fromTo(panel.querySelector('h1'),{opacity:0,y:65,rotationX:-30},{opacity:1,y:0,rotationX:0,duration:1.1,ease:'expo.out'},.35).fromTo(panel.querySelectorAll('p,.chapter-begin,.chapter-navigation'),{opacity:0},{opacity:1,duration:.65,stagger:.1},.75);}
 }
 export function dismissChapter(root,{instant=false,onComplete}={}){
  chapterTween?.progress(1).kill();const panel=root.querySelector('.chapter-cinematic');if(!panel)return;
@@ -21,5 +28,5 @@ export function dismissChapter(root,{instant=false,onComplete}={}){
  const finish=()=>{panel.remove();onComplete?.();};
  if(instant){finish();return;}
  const shape=panel.classList.contains('chapter-security')?'circle(0% at 50% 50%)':panel.classList.contains('chapter-economics')?'inset(100% 0 0 0)':'inset(0 0 0 100%)';
- chapterTween=gsap.to(panel,{clipPath:shape,opacity:.1,duration:.85,ease:'expo.inOut',onComplete:finish});
+ chapterTween=sketch?gsap.to(panel,{opacity:0,duration:.22,ease:'power1.out',onComplete:finish}):gsap.to(panel,{clipPath:shape,opacity:.1,duration:.85,ease:'expo.inOut',onComplete:finish});
 }

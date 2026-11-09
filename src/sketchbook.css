@@ -14,7 +14,7 @@ html.sketch {
   --sk-blue: #3f7de6;
   --sk-red: #e5483e;
   --sk-orange: #f39a2e;
-  --sk-accent: #d9541e;
+  --sk-accent: #2f63bf;
   --sk-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
   --font-display: 'Fuzzy Bubbles', 'Patrick Hand', cursive;
   --font-editorial: 'Patrick Hand', cursive;
@@ -103,3 +103,49 @@ html.sketch .quiz-live > button[aria-pressed="true"], html.sketch .decision-choi
 html.sketch .quiz-live > button[aria-pressed="true"] > span { color: var(--sk-accent) !important; }
 /* no legibility veils over the drawings: the page is already light */
 html.sketch #scene::after { display: none !important; }
+
+/* the highlighter is drawn across after the words are written */
+html.sketch :is(.kn-title .kn-l2, .layout-finale h1 [data-reveal]:last-child, .kn-brake strong span) {
+  background-position: left center;
+  transition: background-size .45s cubic-bezier(.3, .7, .3, 1) .4s;
+}
+html.sketch .kn-title .kn-l2:not(.is-on), html.sketch .kn-brake:not(.is-on) strong span { background-size: 0% 100%; }
+html.sketch .layout-finale h1 [data-reveal]:last-child { animation: sk-highlight .5s cubic-bezier(.3, .7, .3, 1) .9s both; }
+@keyframes sk-highlight { from { background-size: 0% 100%; } to { background-size: 100% 100%; } }
+@media (prefers-reduced-motion: reduce) {
+  html.sketch :is(.kn-title .kn-l2, .layout-finale h1 [data-reveal]:last-child, .kn-brake strong span) { transition: none; animation: none; }
+}
+
+/* "Know your side": two facing pages instead of a light and a dark half */
+html.sketch body.tone-split .boundary-title :is(h1, .layout-subtitle) {
+  background: none !important; -webkit-background-clip: border-box; background-clip: border-box;
+}
+html.sketch body.tone-split .boundary-title h1, html.sketch body.tone-split .intro-title { color: var(--sk-ink) !important; }
+html.sketch body.tone-split .boundary-title .layout-subtitle { color: var(--sk-ink-soft) !important; }
+html.sketch body.tone-split .provider-half h2 { color: var(--sk-accent) !important; }
+html.sketch body.tone-split :is(.provider-half, .customer-half, .customer-half h2) { color: var(--sk-ink) !important; }
+html.sketch body.tone-split :is(.provider-half, .customer-half) :is(p, .micro) { color: var(--sk-ink-soft) !important; }
+html.sketch body.tone-split :is(.boundary-note, .intro-cue) { background: var(--sk-yellow) !important; color: var(--sk-ink) !important; }
+html.sketch body.tone-split .deck-footer { background: transparent !important; }
+html.sketch body.tone-split .brand-mark { border-color: #e2b93a !important; }
+
+/* the small SVG illustrations are drawn objects, not page surfaces: cream faces, ink lines, yellow accents */
+html.sketch body[class] {
+  --toon-ink: #1f1a1d !important;
+  --toon-cream: #fffaf0 !important;
+  --toon-orange: #f7d35e !important;
+  --toon-shade: #e8dccd !important;
+}
+
+/* when a centred title moves to its corner, the drawing waits until the title is out of the way */
+html.sketch #scene canvas { transition: opacity .3s ease-out .45s; }
+html.sketch body.title-only #scene canvas { opacity: 0; transition: none; }
+@media (prefers-reduced-motion: reduce) { html.sketch #scene canvas { transition: none; } }
+
+/* little drawn badges and tiles: cream card, ink outline, a yellow offset shadow like a sticker */
+html.sketch body.view-briefing :is(.vault-dial, .control-glyph, .daily-symbol) {
+  background: #fffaf0 !important; border: 2px solid var(--sk-ink) !important; color: var(--sk-ink) !important;
+  box-shadow: 4px 5px 0 var(--sk-yellow-deep) !important;
+}
+html.sketch body.view-briefing .vault-dial i { background: var(--sk-ink) !important; }
+html.sketch body.view-briefing .vault-dial::before { border-color: var(--sk-ink-soft) !important; }

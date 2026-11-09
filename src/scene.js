@@ -102,9 +102,9 @@ export function createScene(host, reducedMotion) {
       gl_FragColor.rgb*=.97+grain*.05;
     }`);};
   const toon=(color,extra={})=>{const m=new THREE.MeshToonMaterial({color,gradientMap:toonRamp,...extra});if(sketch)m.onBeforeCompile=pencil;return m;};
-  const orange = toon(sketch?0xf07a4a:0xe56f3c);
-  const pale = toon(sketch?0xfdf3d8:0xf3e8d3);
-  const black = toon(sketch?0x7d93c4:0x3b3f47);
+  const orange = toon(sketch?0xf7d35e:0xe56f3c);
+  const pale = toon(sketch?0xfffaf0:0xf3e8d3);
+  const black = toon(sketch?0x8cabe8:0x3b3f47);
   const lineMat = new THREE.LineBasicMaterial({ color: sketch?0x1f1a1d:0x8d6c50, transparent: true, opacity: sketch?.5:.32 });
   const groups = {};
   const make = name => { const g = new THREE.Group(); groups[name] = g; pivot.add(g); g.visible = false; return g; };
@@ -504,6 +504,7 @@ export function createScene(host, reducedMotion) {
   function setDesign(design,instant=false){
     const previousShape=!instant&&!reducedMotion.matches?silhouette(current):null;
     morphTween?.kill();morphMaterial.opacity=0;
+    if(sketch){gsap.killTweensOf(host);host.style.opacity='';}
     active=true;host.hidden=false;currentDesign=design;
     camera=['terraces','time','privilege','duality','ownership','keynote-cost','price-duel','keynote-price','expansion','keynote-elastic','keynote-finops','cycle','blueprint','proof','horizon','lab'].includes(design.layout)?diagramCamera:perspectiveCamera;
     spatialTween?.kill();
@@ -521,7 +522,13 @@ export function createScene(host, reducedMotion) {
     const targetCameraZ=camera.position.z;
     const nextShape=silhouette(g);
     planetUniforms.uMorph.value=0;
-    if(!instant&&!reducedMotion.matches){
+    if(!instant&&!reducedMotion.matches&&sketch){
+      // Sketchbook: the drawing waits for the old page to fade, then fades in with a small settle.
+      const tl=gsap.timeline({onUpdate:render});spatialTween=tl;
+      tl.fromTo(host,{opacity:0},{opacity:1,duration:.35,ease:'power1.out',clearProps:'opacity'},.16);
+      tl.fromTo(g.rotation,{y:rotation[1]-.16},{y:rotation[1],duration:.6,ease:'power2.out'},.16);
+      tl.fromTo(g.scale,{x:scale*.95,y:scale*.95,z:scale*.95},{x:scale,y:scale,z:scale,duration:.5,ease:'power2.out'},.16);
+    }else if(!instant&&!reducedMotion.matches){
       morphBetween(previousShape,nextShape);
       const tl=gsap.timeline({onUpdate:render});spatialTween=tl;
       const type=design.transition;

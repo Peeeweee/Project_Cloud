@@ -1,4 +1,4 @@
-import './theme.js';
+import { sketch } from './theme.js';
 import '@fontsource/fuzzy-bubbles/latin-400.css';
 import '@fontsource/fuzzy-bubbles/latin-700.css';
 import '@fontsource/patrick-hand/latin-400.css';
@@ -185,6 +185,28 @@ function setStep(n){navigationTween?.progress(1);clearWords(main);const prev=ste
 function beginChapter(){if(!chapterActive)return;chapterActive=false;$('#announcement').textContent=`${slides[index].title.replace(/\n/g,' ')}. Next to reveal the slide.`;dismissChapter(main,{instant:reducedMotion.matches,onComplete:()=>{if(step===0&&!chapterActive){const title=main.querySelector('.live-moving-title')||main.querySelector('.kn-title');if(title&&!reducedMotion.matches){if(title.classList.contains('live-moving-title'))gsap.fromTo(title,{opacity:0},{opacity:1,duration:.6,clearProps:'opacity'});else wordsIn(title);}}scene.resize();}});}
 function advance(){if(chapterActive)return beginChapter();if(mode!=='slides')return showSlide(0,{focus:true});if(step<buildSteps(directions[index].layout)-1)setStep(step+1);else showSlide(index+1);}
 function retreat(){if(mode!=='slides')return;if(chapterActive){if(index>0)showSlide(index-1,{atEnd:true});return;}if(step>0)setStep(step-1);else if(chapterFor(slides[index].id)){chapterActive=true;mountChapter(main,chapterFor(slides[index].id),{instant:reducedMotion.matches});}else if(index>0)showSlide(index-1,{atEnd:true});}
+// Sketchbook arrival: the old page fades first, then the title is written in letter by letter and
+// each detail fades in, in reading order. The 3D drawing fades in once the old page is gone.
+function sketchArrival(outgoing,slide,art,atEnd){
+  const tl=gsap.timeline();navigationTween=tl;
+  const title=main.querySelector('#slide-title'),content=main.querySelector('.scene-content');
+  if(outgoing){
+    tl.to(outgoing,{opacity:0,duration:.16,ease:'power1.out',onComplete:()=>outgoing.remove()},0);
+    // the new page waits for the old one, so the two never show at once
+    const page=main.querySelector('.art-slide');
+    if(page)tl.fromTo(page,{opacity:0},{opacity:1,duration:.12,ease:'none',clearProps:'opacity'},.13);
+  }
+  const t0=outgoing?.14:.05;
+  const heroOnly=Boolean(main.querySelector('.has-title-entrance'))&&step===0;
+  let at=t0;
+  if(title&&!(chapterFor(slide.id)&&!atEnd))at+=Math.min(.35,wordsIn(title,{delay:t0})*.6);
+  const parts=heroOnly?[]:entranceTargets(content,title);
+  parts.forEach((part,i)=>{const t=at+i*.06;tl.fromTo(part,{opacity:0},{opacity:1,duration:.3,ease:'power1.out',clearProps:'opacity'},t);wordsIn(part,{delay:t});});
+  const bottom=main.querySelector('.slide-bottom');
+  if(bottom&&!heroOnly)tl.fromTo(bottom,{opacity:0},{opacity:1,duration:.3,ease:'power1.out',clearProps:'opacity'},at+parts.length*.06);
+  if(!heroOnly&&art.layout==='signal')tl.fromTo('.chart-line',{strokeDasharray:900,strokeDashoffset:900},{strokeDashoffset:0,duration:.9,ease:'power2.out'},at);
+  if(!heroOnly&&art.layout==='proof')tl.fromTo('.proof-signature b',{left:'0%'},{left:'95%',duration:.9,ease:'power2.inOut'},at);
+}
 function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atEnd=false }={}) {
   const previous=index;
   stopNavigation();
@@ -220,7 +242,8 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atE
   if(!directions[index].layout.startsWith('keynote-'))scene.update?.({partTime:pricingPart, saleDay}, true);
   if(slide.kind==='lab')scene.lab?.(labState,true);
   applyBuild(main,directions[index].layout,step,null,{instant:true,scene});
-  if(!instant && !reducedMotion.matches) {
+  if(!instant && !reducedMotion.matches && sketch) sketchArrival(outgoing,slide,art,atEnd);
+  else if(!instant && !reducedMotion.matches) {
     const direction=index>=previous?1:-1;
     const tl=gsap.timeline();navigationTween=tl;
     const title=main.querySelector('#slide-title'),content=main.querySelector('.scene-content');
