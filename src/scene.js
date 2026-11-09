@@ -131,18 +131,20 @@ export function createScene(host, reducedMotion) {
     [-1.3,.45,0,1.05],[.1,.88,-.1,1.38],[1.35,.42,.12,1],[.55,1.62,-.35,.82],[-.6,1.3,-.3,.8],[0,0,-.9,1.35]];
   const cloudBank=new THREE.Group(), COVER_CLOUD=.45;
   // "Be ready for the bad day": pen-stroke rain falls from the cloud on the incident slide.
-  const rain=new THREE.Group(), drops=[];let cloudLift=0;
+  const rain=new THREE.Group(), drops=[];let cloudLift=0, cloudMat=null;
   const planetSurface=sketch?new THREE.Group():mesh(new THREE.SphereGeometry(2.9,96,64),new THREE.ShaderMaterial({vertexShader,fragmentShader,uniforms:planetUniforms}),planet);
   if(sketch){
     planet.add(planetSurface);
-    const cloudMat=toon(0xfffbf2);
+    cloudMat=toon(0xfffbf2);
     for(const [x,y,z,r] of cloudPuffs)mesh(new THREE.SphereGeometry(r,40,28),cloudMat,planetSurface,[x,y-.2,z]);
     // On the cover the cloud widens into a sea of clouds across the bottom of the page.
     planet.add(rain);rain.visible=false;
     const dropMat=new THREE.MeshBasicMaterial({color:0x2f63bf});
-    for(let i=0;i<26;i++){
-      const d=mesh(new THREE.CapsuleGeometry(.035,.32,3,6),dropMat,rain,[-2.4+(i*.19)%4.8+((i*7)%3)*.05,-1.1-((i*.37)%1.8),((i*5)%3-1)*.3]);
-      d.rotation.z=.18;d.userData.speed=2.6+(i%5)*.35;drops.push(d);
+    // even columns under the cloud; each drop falls straight down and restarts in its own column
+    for(let i=0;i<24;i++){
+      const col=i%12,x=-2.2+col*.4+(i>=12?.2:0);
+      const d=mesh(new THREE.CapsuleGeometry(.035,.3,3,6),dropMat,rain,[x,-1.05-((i*.53)%1.8),((i*5)%3-1)*.25]);
+      d.userData.speed=2.4+(i*7%5)*.3;drops.push(d);
     }
     planetSurface.add(cloudBank);
     // [x, height of the puff's top, z, radius]
@@ -509,7 +511,7 @@ export function createScene(host, reducedMotion) {
     Object.values(groups).forEach(other=>{other.visible=false;gsap.killTweensOf(other.position);gsap.killTweensOf(other.scale);gsap.killTweensOf(other.rotation);other.children.forEach(child=>{gsap.killTweensOf(child.position);gsap.killTweensOf(child.scale);});});
     current=g;g.visible=true;
     if(sketch&&g===satellite)g.visible=false; // no satellite in the notebook: the chart tells the story
-    if(sketch){const cover=design.layout==='horizon';cloudBank.visible=cover;planetSurface.scale.setScalar(cover?COVER_CLOUD:1);rain.visible=design.layout==='procedure';cloudLift=rain.visible?.65:0;}stars.visible=!sketch&&!['paper','split','rust'].includes(design.tone);
+    if(sketch){const cover=design.layout==='horizon';cloudBank.visible=cover;planetSurface.scale.setScalar(cover?COVER_CLOUD:1);rain.visible=design.layout==='procedure';cloudLift=rain.visible?.65:0;cloudMat?.color.set(rain.visible?0xb8bfcc:0xfffbf2);}stars.visible=!sketch&&!['paper','split','rust'].includes(design.tone);
     g.children.forEach(child=>{const home=homePositions.get(child);if(home)child.position.copy(home);});
     const position=[0,0,0],scale=design.scale;
     // the cloud is drawn upright; the Mars tilts were for showing the planet's surface
@@ -682,7 +684,7 @@ export function createScene(host, reducedMotion) {
     const elapsed=Math.min(time-lastPlanetFrame,.05);lastPlanetFrame=time;
     // Rotate the surface independently so camera framing and captions stay fixed.
     if(sketch){planetUniforms.uTime.value+=elapsed;const t=planetUniforms.uTime.value;planetSurface.rotation.y=Math.sin(t*.35)*.12;planetSurface.position.y=cloudLift+Math.sin(t*.8)*.06;
-      if(rain.visible)drops.forEach(d=>{d.position.y-=elapsed*d.userData.speed;d.position.x-=elapsed*d.userData.speed*.18;if(d.position.y<-2.9){d.position.y=-1.05;d.position.x+=.52;}});
+      if(rain.visible)drops.forEach(d=>{d.position.y-=elapsed*d.userData.speed;if(d.position.y<-2.9)d.position.y=-1.05;});
       render();return;}
     if(!gsap.isTweening(planetSurface.rotation))planetSurface.rotation.y+=elapsed*.045;
     planetUniforms.uTime.value+=elapsed*.28;

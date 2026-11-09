@@ -167,11 +167,10 @@ html.sketch :is(.chrome-toggle, .intro-cue, .intro-kicker, .chapter-navigation) 
 }
 
 /* the traffic chart keeps flowing: a blue arrow runs along the line, trailing a soft stroke */
-html.sketch .chart-flow { fill: none; stroke: #2f63bf; stroke-width: 6; stroke-linecap: round; opacity: .28;
-  stroke-dasharray: 9 91; animation: sk-flow 3.4s linear infinite; }
+/* the trail sits just behind the arrowhead; both run on the same SVG clock so they stay together */
+html.sketch .chart-flow { fill: none; stroke: #2f63bf; stroke-width: 6; stroke-linecap: round; opacity: .28; stroke-dasharray: 9 91; }
 html.sketch .chart-runner path { fill: #2f63bf; stroke: #fdf6f2; stroke-width: 1.5; }
-@keyframes sk-flow { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-@media (prefers-reduced-motion: reduce) { html.sketch .chart-flow { animation: none; } html.sketch .chart-runner { display: none; } }
+@media (prefers-reduced-motion: reduce) { html.sketch :is(.chart-flow, .chart-runner) { display: none; } }
 
 /* small fits for the bigger handwriting (desktop) */
 html.sketch :is(.cover-edition, .horizon-caption) { display: none !important; }
