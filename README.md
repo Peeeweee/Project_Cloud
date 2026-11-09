@@ -6,6 +6,8 @@ A cinematic, original Mars-inspired browser presentation on cloud economics, ope
 
 The deck now opens in a hand-drawn sketchbook look in the style of an illustrated lesson: warm paper, ink, Fuzzy Bubbles and Patrick Hand handwriting, and a motor-lesson palette (blue pen for accents and lines, yellow highlighter for fills and active objects, soft blue and cream for other objects, red only for danger). Key title lines get a yellow highlighter that draws across after the words, "A budget alert is not a brake" is a taped note, the 3D drawings have pencil hatching, and a drawn cumulus cloud (a sea of clouds on the cover) replaces the Mars planet.
 
+The page is dot-grid paper with a few faint pencil clouds drifting along the top and bottom margins. After each title is written, a small hand-drawn doodle (sparks, a swirl, a star, a squiggle or a curly arrow, always the same one for a slide) is drawn beside it in blue pen or yellow, and it follows the title when the title moves. The 3D drawings float and sway gently, and buttons and choices lift slightly under the pointer. Settings → Motion off stops all of it.
+
 Transitions are calm and quick: the old page fades first, then each title is written in by hand: every letter is painted solid along its real shape (outlines read from the font files with opentype.js), one after another, the details fade in, and the 3D drawing appears only after the old page is gone (no morphing dots, blur, squash or colour wipe). Slides, order, builds, notes and the Cloud Lab are unchanged.
 
 - Add `?mars` to the address to present the original Mars design instead (for example `https://peeeweee.github.io/Project_Cloud/?mars`).

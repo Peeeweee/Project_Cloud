@@ -48,8 +48,14 @@ const pieces = split => [...(split.words || []), ...(split.chars || [])];
 
 // Sketchbook: headings are written in letter by letter, as if a pen traced them; other text
 // simply fades in (the whole block around it fades too, so nothing jumps).
-const isHeading = leaf => leaf.matches('h1,h2,h3,strong,.kn-l1,.kn-l2') || !!leaf.closest('h1,h2,h3')
-  || parseFloat(getComputedStyle(leaf).fontSize) >= 26;
+// Only big display text is written by pen; smaller headings, labels and anything inside a button or
+// a flex/grid row just fade in, so busy slides stay calm and finish quickly.
+const isHeading = leaf => {
+  if (leaf.closest('button,[role=button],.quiz')) return false;
+  const st = getComputedStyle(leaf);
+  if (/flex|grid/.test(st.display)) return false;
+  return parseFloat(st.fontSize) >= 34 && (leaf.matches('h1,h2,h3,strong,.kn-l1,.kn-l2') || !!leaf.closest('h1,h2,h3'));
+};
 function writeIn(leaf, delay) {
   const old = live.get(leaf);
   if (old) { gsap.killTweensOf(pieces(old.split)); old.timer?.kill(); old.tl?.kill(); old.split.revert(); }
@@ -67,14 +73,15 @@ function writeIn(leaf, delay) {
     { clipPath: 'inset(-30% -10% -30% -10%)', duration: .14, ease: 'none', delay, stagger: per, onComplete: done });
   return chars.length * per + .14;
 }
+// Returns when the last heading finishes writing (relative to `delay`).
 function sketchIn(root, delay) {
   clearWords(root);
-  let at = delay;
+  let at = delay, end = delay;
   textLeaves(root).forEach(leaf => {
-    if (isHeading(leaf)) at += Math.min(.5, writeIn(leaf, at) * .5);
+    if (isHeading(leaf)) { const d = writeIn(leaf, at); end = Math.max(end, at + d); at += Math.min(.25, d * .35); }
     else gsap.fromTo(leaf, { opacity: 0 }, { opacity: 1, duration: .3, delay: at, ease: 'power1.out', clearProps: 'opacity' });
   });
-  return at - delay;
+  return Math.max(end, at) - delay;
 }
 
 // Reveal the words of every text leaf in `root`, in reading order. Returns the total duration.

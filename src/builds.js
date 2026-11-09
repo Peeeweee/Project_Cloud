@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { Flip } from 'gsap/Flip';
 import { wordsIn, wordsOut, clearWords } from './choreo.js';
 import { sketch } from './theme.js';
+import { placeDoodle, hideDoodle } from './doodles.js';
 gsap.registerPlugin(Flip);
 
 const money = v => '$' + v.toFixed(2);
@@ -105,7 +106,8 @@ export function applyBuild(root, layout, step, prev, { instant = false, scene } 
   }
   slide.querySelectorAll('.kn-dots i').forEach((dot, i) => dot.classList.toggle('is-on', i <= step));
   if (instant) slide.classList.add('kn-instant'); else slide.classList.remove('kn-instant');
-  if (flipState) Flip.from(flipState, { duration: sketch ? .5 : .95, ease: sketch ? 'power2.inOut' : 'power3.inOut', scale: true });
+  if (flipState) { if (sketch) hideDoodle(title); Flip.from(flipState, { duration: sketch ? .5 : .95, ease: sketch ? 'power2.inOut' : 'power3.inOut', scale: true, onComplete: () => sketch && placeDoodle(title, { fade: true }) }); }
+  else if (sketch && title) placeDoodle(title);
   build.apply(slide, step, prev ?? -1, { instant, scene });
   if (instant) requestAnimationFrame(() => slide.classList.remove('kn-instant'));
 }
@@ -137,7 +139,12 @@ function applyTitleEntrance(slide,step,{instant,scene}){
  card.inert=!titleOnly;card.setAttribute('aria-hidden',String(!titleOnly));
  if(instant)return;
  const tl=gsap.timeline();titleEntranceTween=tl;
- if(changing)tl.to(title,{...target,duration:sketch?.5:.95,ease:sketch?'power2.inOut':'power3.inOut'},0);
+ if(changing){
+  if(sketch)hideDoodle(title);
+  tl.to(title,{...target,duration:sketch?.5:.95,ease:sketch?'power2.inOut':'power3.inOut'},0);
+  // the doodle follows the title to its new place, then reappears
+  if(sketch)tl.call(()=>placeDoodle(title,{fade:true}),null,.5);
+ }
  if(titleOnly)return;
  // Never animate the heading or an ancestor that could move it a second time.
  const parts=[];

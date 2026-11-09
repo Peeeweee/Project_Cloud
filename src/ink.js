@@ -25,11 +25,14 @@ let uid = 0;
 // Returns { paths, duration } after starting the animation, or null when the font is not loaded
 // (the caller then uses the simpler reveal). `chars` are SplitText character elements.
 export function inkWrite(leaf, chars, delay, onDone) {
-  const style = getComputedStyle(leaf);
-  const font = fontFor(style);
-  if (!font || !chars.length) return null;
-  const size = parseFloat(style.fontSize), upper = style.textTransform === 'uppercase';
-  const ink = style.color;
+  if (!chars.length || !fontFor(getComputedStyle(leaf))) return null;
+  // Read each letter's own font, size and colour: a heading can hold smaller text inside it
+  // (for example "OF" with "the cloud." underneath in a nested span).
+  const looks = chars.map(ch => {
+    const st = getComputedStyle(ch);
+    return { font: fontFor(st), size: parseFloat(st.fontSize), upper: st.textTransform === 'uppercase', ink: st.color };
+  });
+  if (looks.some(l => !l.font)) return null;
   // Find each character's baseline with a zero-height probe (read all, then write, to avoid thrash).
   const probes = chars.map(ch => {
     const p = document.createElement('span');
@@ -40,6 +43,7 @@ export function inkWrite(leaf, chars, delay, onDone) {
   probes.forEach(p => p.remove());
   const paths = [];
   chars.forEach((ch, i) => {
+    const { font, size, upper, ink } = looks[i];
     let text = ch.textContent; if (upper) text = text.toUpperCase();
     const d = font.getPath(text, 0, baselines[i], size).toPathData(2);
     if (!d) return;
@@ -65,7 +69,7 @@ export function inkWrite(leaf, chars, delay, onDone) {
   const per = Math.min(.075, .95 / paths.length);
   const tl = gsap.timeline({ delay, onComplete: onDone });
   paths.forEach((p, i) => {
-    const draw = Math.max(.16, Math.min(.36, lengths[i] / size * .045));
+    const draw = Math.max(.16, Math.min(.36, lengths[i] / parseFloat(p.style.strokeWidth) * .0135));
     tl.to(p, { strokeDashoffset: 0, duration: draw, ease: 'sine.inOut' }, i * per);
     // seal any tiny gap the pen missed, right as it lifts
     tl.to(p, { fillOpacity: 1, duration: .08, ease: 'none' }, i * per + draw * .9);

@@ -669,6 +669,12 @@ export function createScene(host, reducedMotion) {
       costBodies.forEach((b,i)=>{const s=Math.sin(time*2.1+i*1.1);b.position.y=s*.05;b.rotation.y=-.5+Math.sin(time*1.2+i)*.07;costPlates[i].material.opacity=.16;});
       render();return;
     }
+    // Sketchbook: every drawing floats gently, like a paper cut-out on a breeze (30 fps, only while shown).
+    if(sketch&&active&&!document.hidden&&current&&current!==planet&&!reducedMotion.matches){
+      if(time-lastBob<1/30)return;lastBob=time;
+      pivot.position.y=Math.sin(time*1.15)*.035;pivot.rotation.z=Math.sin(time*.7)*.014;
+      render();return;
+    }
     if(!active||document.hidden||current!==planet||reducedMotion.matches)return;
     if(time-lastPlanetFrame<1/30)return;
     const elapsed=Math.min(time-lastPlanetFrame,.05);lastPlanetFrame=time;

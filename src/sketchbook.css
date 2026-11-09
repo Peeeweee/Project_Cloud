@@ -28,7 +28,8 @@ html.sketch {
 html.sketch body[class] {
   --sk-page: var(--sk-paper);
   background-color: var(--sk-page) !important;
-  background-image: var(--sk-grain) !important;
+  background-image: var(--sk-grain), radial-gradient(rgba(31, 26, 29, .085) 1px, transparent 1.5px) !important;
+  background-size: 240px 240px, 26px 26px !important;
   background-attachment: fixed !important;
   color: var(--sk-ink) !important;
   --paper: var(--sk-ink) !important;
@@ -39,7 +40,8 @@ html.sketch body[class] {
 /* the old rust slides become a warm, highlighted page; the split slide becomes two facing pages */
 html.sketch body.tone-rust[class] { --sk-page: #fcf0d6; }
 html.sketch body.tone-split[class] {
-  background-image: var(--sk-grain), linear-gradient(90deg, var(--sk-paper) 50%, #fcf0d6 50%) !important;
+  background-image: var(--sk-grain), radial-gradient(rgba(31, 26, 29, .085) 1px, transparent 1.5px), linear-gradient(90deg, var(--sk-paper) 50%, #fcf0d6 50%) !important;
+  background-size: 240px 240px, 26px 26px, auto !important;
 }
 html.sketch ::selection { background: var(--sk-yellow); color: var(--sk-ink); }
 
@@ -53,7 +55,7 @@ html.sketch *, html.sketch *::before, html.sketch *::after { text-shadow: none !
 html.sketch {
   --sk-hl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40' preserveAspectRatio='none'%3E%3Cpath d='M3 13 C40 7 110 9 197 10 L195 33 C140 37 70 34 5 37 Z' fill='%23fde384'/%3E%3Cpath d='M8 17 C60 14 130 15 192 16' stroke='%23f2c94c' stroke-width='3' fill='none' opacity='.5'/%3E%3C/svg%3E");
 }
-html.sketch :is(.kn-title .kn-l2, .layout-finale h1 [data-reveal]:last-child, .brake-word, .kn-brake strong span) {
+html.sketch :is(.kn-title .kn-l2, .layout-finale h1 span[data-reveal]:last-of-type, .brake-word, .kn-brake strong span) {
   color: var(--sk-ink) !important;
   background: var(--sk-hl) center / 100% 100% no-repeat;
   -webkit-box-decoration-break: clone;
@@ -73,7 +75,7 @@ html.sketch .kn-brake::before {
   content: ''; position: absolute; left: 50%; top: -14px; width: 120px; height: 28px; margin-left: -60px;
   background: rgba(227, 220, 247, .85); transform: rotate(2deg); border-radius: 2px;
 }
-html.sketch .layout-finale h1 [data-reveal]:last-child { display: table; margin-left: auto; margin-right: auto; }
+html.sketch .layout-finale h1 span[data-reveal]:last-of-type { display: table; margin-left: auto; margin-right: auto; }
 
 /* ---------- hand-made details ---------- */
 
@@ -100,15 +102,15 @@ html.sketch .quiz-live > button[aria-pressed="true"] > span { color: var(--sk-ac
 html.sketch #scene::after { display: none !important; }
 
 /* the highlighter is drawn across after the words are written */
-html.sketch :is(.kn-title .kn-l2, .layout-finale h1 [data-reveal]:last-child, .kn-brake strong span) {
+html.sketch :is(.kn-title .kn-l2, .layout-finale h1 span[data-reveal]:last-of-type, .kn-brake strong span) {
   background-position: left center;
   transition: background-size .45s cubic-bezier(.3, .7, .3, 1) .4s;
 }
 html.sketch .kn-title .kn-l2:not(.is-on), html.sketch .kn-brake:not(.is-on) strong span { background-size: 0% 100%; }
-html.sketch .layout-finale h1 [data-reveal]:last-child { animation: sk-highlight .5s cubic-bezier(.3, .7, .3, 1) .9s both; }
+html.sketch .layout-finale h1 span[data-reveal]:last-of-type { animation: sk-highlight .5s cubic-bezier(.3, .7, .3, 1) .9s both; }
 @keyframes sk-highlight { from { background-size: 0% 100%; } to { background-size: 100% 100%; } }
 @media (prefers-reduced-motion: reduce) {
-  html.sketch :is(.kn-title .kn-l2, .layout-finale h1 [data-reveal]:last-child, .kn-brake strong span) { transition: none; animation: none; }
+  html.sketch :is(.kn-title .kn-l2, .layout-finale h1 span[data-reveal]:last-of-type, .kn-brake strong span) { transition: none; animation: none; }
 }
 
 /* "Know your side": two facing pages instead of a light and a dark half */
@@ -144,3 +146,30 @@ html.sketch body.view-briefing :is(.vault-dial, .control-glyph, .daily-symbol) {
 }
 html.sketch body.view-briefing .vault-dial i { background: var(--sk-ink) !important; }
 html.sketch body.view-briefing .vault-dial::before { border-color: var(--sk-ink-soft) !important; }
+
+/* ---------- living page ---------- */
+
+/* faint pencil clouds drifting behind everything */
+#sk-sky { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+#sk-sky i { position: absolute; left: 0; display: block; animation: sk-drift linear infinite; will-change: transform; }
+#sk-sky svg { display: block; overflow: visible; }
+#sk-sky path { fill: none; stroke: rgba(31, 26, 29, .11); stroke-width: 1.6; stroke-linejoin: round; }
+@keyframes sk-drift { from { transform: translateX(-260px); } to { transform: translateX(calc(100vw + 40px)); } }
+body.reading ~ #sk-sky, body.reading #sk-sky { display: none; }
+@media (prefers-reduced-motion: reduce) { #sk-sky i { animation: none; transform: translateX(20vw); } }
+
+/* buttons and choices lift slightly under the pointer, like a card picked up */
+html.sketch :is(.chapter-begin, .enter-button, .quiz-live > button, .decision-choices .quiz > button, .lab-tabs button, .lab-controls button) {
+  transition: transform .2s cubic-bezier(.3, .7, .3, 1), box-shadow .2s;
+}
+html.sketch :is(.chapter-begin, .enter-button, .quiz-live > button, .decision-choices .quiz > button, .lab-tabs button, .lab-controls button):hover {
+  transform: translateY(-2px) rotate(-.6deg);
+}
+html.sketch :is(.chapter-begin, .enter-button, .quiz-live > button, .decision-choices .quiz > button, .lab-tabs button, .lab-controls button):active {
+  transform: translateY(0) scale(.98);
+}
+
+/* hand-drawn doodle next to each title (drawn by doodles.js) */
+html.sketch .sk-doodle { position: absolute; pointer-events: none; overflow: visible; z-index: 1; }
+html.sketch .sk-doodle path { fill: none; stroke-width: 3.6; stroke-linecap: round; stroke-linejoin: round; }
+html.sketch body.tone-split .intro-kicker { background: none !important; color: var(--sk-ink-soft) !important; }
