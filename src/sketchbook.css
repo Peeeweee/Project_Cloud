@@ -77,13 +77,8 @@ html.sketch .layout-finale h1 [data-reveal]:last-child { display: table; margin-
 
 /* ---------- hand-made details ---------- */
 
-/* the group badge: a yellow sticker with a marker label */
-html.sketch .brand-mark {
-  background: var(--sk-yellow); border: 2px solid #e2b93a !important; color: var(--sk-ink);
-  box-shadow: inset 0 -3px 0 rgba(226, 185, 58, .45) !important; font-family: var(--font-display);
-}
-html.sketch .brand-type { font-family: var(--font-display); letter-spacing: .04em; color: var(--sk-ink); }
-html.sketch .brand-type span { font-family: var(--font-technical); letter-spacing: .06em; color: var(--sk-ink-soft); }
+/* no corner logo: the page is the notebook itself (Home still returns to the opening) */
+html.sketch .brand { display: none !important; }
 
 /* buttons are drawn with a marker: paper fill, ink outline; the main call to action is yellow */
 html.sketch :is(.chapter-begin, .enter-button) {
