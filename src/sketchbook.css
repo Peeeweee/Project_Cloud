@@ -211,3 +211,11 @@ html.sketch .key-passport .key-spin { transform-box: view-box; transform-origin:
 @media (prefers-reduced-motion: reduce) { html.sketch .key-passport .key-spin { animation: none; rotate: -12deg; } }
 /* slide 29: a little more air between the tag card and its caption */
 html.sketch .layout-keynote-finops .kn-tag-note { top: 74%; }
+
+/* the closing slide says thank you, in blue pen above the title */
+html.sketch .sk-thanks {
+  font-family: var(--font-display); font-weight: 700; color: var(--sk-accent);
+  font-size: clamp(40px, 5.2vw, 84px); line-height: 1; margin: 0 0 clamp(10px, 2.2vh, 24px); letter-spacing: 0;
+}
+html.sketch body.view-horizon .cover-title:has(.sk-thanks) { top: 4% !important; }
+html.sketch body.view-horizon.presenting .cover-title:has(.sk-thanks) h1 { font-size: clamp(80px, min(10vw, 19vh), 210px) !important; margin-bottom: 26px; }
