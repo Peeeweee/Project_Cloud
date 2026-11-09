@@ -442,7 +442,7 @@ export function createScene(host, reducedMotion) {
       camera.top=halfHeight;camera.bottom=-halfHeight;
       current.position.set(0,(aspect<1?.38:.56)*halfHeight-radius,0);
       // Sketchbook: the cloud is a bank along the bottom of the page, below the title.
-      if(sketch&&design.scene==='planet')current.position.y=(aspect<1?-.7:-.7)*halfHeight-2.24*COVER_CLOUD*Math.abs(design.scale);
+      if(sketch&&design.scene==='planet')current.position.y=(aspect<1?-.8:-.8)*halfHeight-2.24*COVER_CLOUD*Math.abs(design.scale);
       camera.position.set(0,0,25);camera.lookAt(0,0,0);camera.updateProjectionMatrix();return;
     }
     const slot=document.querySelector('.scene-slot');if(!slot)return;
