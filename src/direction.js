@@ -1,8 +1,11 @@
 import { sketch } from './theme.js';
 // Closing-slide stickers, linked from Tenor (not copied into this repo); they need a connection.
+// The GIFs have a white background; this filter turns near-white pixels see-through (alpha = 3·(2.9·a - r - g - b)),
+// so the characters sit straight on the page while outlines and colours stay solid.
 const STICKERS='<div class="sk-stickers" aria-hidden="true">'
-  +'<img class="sk-sticker sk-sticker-left" src="https://media1.tenor.com/m/XbXW81Nb7XMAAAAC/clapping-yay.gif" alt="" referrerpolicy="no-referrer" decoding="async">'
-  +'<img class="sk-sticker sk-sticker-right" src="https://media1.tenor.com/m/WoVFc5eOglsAAAAC/bubu-bubu-dudu.gif" alt="" referrerpolicy="no-referrer" decoding="async">'
+  +'<svg width="0" height="0" style="position:absolute"><filter id="sk-unwhite" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -3 -3 -3 8.7 0"/></filter></svg>'
+  +'<span class="sk-sticker sk-sticker-left"><img src="https://media1.tenor.com/m/XbXW81Nb7XMAAAAC/clapping-yay.gif" alt="" referrerpolicy="no-referrer" decoding="async"></span>'
+  +'<span class="sk-sticker sk-sticker-right"><img src="https://media1.tenor.com/m/WoVFc5eOglsAAAAC/bubu-bubu-dudu.gif" alt="" referrerpolicy="no-referrer" decoding="async"></span>'
   +'</div>';
 import {securityAdditions,securityScene} from './security-additions.js';
 import {slides} from './content.js';

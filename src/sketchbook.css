@@ -220,15 +220,16 @@ html.sketch .sk-thanks {
 html.sketch body.view-horizon .cover-title:has(.sk-thanks) { top: 4% !important; }
 html.sketch body.view-horizon.presenting .cover-title:has(.sk-thanks) h1 { font-size: clamp(80px, min(10vw, 19vh), 210px) !important; margin-bottom: 26px; }
 
-/* closing slide: two GIF stickers beside the title, slapped onto the page after it is written */
-html.sketch .sk-stickers { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-html.sketch .sk-sticker {
-  position: absolute; top: 36%; width: clamp(120px, 13vw, 210px); height: auto;
-  background: #fff; padding: 6px; border-radius: 16px; box-shadow: 0 2px 0 rgba(31, 26, 29, .08), 0 10px 22px -10px rgba(60, 40, 30, .45);
+/* closing slide: two GIFs beside the title, their white background made see-through by the
+   #sk-unwhite filter (direction.js), so the characters sit straight on the page */
+html.sketch .sk-stickers { position: absolute; inset: 0; pointer-events: none; }
+html.sketch .sk-sticker { position: absolute; top: 34%; width: clamp(130px, 14vw, 230px); }
+html.sketch .sk-sticker img {
+  display: block; width: 100%; height: auto; filter: url(#sk-unwhite);
   animation: sk-stick .55s cubic-bezier(.3, 1.6, .5, 1) 1.4s both;
 }
-html.sketch .sk-sticker-left { left: 3%; --tilt: -7deg; }
-html.sketch .sk-sticker-right { right: 3%; --tilt: 6deg; top: 40%; }
+html.sketch .sk-sticker-left { left: 2%; --tilt: -6deg; }
+html.sketch .sk-sticker-right { right: 2%; top: 38%; --tilt: 5deg; }
 @keyframes sk-stick { from { opacity: 0; transform: scale(.5) rotate(calc(var(--tilt) * 3)); } to { opacity: 1; transform: scale(1) rotate(var(--tilt)); } }
-@media (prefers-reduced-motion: reduce) { html.sketch .sk-sticker { animation: none; transform: rotate(var(--tilt)); } }
+@media (prefers-reduced-motion: reduce) { html.sketch .sk-sticker img { animation: none; transform: rotate(var(--tilt)); } }
 @media (max-width: 760px) { html.sketch .sk-stickers { display: none; } }
