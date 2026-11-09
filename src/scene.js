@@ -85,25 +85,11 @@ export function createScene(host, reducedMotion) {
   }
 
   // Cartoon look: three flat light bands (cel shading) instead of glossy metal, plus ink outlines below.
-  const ramp=sketch?[150,212,255]:[105,185,255];
+  // Sketchbook: soft, even shading in three flat tones (no hatching)
+  const ramp=sketch?[178,224,255]:[105,185,255];
   const toonRamp=new THREE.DataTexture(new Uint8Array(ramp.flatMap(v=>[v,v,v,255])),3,1);
   toonRamp.minFilter=toonRamp.magFilter=THREE.NearestFilter;toonRamp.generateMipmaps=false;toonRamp.needsUpdate=true;
-  // Sketchbook: shadow bands get pencil hatching drawn in screen space, like shading on paper.
-  const pencil=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',`#include <opaque_fragment>
-    {
-      float base=max(dot(diffuseColor.rgb,vec3(.299,.587,.114)),.02);
-      float shade=clamp(1.-dot(gl_FragColor.rgb,vec3(.299,.587,.114))/base,0.,1.);
-      vec2 p=gl_FragCoord.xy;
-      float jitter=fract(sin(dot(floor(p/vec2(5.,9.)),vec2(12.9898,78.233)))*43758.5453);
-      float lineA=1.-smoothstep(.12,.32,abs(fract((p.x+p.y*1.15)/6.5+jitter*.18)-.5));
-      float lineB=1.-smoothstep(.12,.3,abs(fract((p.x-p.y*1.1)/7.5)-.5));
-      float hatch=lineA*smoothstep(.1,.22,shade)+lineB*smoothstep(.3,.42,shade)*.8;
-      float grain=fract(sin(dot(p,vec2(91.7,47.3)))*15731.7);
-      vec3 ink=vec3(.122,.102,.114);
-      gl_FragColor.rgb=mix(gl_FragColor.rgb,ink,clamp(hatch,0.,1.)*.42);
-      gl_FragColor.rgb*=.97+grain*.05;
-    }`);};
-  const toon=(color,extra={})=>{const m=new THREE.MeshToonMaterial({color,gradientMap:toonRamp,...extra});if(sketch)m.onBeforeCompile=pencil;return m;};
+  const toon=(color,extra={})=>new THREE.MeshToonMaterial({color,gradientMap:toonRamp,...extra});
   const orange = toon(sketch?0xf7d35e:0xe56f3c);
   const pale = toon(sketch?0xfffaf0:0xf3e8d3);
   const black = toon(sketch?0x8cabe8:0x3b3f47);
