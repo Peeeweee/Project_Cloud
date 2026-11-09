@@ -182,3 +182,12 @@ html.sketch body.view-horizon .slide-bottom { display: none !important; }
   html.sketch .layout-proof .proof-note { translate: 0 10px; }
   html.sketch .firewall-fields { translate: 0 14px; }
 }
+
+/* slide 2: compute and the "on demand" circle share one centre line, with room between them */
+@media (min-width: 761px) {
+  html.sketch .resource-node-0 { left: 50% !important; translate: -50% 0; width: max-content; max-width: 46%; }
+  html.sketch .resource-center { left: 50% !important; translate: -50% 0; top: 45% !important; width: 26% !important; }
+  html.sketch .resource-node-1, html.sketch .resource-node-2 { right: auto !important; translate: -50% 0; width: max-content; }
+  html.sketch .resource-node-1 { left: 15% !important; }
+  html.sketch .resource-node-2 { left: 85% !important; }
+}
