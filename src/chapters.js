@@ -1,7 +1,6 @@
 import {gsap} from 'gsap';
 import {sketch} from './theme.js';
 import {wordsIn} from './choreo.js';
-import {doodle} from './doodles.js';
 export const chapterFor=id=>({
  'online-is-not-enough':{key:'operations',number:'01',title:'Operations',speaker:'Kent Paulo R. Delgado',line:'Keep it running.',verb:'Observe / Maintain / Recover'},
  'shared-responsibility':{key:'security',number:'02',title:'Security',speaker:'John Renan Labay',line:'Protect what matters.',verb:'Identity / Boundaries / Trust'},
@@ -19,8 +18,7 @@ export function mountChapter(root,chapter,{instant=false}={}){
  if(!instant&&sketch){
   // Sketchbook: a quick fade, the chapter name is written in, the rest follows.
   chapterTween=gsap.timeline();chapterTween.fromTo(panel,{opacity:0},{opacity:1,duration:.2}).fromTo(panel.querySelectorAll('.chapter-part,.chapter-person,.chapter-verb,.chapter-art'),{opacity:0},{opacity:1,duration:.3,stagger:.05},.1).fromTo(panel.querySelectorAll('p,.chapter-begin,.chapter-navigation'),{opacity:0},{opacity:1,duration:.3,stagger:.06},.55);
-  const h1=panel.querySelector('h1'),written=wordsIn(h1,{delay:.12});
-  chapterTween.call(()=>doodle(h1,Number(chapter.number)+2),null,.12+written+.08);
+  wordsIn(panel.querySelector('h1'),{delay:.12});
  }
  else if(!instant){chapterTween=gsap.timeline();chapterTween.fromTo(panel,{opacity:0},{opacity:1,duration:.35}).fromTo(panel.querySelectorAll('.chapter-part,.chapter-person,.chapter-verb'),{opacity:0,y:15},{opacity:1,y:0,duration:.65,stagger:.08},.15).fromTo(panel.querySelector('h1'),{opacity:0,y:65,rotationX:-30},{opacity:1,y:0,rotationX:0,duration:1.1,ease:'expo.out'},.35).fromTo(panel.querySelectorAll('p,.chapter-begin,.chapter-navigation'),{opacity:0},{opacity:1,duration:.65,stagger:.1},.75);}
 }

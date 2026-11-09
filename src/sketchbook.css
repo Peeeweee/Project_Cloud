@@ -1,6 +1,15 @@
-/* Sketchbook theme: warm paper, ink, handwriting, highlighter. Active when <html> has .sketch
+/* Sketchbook theme: warm paper, ink, handwriting. Active when <html> has .sketch
    (the default; ?mars turns it off). Colors for every existing rule come from sketch-colors.css;
    this file sets the paper, the type, and the hand-drawn details on top. */
+
+/* The handwriting faces draw their letters small inside the font size, so they are registered
+   again with a size boost: titles +12%, text +10%. ink.js applies the same factors. */
+@font-face { font-family: 'Fuzzy Bubbles Sk'; font-weight: 400; font-display: swap; size-adjust: 112%;
+  src: url('../node_modules/@fontsource/fuzzy-bubbles/files/fuzzy-bubbles-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Fuzzy Bubbles Sk'; font-weight: 700; font-display: swap; size-adjust: 112%;
+  src: url('../node_modules/@fontsource/fuzzy-bubbles/files/fuzzy-bubbles-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Patrick Hand Sk'; font-weight: 400; font-display: swap; size-adjust: 110%;
+  src: url('../node_modules/@fontsource/patrick-hand/files/patrick-hand-latin-400-normal.woff2') format('woff2'); }
 
 html.sketch {
   --sk-paper: #fdf6f2;
@@ -16,9 +25,9 @@ html.sketch {
   --sk-orange: #f39a2e;
   --sk-accent: #2f63bf;
   --sk-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
-  --font-display: 'Fuzzy Bubbles', 'Patrick Hand', cursive;
-  --font-editorial: 'Patrick Hand', cursive;
-  --font-technical: 'Patrick Hand', cursive;
+  --font-display: 'Fuzzy Bubbles Sk', 'Patrick Hand Sk', cursive;
+  --font-editorial: 'Patrick Hand Sk', cursive;
+  --font-technical: 'Patrick Hand Sk', cursive;
   font-family: var(--font-technical);
   color: var(--sk-ink);
   background: var(--sk-paper);
@@ -51,31 +60,16 @@ html.sketch :is(h1, h2, h3) { letter-spacing: -.005em; }
 /* no glows or drop-shadowed text on paper */
 html.sketch *, html.sketch *::before, html.sketch *::after { text-shadow: none !important; }
 
-/* highlighter: the second line of a title gets a yellow marker stroke instead of orange ink */
-html.sketch {
-  --sk-hl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40' preserveAspectRatio='none'%3E%3Cpath d='M3 13 C40 7 110 9 197 10 L195 33 C140 37 70 34 5 37 Z' fill='%23fde384'/%3E%3Cpath d='M8 17 C60 14 130 15 192 16' stroke='%23f2c94c' stroke-width='3' fill='none' opacity='.5'/%3E%3C/svg%3E");
-}
-html.sketch :is(.kn-title .kn-l2, .layout-finale h1 span[data-reveal]:last-of-type, .brake-word, .kn-brake strong span) {
-  color: var(--sk-ink) !important;
-  background: var(--sk-hl) center / 100% 100% no-repeat;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  padding: 0 .14em;
-  margin: 0 -.06em;
-}
-
 /* "A budget alert is not a brake." is a note taped onto the page */
 html.sketch .kn-brake {
   background: #fff3b4 !important;
   box-shadow: 0 1px 0 rgba(0, 0, 0, .05), 0 16px 30px -18px rgba(60, 40, 30, .55) !important;
   border-radius: 3px 3px 14px 3px;
-  transform: rotate(-1.3deg);
 }
 html.sketch .kn-brake::before {
   content: ''; position: absolute; left: 50%; top: -14px; width: 120px; height: 28px; margin-left: -60px;
   background: rgba(227, 220, 247, .85); transform: rotate(2deg); border-radius: 2px;
 }
-html.sketch .layout-finale h1 span[data-reveal]:last-of-type { display: table; margin-left: auto; margin-right: auto; }
 
 /* ---------- hand-made details ---------- */
 
@@ -100,18 +94,6 @@ html.sketch .quiz-live > button[aria-pressed="true"], html.sketch .decision-choi
 html.sketch .quiz-live > button[aria-pressed="true"] > span { color: var(--sk-accent) !important; }
 /* no legibility veils over the drawings: the page is already light */
 html.sketch #scene::after { display: none !important; }
-
-/* the highlighter is drawn across after the words are written */
-html.sketch :is(.kn-title .kn-l2, .layout-finale h1 span[data-reveal]:last-of-type, .kn-brake strong span) {
-  background-position: left center;
-  transition: background-size .45s cubic-bezier(.3, .7, .3, 1) .4s;
-}
-html.sketch .kn-title .kn-l2:not(.is-on), html.sketch .kn-brake:not(.is-on) strong span { background-size: 0% 100%; }
-html.sketch .layout-finale h1 span[data-reveal]:last-of-type { animation: sk-highlight .5s cubic-bezier(.3, .7, .3, 1) .9s both; }
-@keyframes sk-highlight { from { background-size: 0% 100%; } to { background-size: 100% 100%; } }
-@media (prefers-reduced-motion: reduce) {
-  html.sketch :is(.kn-title .kn-l2, .layout-finale h1 span[data-reveal]:last-of-type, .kn-brake strong span) { transition: none; animation: none; }
-}
 
 /* "Know your side": two facing pages instead of a light and a dark half */
 html.sketch body.tone-split .boundary-title :is(h1, .layout-subtitle) {
@@ -169,7 +151,33 @@ html.sketch :is(.chapter-begin, .enter-button, .quiz-live > button, .decision-ch
   transform: translateY(0) scale(.98);
 }
 
-/* hand-drawn doodle next to each title (drawn by doodles.js) */
-html.sketch .sk-doodle { position: absolute; pointer-events: none; overflow: visible; z-index: 1; }
-html.sketch .sk-doodle path { fill: none; stroke-width: 3.6; stroke-linecap: round; stroke-linejoin: round; }
+
 html.sketch body.tone-split .intro-kicker { background: none !important; color: var(--sk-ink-soft) !important; }
+
+/* build steps rise in without the old camera-blur */
+html.sketch .art-slide [data-build] { filter: none !important; }
+
+/* no on-screen hints or chrome: the presenter uses the keys (→ / Space, H shows the controls) */
+html.sketch :is(.chrome-toggle, .intro-cue, .intro-kicker, .chapter-navigation) { display: none !important; }
+
+/* bigger drawings where the page had empty space */
+@media (min-width: 761px) {
+  html.sketch body.view-faults .scene-slot { left: 40%; top: 2%; width: 58%; height: 72%; }
+  html.sketch body.view-orbital .scene-slot { left: 25%; top: 25%; width: 50%; height: 58%; }
+}
+
+/* the traffic chart keeps flowing: a blue arrow runs along the line, trailing a soft stroke */
+html.sketch .chart-flow { fill: none; stroke: #2f63bf; stroke-width: 6; stroke-linecap: round; opacity: .28;
+  stroke-dasharray: 9 91; animation: sk-flow 3.4s linear infinite; }
+html.sketch .chart-runner path { fill: #2f63bf; stroke: #fdf6f2; stroke-width: 1.5; }
+@keyframes sk-flow { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { html.sketch .chart-flow { animation: none; } html.sketch .chart-runner { display: none; } }
+
+/* small fits for the bigger handwriting (desktop) */
+html.sketch .cover-edition { display: none !important; }
+@media (min-width: 761px) {
+  html.sketch .root-routine section { padding-top: 8px !important; padding-bottom: 6px !important; }
+  html.sketch .root-routine section h2 { margin: 2px 0 4px !important; }
+  html.sketch .layout-proof .proof-note { translate: 0 10px; }
+  html.sketch .firewall-fields { translate: 0 14px; }
+}

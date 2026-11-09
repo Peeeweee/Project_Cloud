@@ -22,21 +22,21 @@ export function textLeaves(root) {
   return leaves;
 }
 
-// One live split per element: rapid clicks restore the previous split before starting another.
+// One live animation per element: rapid clicks stop the previous one (and restore the text)
+// before starting another.
 const live = new Map();
+function stop(entry) {
+  if (entry.split) gsap.killTweensOf(pieces(entry.split));
+  entry.timer?.kill(); entry.tl?.kill(); entry.cleanup?.(); entry.split?.revert();
+}
 export function clearWords(root) {
   for (const [leaf, entry] of live) {
-    if (root === leaf || root.contains(leaf)) {
-      gsap.killTweensOf(pieces(entry.split));
-      entry.timer?.kill(); entry.tl?.kill();
-      entry.split.revert();
-      live.delete(leaf);
-    }
+    if (root === leaf || root.contains(leaf)) { stop(entry); live.delete(leaf); }
   }
 }
 function freshSplit(leaf) {
   const old = live.get(leaf);
-  if (old) { gsap.killTweensOf(pieces(old.split)); old.timer?.kill(); old.tl?.kill(); old.split.revert(); }
+  if (old) stop(old);
   const split = SplitText.create(leaf, { type: 'words', mask: 'words', aria: 'none' });
   const entry = { split };
   live.set(leaf, entry);
@@ -56,32 +56,56 @@ const isHeading = leaf => {
   if (/flex|grid/.test(st.display)) return false;
   return parseFloat(st.fontSize) >= 34 && (leaf.matches('h1,h2,h3,strong,.kn-l1,.kn-l2') || !!leaf.closest('h1,h2,h3'));
 };
+// The text itself is never split or re-flowed in the sketch theme, so its spacing never changes
+// when an animation ends: the pen drawing sits on top of the untouched text (ink.js).
 function writeIn(leaf, delay) {
   const old = live.get(leaf);
-  if (old) { gsap.killTweensOf(pieces(old.split)); old.timer?.kill(); old.tl?.kill(); old.split.revert(); }
-  const split = SplitText.create(leaf, { type: 'words,chars', aria: 'none' });
-  const entry = { split };
+  if (old) { stop(old); live.delete(leaf); }
+  const entry = {};
   live.set(leaf, entry);
-  const chars = split.chars;
-  const done = () => { if (live.get(leaf) === entry) { split.revert(); live.delete(leaf); } };
-  // Preferred: each letter traced in ink along its real outline, then filled (ink.js).
-  const ink = inkWrite(leaf, chars, delay, done);
-  if (ink) { entry.tl = ink.tl; return ink.duration; }
-  // Fallback while the font outlines are still loading: a left-to-right reveal per letter.
-  const per = Math.min(.03, .45 / Math.max(chars.length, 1));
-  gsap.fromTo(chars, { clipPath: 'inset(-30% 100% -30% -10%)' },
-    { clipPath: 'inset(-30% -10% -30% -10%)', duration: .14, ease: 'none', delay, stagger: per, onComplete: done });
-  return chars.length * per + .14;
+  const ink = inkWrite(leaf, delay, () => { if (live.get(leaf) === entry) { entry.cleanup?.(); live.delete(leaf); } });
+  if (ink) { entry.tl = ink.tl; entry.cleanup = ink.cleanup; return ink.duration; }
+  live.delete(leaf);
+  return riseIn(leaf, delay) + .3; // outlines still loading: the line simply rises in
 }
+// Other text rises in as a whole line, the way it will finally sit on the page.
+function riseIn(leaf, delay) {
+  const move = getComputedStyle(leaf).display !== 'inline' && canMove(leaf);
+  gsap.fromTo(leaf, { opacity: 0, ...(move ? { y: 10 } : {}) },
+    { opacity: 1, ...(move ? { y: 0 } : {}), duration: .5, delay, ease: 'power3.out', overwrite: 'auto', clearProps: move ? 'opacity,transform' : 'opacity' });
+  return .06;
+}
+
 // Returns when the last heading finishes writing (relative to `delay`).
 function sketchIn(root, delay) {
   clearWords(root);
   let at = delay, end = delay;
   textLeaves(root).forEach(leaf => {
     if (isHeading(leaf)) { const d = writeIn(leaf, at); end = Math.max(end, at + d); at += Math.min(.25, d * .35); }
-    else gsap.fromTo(leaf, { opacity: 0 }, { opacity: 1, duration: .3, delay: at, ease: 'power1.out', clearProps: 'opacity' });
+    else at += riseIn(leaf, at);
   });
   return Math.max(end, at) - delay;
+}
+
+// Can `el` be moved with a transform without shifting positioned content inside it? (A transform
+// makes the element the containing block of its absolutely positioned descendants.)
+export function canMove(el) {
+  if (getComputedStyle(el).position !== 'static') return true;
+  for (const d of el.querySelectorAll('*')) {
+    const p = getComputedStyle(d).position;
+    if (p === 'fixed' || (p === 'absolute' && !el.contains(d.offsetParent))) return false;
+  }
+  return true;
+}
+// Cards and blocks rise a little and fade in, one after another.
+export function riseBlocks(tl, blocks, at, gap = .08) {
+  blocks.forEach((el, i) => {
+    const move = canMove(el);
+    tl.fromTo(el, { opacity: 0, ...(move ? { y: 18 } : {}) },
+      { opacity: 1, ...(move ? { y: 0 } : {}), duration: .55, ease: 'power3.out', clearProps: move ? 'opacity,transform' : 'opacity' }, at + i * gap);
+    wordsIn(el, { delay: at + i * gap });
+  });
+  return at + blocks.length * gap;
 }
 
 // Reveal the words of every text leaf in `root`, in reading order. Returns the total duration.

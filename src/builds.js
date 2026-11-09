@@ -3,9 +3,8 @@
 // Elements opt in with data-build="n" (shown from step n) and data-until="m" (hidden after step m).
 import { gsap } from 'gsap';
 import { Flip } from 'gsap/Flip';
-import { wordsIn, wordsOut, clearWords } from './choreo.js';
+import { wordsIn, wordsOut, clearWords, riseBlocks } from './choreo.js';
 import { sketch } from './theme.js';
-import { placeDoodle, hideDoodle } from './doodles.js';
 gsap.registerPlugin(Flip);
 
 const money = v => '$' + v.toFixed(2);
@@ -106,8 +105,7 @@ export function applyBuild(root, layout, step, prev, { instant = false, scene } 
   }
   slide.querySelectorAll('.kn-dots i').forEach((dot, i) => dot.classList.toggle('is-on', i <= step));
   if (instant) slide.classList.add('kn-instant'); else slide.classList.remove('kn-instant');
-  if (flipState) { if (sketch) hideDoodle(title); Flip.from(flipState, { duration: sketch ? .5 : .95, ease: sketch ? 'power2.inOut' : 'power3.inOut', scale: true, onComplete: () => sketch && placeDoodle(title, { fade: true }) }); }
-  else if (sketch && title) placeDoodle(title);
+  if (flipState) Flip.from(flipState, { duration: sketch ? .5 : .95, ease: sketch ? 'power2.inOut' : 'power3.inOut', scale: true });
   build.apply(slide, step, prev ?? -1, { instant, scene });
   if (instant) requestAnimationFrame(() => slide.classList.remove('kn-instant'));
 }
@@ -139,12 +137,7 @@ function applyTitleEntrance(slide,step,{instant,scene}){
  card.inert=!titleOnly;card.setAttribute('aria-hidden',String(!titleOnly));
  if(instant)return;
  const tl=gsap.timeline();titleEntranceTween=tl;
- if(changing){
-  if(sketch)hideDoodle(title);
-  tl.to(title,{...target,duration:sketch?.5:.95,ease:sketch?'power2.inOut':'power3.inOut'},0);
-  // the doodle follows the title to its new place, then reappears
-  if(sketch)tl.call(()=>placeDoodle(title,{fade:true}),null,.5);
- }
+ if(changing)tl.to(title,{...target,duration:sketch?.5:.95,ease:sketch?'power2.inOut':'power3.inOut'},0);
  if(titleOnly)return;
  // Never animate the heading or an ancestor that could move it a second time.
  const parts=[];
@@ -154,9 +147,14 @@ function applyTitleEntrance(slide,step,{instant,scene}){
  }};
  visit(content);
  // Structural wrappers contain positioned labels: a transform would change their containing block.
- const q=sketch?{at:.3,dur:.3,gap:.05,end:.45}:{at:.25,dur:.7,gap:.07,end:.55};
- tl.fromTo(parts,{opacity:0},{opacity:1,duration:q.dur,stagger:q.gap,ease:sketch?'power1.out':'power3.out',clearProps:'opacity'},q.at);
- parts.forEach((part,i)=>wordsIn(part,{delay:q.at+i*(sketch?q.gap:.08)}));
- if(bottom)tl.fromTo(bottom,{opacity:0,y:sketch?0:8},{opacity:1,y:0,duration:sketch?.3:.55,clearProps:'opacity,transform'},q.end);
+ if(sketch){
+  // the title has moved out of the way; the rest of the page rises in, block by block
+  const after=riseBlocks(tl,parts,.3);
+  if(bottom)riseBlocks(tl,[bottom],after);
+  scene?.resize?.();return;
+ }
+ tl.fromTo(parts,{opacity:0},{opacity:1,duration:.7,stagger:.07,ease:'power3.out',clearProps:'opacity'},.25);
+ parts.forEach((part,i)=>wordsIn(part,{delay:.25+i*.08}));
+ if(bottom)tl.fromTo(bottom,{opacity:0,y:8},{opacity:1,y:0,duration:.55,clearProps:'opacity,transform'},.55);
  scene?.resize?.();
 }

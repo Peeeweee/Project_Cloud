@@ -1,8 +1,4 @@
 import { sketch } from './theme.js';
-import { doodle } from './doodles.js';
-import '@fontsource/fuzzy-bubbles/latin-400.css';
-import '@fontsource/fuzzy-bubbles/latin-700.css';
-import '@fontsource/patrick-hand/latin-400.css';
 import '@fontsource/syne/latin-600.css';
 import '@fontsource/syne/latin-800.css';
 import '@fontsource/instrument-serif/latin-400-italic.css';
@@ -28,7 +24,7 @@ import './sketch-colors.css';
 import './sketchbook.css';
 import {chapterFor,mountChapter,dismissChapter,clearChapter} from './chapters.js';
 import { buildSteps, applyBuild, clearBuilds } from './builds.js';
-import { wordsIn, clearWords } from './choreo.js';
+import { wordsIn, clearWords, riseBlocks } from './choreo.js';
 import {labState,labHTML,labDesign,resetLab} from './lab.js';
 import { directions, composeSlide } from './direction.js';
 import { gsap } from 'gsap';
@@ -105,7 +101,7 @@ function labelRows(items, className='concept-list') {
   return `<div class="${className}">${items.map(([label,text])=>`<div><span>${esc(label)}</span><strong>${esc(text)}</strong></div>`).join('')}</div>`;
 }
 function lineChart() {
-  return `<div class="signal-chart"><div class="chart-top"><span>REQUEST VOLUME</span><span class="badge">SIMULATED</span></div><svg viewBox="0 0 600 150" role="img" aria-label="Simulated traffic rises sharply at 14:20, followed by an audit event"><path class="chart-grid" d="M0 30h600M0 75h600M0 120h600"/><path class="chart-area" d="M0 118L40 113 80 116 120 106 160 112 200 99 240 105 280 86 310 100 340 35 365 12 390 49 420 37 460 52 500 42 550 56 600 48V150H0Z"/><path class="chart-line" d="M0 118L40 113 80 116 120 106 160 112 200 99 240 105 280 86 310 100 340 35 365 12 390 49 420 37 460 52 500 42 550 56 600 48"/><circle cx="365" cy="12" r="5"/></svg><div class="chart-axis"><span>14:00</span><span>14:20 / SPIKE</span><span>14:40</span></div><div class="event-row"><span class="dot"></span><strong>14:21</strong><span>New resource created · audit event</span></div></div>`;
+  return `<div class="signal-chart"><div class="chart-top"><span>REQUEST VOLUME</span><span class="badge">SIMULATED</span></div><svg viewBox="0 0 600 150" role="img" aria-label="Simulated traffic rises sharply at 14:20, followed by an audit event"><path class="chart-grid" d="M0 30h600M0 75h600M0 120h600"/><path class="chart-area" d="M0 118L40 113 80 116 120 106 160 112 200 99 240 105 280 86 310 100 340 35 365 12 390 49 420 37 460 52 500 42 550 56 600 48V150H0Z"/><path class="chart-line" d="M0 118L40 113 80 116 120 106 160 112 200 99 240 105 280 86 310 100 340 35 365 12 390 49 420 37 460 52 500 42 550 56 600 48"/>${sketch?'<path class="chart-flow" pathLength="100" d="M0 118L40 113 80 116 120 106 160 112 200 99 240 105 280 86 310 100 340 35 365 12 390 49 420 37 460 52 500 42 550 56 600 48"/><g class="chart-runner"><path d="M-10 -6 L8 0 L-10 6 Z"/><animateMotion dur="3.4s" repeatCount="indefinite" rotate="auto" path="M0 118L40 113 80 116 120 106 160 112 200 99 240 105 280 86 310 100 340 35 365 12 390 49 420 37 460 52 500 42 550 56 600 48"/></g>':''}<circle cx="365" cy="12" r="5"/></svg><div class="chart-axis"><span>14:00</span><span>14:20 / SPIKE</span><span>14:40</span></div><div class="event-row"><span class="dot"></span><strong>14:21</strong><span>New resource created · audit event</span></div></div>`;
 }
 function pricingHTML() {
   const hours = pricingPart ? 176 : 730, onDemand=hours*.1, committed=43.8;
@@ -183,7 +179,9 @@ function gate() {
 function resetSlideInteractions(){pricingPart=false;saleDay=false;quizAnswer=null;step=0;resetLab();}
 // Next/Back play a slide's build steps before changing slides; Back lands on the previous slide's last step.
 function setStep(n){navigationTween?.progress(1);clearWords(main);const prev=step;step=n;applyBuild(main,directions[index].layout,step,prev,{instant:reducedMotion.matches,scene});$('#announcement').textContent=`Slide ${index+1}. Step ${step+1} of ${buildSteps(directions[index].layout)}.`;}
-function beginChapter(){if(!chapterActive)return;chapterActive=false;$('#announcement').textContent=`${slides[index].title.replace(/\n/g,' ')}. Next to reveal the slide.`;dismissChapter(main,{instant:reducedMotion.matches,onComplete:()=>{if(step===0&&!chapterActive){const title=main.querySelector('.live-moving-title')||main.querySelector('.kn-title');if(title&&!reducedMotion.matches&&sketch){const written=wordsIn(title);gsap.delayedCall(written+.08,()=>doodle(title,index));}else if(title&&!reducedMotion.matches){if(title.classList.contains('live-moving-title'))gsap.fromTo(title,{opacity:0},{opacity:1,duration:.6,clearProps:'opacity'});else wordsIn(title);}}scene.resize();}});}
+function beginChapter(){if(!chapterActive)return;chapterActive=false;$('#announcement').textContent=`${slides[index].title.replace(/\n/g,' ')}. Next to reveal the slide.`;// Sketchbook: the title is hidden and its writing queued before the card fades, so it never shows early.
+if(sketch&&step===0&&!reducedMotion.matches){const title=main.querySelector('.live-moving-title')||main.querySelector('.kn-title');if(title)wordsIn(title,{delay:.24});}
+dismissChapter(main,{instant:reducedMotion.matches,onComplete:()=>{if(step===0&&!chapterActive){const title=main.querySelector('.live-moving-title')||main.querySelector('.kn-title');if(sketch){}else if(title&&!reducedMotion.matches){if(title.classList.contains('live-moving-title'))gsap.fromTo(title,{opacity:0},{opacity:1,duration:.6,clearProps:'opacity'});else wordsIn(title);}}scene.resize();}});}
 function advance(){if(chapterActive)return beginChapter();if(mode!=='slides')return showSlide(0,{focus:true});if(step<buildSteps(directions[index].layout)-1)setStep(step+1);else showSlide(index+1);}
 function retreat(){if(mode!=='slides')return;if(chapterActive){if(index>0)showSlide(index-1,{atEnd:true});return;}if(step>0)setStep(step-1);else if(chapterFor(slides[index].id)){chapterActive=true;mountChapter(main,chapterFor(slides[index].id),{instant:reducedMotion.matches});}else if(index>0)showSlide(index-1,{atEnd:true});}
 // Sketchbook arrival: the old page fades first, then the title is written in letter by letter and
@@ -200,15 +198,11 @@ function sketchArrival(outgoing,slide,art,atEnd){
   const t0=outgoing?.14:.05;
   const heroOnly=Boolean(main.querySelector('.has-title-entrance'))&&step===0;
   let at=t0;
-  if(title&&!(chapterFor(slide.id)&&!atEnd)){
-    const written=wordsIn(title,{delay:t0});at+=Math.min(.35,written*.6);
-    // once the title is written, a little doodle is drawn beside it
-    if(slide.kind!=='lab')tl.call(()=>doodle(title,index),null,t0+written+.08);
-  }
+  if(title&&!(chapterFor(slide.id)&&!atEnd))at+=Math.min(.35,wordsIn(title,{delay:t0})*.6);
   const parts=heroOnly?[]:entranceTargets(content,title);
-  parts.forEach((part,i)=>{const t=at+i*.06;tl.fromTo(part,{opacity:0},{opacity:1,duration:.3,ease:'power1.out',clearProps:'opacity'},t);wordsIn(part,{delay:t});});
+  const after=riseBlocks(tl,parts,at+.05);
   const bottom=main.querySelector('.slide-bottom');
-  if(bottom&&!heroOnly)tl.fromTo(bottom,{opacity:0},{opacity:1,duration:.3,ease:'power1.out',clearProps:'opacity'},at+parts.length*.06);
+  if(bottom&&!heroOnly)riseBlocks(tl,[bottom],after);
   if(!heroOnly&&art.layout==='signal')tl.fromTo('.chart-line',{strokeDasharray:900,strokeDashoffset:900},{strokeDashoffset:0,duration:.9,ease:'power2.out'},at);
   if(!heroOnly&&art.layout==='proof')tl.fromTo('.proof-signature b',{left:'0%'},{left:'95%',duration:.9,ease:'power2.inOut'},at);
 }
@@ -248,7 +242,6 @@ function showSlide(nextIndex, { updateHash=true, instant=false, focus=false, atE
   if(slide.kind==='lab')scene.lab?.(labState,true);
   applyBuild(main,directions[index].layout,step,null,{instant:true,scene});
   if(!instant && !reducedMotion.matches && sketch) sketchArrival(outgoing,slide,art,atEnd);
-  else if(sketch){if(slide.kind!=='lab'&&!(chapterFor(slide.id)&&!atEnd))doodle(main.querySelector('#slide-title'),index);outgoing?.remove();}
   else if(!instant && !reducedMotion.matches) {
     const direction=index>=previous?1:-1;
     const tl=gsap.timeline();navigationTween=tl;

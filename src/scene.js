@@ -38,7 +38,9 @@ export function createScene(host, reducedMotion) {
   const diagramCamera = new THREE.OrthographicCamera(-5,5,5,-5,.1,100);
   let camera=perspectiveCamera;
   camera.position.set(0,0,10);
-  const pivot = new THREE.Group(); scene.add(pivot);
+  // Sketchbook idle motion turns this wrapper; the pivot inside keeps its pointer parallax.
+  const idle = new THREE.Group(); scene.add(idle);
+  const pivot = new THREE.Group(); idle.add(pivot);
   scene.add(new THREE.AmbientLight(0xfff4e6, 1.15));
   const light = new THREE.DirectionalLight(0xfff0dc, 2.4); light.position.set(-3, 5, 6); scene.add(light);
   const rim = new THREE.DirectionalLight(0xffb48a, .5); rim.position.set(5, -1, -2); scene.add(rim);
@@ -142,12 +144,20 @@ export function createScene(host, reducedMotion) {
   const cloudPuffs=[[-2.05,-.35,0,1],[-.85,-.5,.35,1.15],[.45,-.45,.25,1.2],[1.75,-.38,0,1],[2.65,-.62,-.1,.7],[-2.85,-.62,-.1,.66],
     [-1.3,.45,0,1.05],[.1,.88,-.1,1.38],[1.35,.42,.12,1],[.55,1.62,-.35,.82],[-.6,1.3,-.3,.8],[0,0,-.9,1.35]];
   const cloudBank=new THREE.Group(), COVER_CLOUD=.45;
+  // "Be ready for the bad day": pen-stroke rain falls from the cloud on the incident slide.
+  const rain=new THREE.Group(), drops=[];let cloudLift=0;
   const planetSurface=sketch?new THREE.Group():mesh(new THREE.SphereGeometry(2.9,96,64),new THREE.ShaderMaterial({vertexShader,fragmentShader,uniforms:planetUniforms}),planet);
   if(sketch){
     planet.add(planetSurface);
     const cloudMat=toon(0xfffbf2);
     for(const [x,y,z,r] of cloudPuffs)mesh(new THREE.SphereGeometry(r,40,28),cloudMat,planetSurface,[x,y-.2,z]);
     // On the cover the cloud widens into a sea of clouds across the bottom of the page.
+    planet.add(rain);rain.visible=false;
+    const dropMat=new THREE.MeshBasicMaterial({color:0x2f63bf});
+    for(let i=0;i<26;i++){
+      const d=mesh(new THREE.CapsuleGeometry(.035,.32,3,6),dropMat,rain,[-2.4+(i*.19)%4.8+((i*7)%3)*.05,-1.1-((i*.37)%1.8),((i*5)%3-1)*.3]);
+      d.rotation.z=.18;d.userData.speed=2.6+(i%5)*.35;drops.push(d);
+    }
     planetSurface.add(cloudBank);
     // [x, height of the puff's top, z, radius]
     for(const [x,top,z,r] of [[-3.55,1.55,.1,.9],[-4.6,2.05,0,1.12],[-5.85,1.7,-.2,1.02],[-7.1,2.2,0,1.1],[-8.4,1.8,-.1,1],
@@ -504,7 +514,7 @@ export function createScene(host, reducedMotion) {
   function setDesign(design,instant=false){
     const previousShape=!instant&&!reducedMotion.matches?silhouette(current):null;
     morphTween?.kill();morphMaterial.opacity=0;
-    if(sketch){gsap.killTweensOf(host);host.style.opacity='';}
+    if(sketch){gsap.killTweensOf(host);host.style.opacity='';idle.rotation.y=0;}
     active=true;host.hidden=false;currentDesign=design;
     camera=['terraces','time','privilege','duality','ownership','keynote-cost','price-duel','keynote-price','expansion','keynote-elastic','keynote-finops','cycle','blueprint','proof','horizon','lab'].includes(design.layout)?diagramCamera:perspectiveCamera;
     spatialTween?.kill();
@@ -512,7 +522,8 @@ export function createScene(host, reducedMotion) {
     const g=groups[design.scene]||planet;
     Object.values(groups).forEach(other=>{other.visible=false;gsap.killTweensOf(other.position);gsap.killTweensOf(other.scale);gsap.killTweensOf(other.rotation);other.children.forEach(child=>{gsap.killTweensOf(child.position);gsap.killTweensOf(child.scale);});});
     current=g;g.visible=true;
-    if(sketch){const cover=design.layout==='horizon';cloudBank.visible=cover;planetSurface.scale.setScalar(cover?COVER_CLOUD:1);}stars.visible=!sketch&&!['paper','split','rust'].includes(design.tone);
+    if(sketch&&g===satellite)g.visible=false; // no satellite in the notebook: the chart tells the story
+    if(sketch){const cover=design.layout==='horizon';cloudBank.visible=cover;planetSurface.scale.setScalar(cover?COVER_CLOUD:1);rain.visible=design.layout==='procedure';cloudLift=rain.visible?.65:0;}stars.visible=!sketch&&!['paper','split','rust'].includes(design.tone);
     g.children.forEach(child=>{const home=homePositions.get(child);if(home)child.position.copy(home);});
     const position=[0,0,0],scale=design.scale;
     // the cloud is drawn upright; the Mars tilts were for showing the planet's surface
@@ -671,15 +682,22 @@ export function createScene(host, reducedMotion) {
     }
     // Sketchbook: every drawing floats gently, like a paper cut-out on a breeze (30 fps, only while shown).
     if(sketch&&active&&!document.hidden&&current&&current!==planet&&!reducedMotion.matches){
-      if(time-lastBob<1/30)return;lastBob=time;
+      if(time-lastBob<1/30)return;const dt=Math.min(time-lastBob,.05);lastBob=time;
+      // drawings lined up with labels on the page stay put; the rest turn slowly back and forth
+      const pinned=['keynote-cost','keynote-price','keynote-elastic','keynote-finops','price-duel','lab','gate'].includes(currentDesign?.layout);
+      idle.rotation.y=pinned?0:Math.sin(time*.45)*.24;
       pivot.position.y=Math.sin(time*1.15)*.035;pivot.rotation.z=Math.sin(time*.7)*.014;
+      if(current===fracture)fracture.children.forEach((bit,i)=>{bit.rotation.x+=dt*(.22+(i%3)*.1)*(i%2?1:-1);bit.rotation.y+=dt*(.3+(i%4)*.05);});
+      if(current===systems&&!gsap.isTweening(systems.rotation))systems.rotation.y+=dt*.4;
       render();return;
     }
     if(!active||document.hidden||current!==planet||reducedMotion.matches)return;
     if(time-lastPlanetFrame<1/30)return;
     const elapsed=Math.min(time-lastPlanetFrame,.05);lastPlanetFrame=time;
     // Rotate the surface independently so camera framing and captions stay fixed.
-    if(sketch){planetUniforms.uTime.value+=elapsed;const t=planetUniforms.uTime.value;planetSurface.rotation.y=Math.sin(t*.35)*.12;planetSurface.position.y=Math.sin(t*.8)*.06;render();return;}
+    if(sketch){planetUniforms.uTime.value+=elapsed;const t=planetUniforms.uTime.value;planetSurface.rotation.y=Math.sin(t*.35)*.12;planetSurface.position.y=cloudLift+Math.sin(t*.8)*.06;
+      if(rain.visible)drops.forEach(d=>{d.position.y-=elapsed*d.userData.speed;d.position.x-=elapsed*d.userData.speed*.18;if(d.position.y<-2.9){d.position.y=-1.05;d.position.x+=.52;}});
+      render();return;}
     if(!gsap.isTweening(planetSurface.rotation))planetSurface.rotation.y+=elapsed*.045;
     planetUniforms.uTime.value+=elapsed*.28;
     render();
