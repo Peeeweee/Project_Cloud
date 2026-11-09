@@ -1,3 +1,7 @@
+import './theme.js';
+import '@fontsource/fuzzy-bubbles/latin-400.css';
+import '@fontsource/fuzzy-bubbles/latin-700.css';
+import '@fontsource/patrick-hand/latin-400.css';
 import '@fontsource/syne/latin-600.css';
 import '@fontsource/syne/latin-800.css';
 import '@fontsource/instrument-serif/latin-400-italic.css';
@@ -19,6 +23,8 @@ import './foundation-scenes.css';
 import './operations-scenes.css';
 import './security-additions.css';
 import './soft-illustrations.css';
+import './sketch-colors.css';
+import './sketchbook.css';
 import {chapterFor,mountChapter,dismissChapter,clearChapter} from './chapters.js';
 import { buildSteps, applyBuild, clearBuilds } from './builds.js';
 import { wordsIn, clearWords } from './choreo.js';

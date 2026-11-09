@@ -1,0 +1,105 @@
+/* Sketchbook theme: warm paper, ink, handwriting, highlighter. Active when <html> has .sketch
+   (the default; ?mars turns it off). Colors for every existing rule come from sketch-colors.css;
+   this file sets the paper, the type, and the hand-drawn details on top. */
+
+html.sketch {
+  --sk-paper: #fdf6f2;
+  --sk-paper-2: #f8eee6;
+  --sk-ink: #1f1a1d;
+  --sk-ink-soft: #4a4347;
+  --sk-line: #cdc3bd;
+  --sk-yellow: #fde384;
+  --sk-yellow-deep: #f2c94c;
+  --sk-lav: #e3dcf7;
+  --sk-blue: #3f7de6;
+  --sk-red: #e5483e;
+  --sk-orange: #f39a2e;
+  --sk-accent: #d9541e;
+  --sk-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  --font-display: 'Fuzzy Bubbles', 'Patrick Hand', cursive;
+  --font-editorial: 'Patrick Hand', cursive;
+  --font-technical: 'Patrick Hand', cursive;
+  font-family: var(--font-technical);
+  color: var(--sk-ink);
+  background: var(--sk-paper);
+}
+
+/* every tone is a page of the same sketchbook (!important: the recolor rules for each tone are more specific) */
+html.sketch body[class] {
+  --sk-page: var(--sk-paper);
+  background-color: var(--sk-page) !important;
+  background-image: var(--sk-grain) !important;
+  background-attachment: fixed !important;
+  color: var(--sk-ink) !important;
+  --paper: var(--sk-ink) !important;
+  --muted: var(--sk-ink-soft) !important;
+  --line: rgba(31, 26, 29, .2) !important;
+  --orange: var(--sk-accent) !important;
+}
+/* the old rust slides become a warm, highlighted page; the split slide becomes two facing pages */
+html.sketch body.tone-rust[class] { --sk-page: #fcf0d6; }
+html.sketch body.tone-split[class] {
+  background-image: var(--sk-grain), linear-gradient(90deg, var(--sk-paper) 50%, #fcf0d6 50%) !important;
+}
+html.sketch ::selection { background: var(--sk-yellow); color: var(--sk-ink); }
+
+/* handwriting is narrower and rounder than the old display face: no tight tracking */
+html.sketch :is(h1, h2, h3) { letter-spacing: -.005em; }
+
+/* no glows or drop-shadowed text on paper */
+html.sketch *, html.sketch *::before, html.sketch *::after { text-shadow: none !important; }
+
+/* highlighter: the second line of a title gets a yellow marker stroke instead of orange ink */
+html.sketch {
+  --sk-hl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40' preserveAspectRatio='none'%3E%3Cpath d='M3 13 C40 7 110 9 197 10 L195 33 C140 37 70 34 5 37 Z' fill='%23fde384'/%3E%3Cpath d='M8 17 C60 14 130 15 192 16' stroke='%23f2c94c' stroke-width='3' fill='none' opacity='.5'/%3E%3C/svg%3E");
+}
+html.sketch :is(.kn-title .kn-l2, .layout-finale h1 [data-reveal]:last-child, .brake-word, .kn-brake strong span) {
+  color: var(--sk-ink) !important;
+  background: var(--sk-hl) center / 100% 100% no-repeat;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0 .14em;
+  margin: 0 -.06em;
+}
+
+/* "A budget alert is not a brake." is a note taped onto the page */
+html.sketch .kn-brake {
+  background: #fff3b4 !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .05), 0 16px 30px -18px rgba(60, 40, 30, .55) !important;
+  border-radius: 3px 3px 14px 3px;
+  transform: rotate(-1.3deg);
+}
+html.sketch .kn-brake::before {
+  content: ''; position: absolute; left: 50%; top: -14px; width: 120px; height: 28px; margin-left: -60px;
+  background: rgba(227, 220, 247, .85); transform: rotate(2deg); border-radius: 2px;
+}
+html.sketch .layout-finale h1 [data-reveal]:last-child { display: table; margin-left: auto; margin-right: auto; }
+
+/* ---------- hand-made details ---------- */
+
+/* the group badge: a yellow sticker with a marker label */
+html.sketch .brand-mark {
+  background: var(--sk-yellow); border: 2px solid #e2b93a !important; color: var(--sk-ink);
+  box-shadow: inset 0 -3px 0 rgba(226, 185, 58, .45) !important; font-family: var(--font-display);
+}
+html.sketch .brand-type { font-family: var(--font-display); letter-spacing: .04em; color: var(--sk-ink); }
+html.sketch .brand-type span { font-family: var(--font-technical); letter-spacing: .06em; color: var(--sk-ink-soft); }
+
+/* buttons are drawn with a marker: paper fill, ink outline; the main call to action is yellow */
+html.sketch :is(.chapter-begin, .enter-button) {
+  background: var(--sk-yellow) !important; color: var(--sk-ink) !important;
+  border: 2px solid #e2b93a !important; box-shadow: inset 0 -4px 0 rgba(226, 185, 58, .45) !important;
+}
+html.sketch .chrome-toggle { background: rgba(255, 252, 249, .85) !important; border: 1.6px solid var(--sk-line) !important; color: var(--sk-ink-soft) !important; }
+
+/* choices and tabs look like the motor's option cards: soft outline, yellow when chosen */
+html.sketch .quiz-live > button, html.sketch .decision-choices .quiz > button:not(.quiz-reset), html.sketch .lab-tabs button {
+  background: rgba(255, 252, 249, .7) !important; border: 1.6px solid var(--sk-line) !important;
+  border-radius: 18px !important; color: var(--sk-ink) !important;
+}
+html.sketch .quiz-live > button[aria-pressed="true"], html.sketch .decision-choices .quiz > button[aria-pressed="true"], html.sketch .lab-tabs button[aria-pressed=true] {
+  background: #fdf0c0 !important; border: 2px solid #e7c25a !important; box-shadow: none !important; color: var(--sk-ink) !important;
+}
+html.sketch .quiz-live > button[aria-pressed="true"] > span { color: var(--sk-accent) !important; }
+/* no legibility veils over the drawings: the page is already light */
+html.sketch #scene::after { display: none !important; }

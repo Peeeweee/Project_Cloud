@@ -2,6 +2,16 @@
 
 A cinematic, original Mars-inspired browser presentation on cloud economics, operations, and security. Speaker order: **Paulo → Renan → Earl**. Thirty-four slides, including an interactive Cloud Lab before the final title reprise. The core report takes approximately 27–33 minutes; allow an optional additional 2–3 minutes for the lab, plus questions.
 
+## Sketchbook theme (branch `sketchbook`)
+
+The deck now opens in a hand-drawn sketchbook look: warm paper, ink, Fuzzy Bubbles and Patrick Hand handwriting, yellow highlighter on key title lines, a taped note for "A budget alert is not a brake", pencil hatching in the 3D shading, and a drawn cumulus cloud (a sea of clouds on the cover) where the Mars planet was. Slides, order, builds, notes and the Cloud Lab are unchanged.
+
+- Add `?mars` to the address to present the original Mars design instead (for example `https://peeeweee.github.io/Project_Cloud/?mars`).
+- `src/theme.js` switches the theme; `src/sketchbook.css` holds the paper, type and details.
+- `src/sketch-colors.css` is generated from every stylesheet by `node tools/sketch-theme.mjs`. Run it again after changing any stylesheet.
+- The style is inspired by an interactive electric-motor lesson; no code or assets were copied from it. Fonts are from Fontsource (SIL OFL 1.1).
+
+
 ## Run locally
 
 Requires Node.js 22.12+ (or a compatible recent release).

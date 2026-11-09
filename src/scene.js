@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { gsap } from 'gsap';
 import marsMapUrl from './assets/mars-color.jpg';
+import { sketch } from './theme.js';
 
 export function createScene(host, reducedMotion) {
   let renderer;
@@ -29,7 +30,7 @@ export function createScene(host, reducedMotion) {
   const morphGeometry=new THREE.BufferGeometry();
   const morphPositions=new Float32Array(morphCount*3);
   morphGeometry.setAttribute('position',new THREE.BufferAttribute(morphPositions,3));
-  const morphMaterial=new THREE.PointsMaterial({color:0xd58b58,size:2,sizeAttenuation:false,transparent:true,opacity:0,depthTest:false,depthWrite:false});
+  const morphMaterial=new THREE.PointsMaterial({color:sketch?0x1f1a1d:0xd58b58,size:2,sizeAttenuation:false,transparent:true,opacity:0,depthTest:false,depthWrite:false});
   const morphCloud=new THREE.Points(morphGeometry,morphMaterial);
   morphCloud.frustumCulled=false;morphScene.add(morphCloud);
   let morphTween;
@@ -82,13 +83,29 @@ export function createScene(host, reducedMotion) {
   }
 
   // Cartoon look: three flat light bands (cel shading) instead of glossy metal, plus ink outlines below.
-  const toonRamp=new THREE.DataTexture(new Uint8Array([105,105,105,255,185,185,185,255,255,255,255,255]),3,1);
+  const ramp=sketch?[150,212,255]:[105,185,255];
+  const toonRamp=new THREE.DataTexture(new Uint8Array(ramp.flatMap(v=>[v,v,v,255])),3,1);
   toonRamp.minFilter=toonRamp.magFilter=THREE.NearestFilter;toonRamp.generateMipmaps=false;toonRamp.needsUpdate=true;
-  const toon=(color,extra={})=>new THREE.MeshToonMaterial({color,gradientMap:toonRamp,...extra});
-  const orange = toon(0xe56f3c);
-  const pale = toon(0xf3e8d3);
-  const black = toon(0x3b3f47);
-  const lineMat = new THREE.LineBasicMaterial({ color: 0x8d6c50, transparent: true, opacity: .32 });
+  // Sketchbook: shadow bands get pencil hatching drawn in screen space, like shading on paper.
+  const pencil=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',`#include <opaque_fragment>
+    {
+      float base=max(dot(diffuseColor.rgb,vec3(.299,.587,.114)),.02);
+      float shade=clamp(1.-dot(gl_FragColor.rgb,vec3(.299,.587,.114))/base,0.,1.);
+      vec2 p=gl_FragCoord.xy;
+      float jitter=fract(sin(dot(floor(p/vec2(5.,9.)),vec2(12.9898,78.233)))*43758.5453);
+      float lineA=1.-smoothstep(.12,.32,abs(fract((p.x+p.y*1.15)/6.5+jitter*.18)-.5));
+      float lineB=1.-smoothstep(.12,.3,abs(fract((p.x-p.y*1.1)/7.5)-.5));
+      float hatch=lineA*smoothstep(.1,.22,shade)+lineB*smoothstep(.3,.42,shade)*.8;
+      float grain=fract(sin(dot(p,vec2(91.7,47.3)))*15731.7);
+      vec3 ink=vec3(.122,.102,.114);
+      gl_FragColor.rgb=mix(gl_FragColor.rgb,ink,clamp(hatch,0.,1.)*.42);
+      gl_FragColor.rgb*=.97+grain*.05;
+    }`);};
+  const toon=(color,extra={})=>{const m=new THREE.MeshToonMaterial({color,gradientMap:toonRamp,...extra});if(sketch)m.onBeforeCompile=pencil;return m;};
+  const orange = toon(sketch?0xf07a4a:0xe56f3c);
+  const pale = toon(sketch?0xfdf3d8:0xf3e8d3);
+  const black = toon(sketch?0x7d93c4:0x3b3f47);
+  const lineMat = new THREE.LineBasicMaterial({ color: sketch?0x1f1a1d:0x8d6c50, transparent: true, opacity: sketch?.5:.32 });
   const groups = {};
   const make = name => { const g = new THREE.Group(); groups[name] = g; pivot.add(g); g.visible = false; return g; };
   const mesh = (geometry, material, parent, position = [0,0,0]) => {
@@ -121,8 +138,23 @@ export function createScene(host, reducedMotion) {
       float edge=pow(1.-max(vNormal.z,0.),3.);
       col=col*(.025+diffuse*1.6)+vec3(.7,.19,.05)*edge*.16*diffuse;
       gl_FragColor=vec4(col,1.); }`;
-  const planetSurface=mesh(new THREE.SphereGeometry(2.9,96,64),new THREE.ShaderMaterial({vertexShader,fragmentShader,uniforms:planetUniforms}),planet);
-  new THREE.TextureLoader().load(marsMapUrl,texture=>{
+  // Sketchbook: the planet becomes a hand-drawn cumulus cloud ("Beyond the cloud") with the same size.
+  const cloudPuffs=[[-2.05,-.35,0,1],[-.85,-.5,.35,1.15],[.45,-.45,.25,1.2],[1.75,-.38,0,1],[2.65,-.62,-.1,.7],[-2.85,-.62,-.1,.66],
+    [-1.3,.45,0,1.05],[.1,.88,-.1,1.38],[1.35,.42,.12,1],[.55,1.62,-.35,.82],[-.6,1.3,-.3,.8],[0,0,-.9,1.35]];
+  const cloudBank=new THREE.Group(), COVER_CLOUD=.45;
+  const planetSurface=sketch?new THREE.Group():mesh(new THREE.SphereGeometry(2.9,96,64),new THREE.ShaderMaterial({vertexShader,fragmentShader,uniforms:planetUniforms}),planet);
+  if(sketch){
+    planet.add(planetSurface);
+    const cloudMat=toon(0xfffbf2);
+    for(const [x,y,z,r] of cloudPuffs)mesh(new THREE.SphereGeometry(r,40,28),cloudMat,planetSurface,[x,y-.2,z]);
+    // On the cover the cloud widens into a sea of clouds across the bottom of the page.
+    planetSurface.add(cloudBank);
+    // [x, height of the puff's top, z, radius]
+    for(const [x,top,z,r] of [[-3.55,1.55,.1,.9],[-4.6,2.05,0,1.12],[-5.85,1.7,-.2,1.02],[-7.1,2.2,0,1.1],[-8.4,1.8,-.1,1],
+      [3.5,1.6,.1,.9],[4.5,2.15,0,1.15],[5.8,1.7,-.2,1.02],[7.05,2.1,0,1.1],[8.35,1.85,-.1,1]])
+      mesh(new THREE.SphereGeometry(r,36,24),cloudMat,cloudBank,[x,top-r,z]);
+  }
+  if(!sketch)new THREE.TextureLoader().load(marsMapUrl,texture=>{
     texture.colorSpace=THREE.NoColorSpace;
     texture.anisotropy=Math.min(renderer.capabilities.getMaxAnisotropy(),4);
     const previous=planetSurface.material;
@@ -142,7 +174,7 @@ export function createScene(host, reducedMotion) {
     previous.dispose();render();
   },undefined,()=>render());
   // Very faint atmospheric rim, without a full-screen bloom pass.
-  mesh(new THREE.SphereGeometry(2.93, 56, 36), new THREE.ShaderMaterial({
+  if(!sketch)mesh(new THREE.SphereGeometry(2.93, 56, 36), new THREE.ShaderMaterial({
     vertexShader,
     uniforms:planetUniforms,
     fragmentShader: `varying vec3 vNormal; varying vec3 vPos; void main(){float f=pow(1.-abs(vNormal.z),4.);float l=max(dot(vNormal,normalize(vec3(-.85,.65,1.))),0.);gl_FragColor=vec4(.94,.36,.14,f*l*.32);}`,
@@ -190,7 +222,7 @@ export function createScene(host, reducedMotion) {
 
   // Slide-specific physical scenes. Geometry is intentionally inexpensive;
   // the spatial composition, rather than a costly effect pass, does the work.
-  function wireBox(parent,size,pos,color=0x9a826b){
+  function wireBox(parent,size,pos,color=0x9a826b){if(sketch)color=0x4a4347;
     const object=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(...size)),new THREE.LineBasicMaterial({color,transparent:true,opacity:.55}));object.position.set(...pos);parent.add(object);return object;
   }
   function path(parent,points,mat=pale,radius=.018){
@@ -315,8 +347,8 @@ export function createScene(host, reducedMotion) {
   box(alert,[.14,.85,.1],[0,.2,.4],pale);box(alert,[.14,.14,.1],[0,-.5,.4],pale);
 
   const incident=make('lab-incident');
-  const incidentRed=toon(0xf0643a);
-  const incidentPathMat=toon(0xf0643a,{transparent:true,opacity:1});
+  const incidentRed=toon(sketch?0xe5483e:0xf0643a);
+  const incidentPathMat=toon(sketch?0xe5483e:0xf0643a,{transparent:true,opacity:1});
   const exposedKey=new THREE.Group();incident.add(exposedKey);exposedKey.position.set(-3.3,0,0);
   mesh(new THREE.TorusGeometry(.4,.11,12,40),orange,exposedKey,[-.3,.3,0]);
   box(exposedKey,[1,.17,.2],[.4,.3,0],orange);box(exposedKey,[.15,.4,.2],[.7,.15,0],orange);
@@ -332,7 +364,7 @@ export function createScene(host, reducedMotion) {
 
   // Ink outlines: a slightly larger, back-facing copy of each toon mesh. Smooth shapes push along their
   // normals; hard-edged shapes are scaled instead so the outline has no gaps at the corners.
-  const ink=new THREE.MeshBasicMaterial({color:0x2a1b12,side:THREE.BackSide});
+  const ink=new THREE.MeshBasicMaterial({color:sketch?0x1f1a1d:0x2a1b12,side:THREE.BackSide});
   const inkPush=ink.clone();
   inkPush.onBeforeCompile=shader=>{shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n  transformed+=normal*0.032;');};
   Object.values(groups).forEach(g=>g.traverse(object=>{
@@ -374,7 +406,7 @@ export function createScene(host, reducedMotion) {
     if(!from||!to)return;
     const state={progress:0};
     morphPositions.set(from);morphMaterial.opacity=0;
-    morphMaterial.color.set(['paper','split'].includes(currentDesign.tone)?0x9f492a:0xe4a271);
+    morphMaterial.color.set(sketch?0x4a4347:['paper','split'].includes(currentDesign.tone)?0x9f492a:0xe4a271);
     morphTween=gsap.timeline({onUpdate:render});
     morphTween.to(state,{progress:1,duration:1.25,ease:'expo.inOut',onUpdate:()=>{
       const p=state.progress,bend=Math.sin(p*Math.PI)*.16;
@@ -399,6 +431,8 @@ export function createScene(host, reducedMotion) {
       camera.left=-halfHeight*aspect;camera.right=halfHeight*aspect;
       camera.top=halfHeight;camera.bottom=-halfHeight;
       current.position.set(0,(aspect<1?.38:.56)*halfHeight-radius,0);
+      // Sketchbook: the cloud is a bank along the bottom of the page, below the title.
+      if(sketch&&design.scene==='planet')current.position.y=(aspect<1?-.7:-.7)*halfHeight-2.24*COVER_CLOUD*Math.abs(design.scale);
       camera.position.set(0,0,25);camera.lookAt(0,0,0);camera.updateProjectionMatrix();return;
     }
     const slot=document.querySelector('.scene-slot');if(!slot)return;
@@ -476,10 +510,12 @@ export function createScene(host, reducedMotion) {
     gsap.killTweensOf(camera.position);
     const g=groups[design.scene]||planet;
     Object.values(groups).forEach(other=>{other.visible=false;gsap.killTweensOf(other.position);gsap.killTweensOf(other.scale);gsap.killTweensOf(other.rotation);other.children.forEach(child=>{gsap.killTweensOf(child.position);gsap.killTweensOf(child.scale);});});
-    current=g;g.visible=true;stars.visible=!['paper','split','rust'].includes(design.tone);
+    current=g;g.visible=true;
+    if(sketch){const cover=design.layout==='horizon';cloudBank.visible=cover;planetSurface.scale.setScalar(cover?COVER_CLOUD:1);}stars.visible=!sketch&&!['paper','split','rust'].includes(design.tone);
     g.children.forEach(child=>{const home=homePositions.get(child);if(home)child.position.copy(home);});
     const position=[0,0,0],scale=design.scale;
-    const rotation=design.rotation||[0,0,0];
+    // the cloud is drawn upright; the Mars tilts were for showing the planet's surface
+    const rotation=sketch&&design.scene==='planet'?[.1,0,0]:(design.rotation||[0,0,0]);
     pivot.rotation.set(0,0,0);g.position.set(...position);g.rotation.set(...rotation);g.scale.setScalar(scale);fitScene(design);
     position[0]=g.position.x;position[1]=g.position.y;position[2]=g.position.z;
     const targetCameraZ=camera.position.z;
@@ -630,6 +666,7 @@ export function createScene(host, reducedMotion) {
     if(time-lastPlanetFrame<1/30)return;
     const elapsed=Math.min(time-lastPlanetFrame,.05);lastPlanetFrame=time;
     // Rotate the surface independently so camera framing and captions stay fixed.
+    if(sketch){planetUniforms.uTime.value+=elapsed;const t=planetUniforms.uTime.value;planetSurface.rotation.y=Math.sin(t*.35)*.12;planetSurface.position.y=Math.sin(t*.8)*.06;render();return;}
     if(!gsap.isTweening(planetSurface.rotation))planetSurface.rotation.y+=elapsed*.045;
     planetUniforms.uTime.value+=elapsed*.28;
     render();
