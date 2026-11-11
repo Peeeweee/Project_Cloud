@@ -230,6 +230,36 @@ html.sketch .sk-sticker img {
 }
 html.sketch .sk-sticker-left { left: 2%; --tilt: -6deg; }
 html.sketch .sk-sticker-right { right: 2%; top: 38%; --tilt: 5deg; }
+/* cover: a flying bird up and to the left of "Beyond" (its GIF is already transparent). It lives inside
+   the h1 and is sized in em, so it follows the title's size and position on every screen. */
+html.sketch .cover-title h1:has(.sk-cover-bird) { position: relative; }
+html.sketch .sk-cover-bird { position: absolute; left: -1.33em; top: -.89em; width: 1.5em; pointer-events: none; --tilt: -4deg; }
+html.sketch .sk-cover-bird img { display: block; width: 100%; height: auto; animation: sk-stick .55s cubic-bezier(.3, 1.6, .5, 1) 1.4s both; }
+@media (prefers-reduced-motion: reduce) { html.sketch .sk-cover-bird img { animation: none; transform: rotate(var(--tilt)); } }
+@media (max-width: 760px) { html.sketch .sk-cover-bird { display: none; } }
+/* per-slide stickers (stickers.js): placed in % of the content area; they pop in with the slide's
+   content, so on a title-first slide they wait until Next reveals it */
+html.sketch .sk-slide-sticker { position: absolute; pointer-events: none; z-index: 2; }
+html.sketch .sk-slide-sticker img { display: block; width: 100%; height: auto; animation: sk-stick .55s cubic-bezier(.3, 1.6, .5, 1) .6s both; }
+html.sketch .has-title-entrance[data-step="0"] .sk-slide-sticker img { animation: none; }
+/* slide 18: a bigger "≠" between Linux root and Account root (phones keep their own size) */
+@media (min-width: 821px) { html.sketch .privilege-pair .not-equal { font-size: clamp(90px, 9.5vw, 170px); line-height: 1; } }
+/* slide 19: the cat-knight sticker takes the vault dial's place (phones, which hide stickers, keep the dial) */
+@media (min-width: 821px) and (min-height: 501px) { html.sketch .root-vault .vault-dial { visibility: hidden; } }
+/* a slide whose sticker replaces its 3D drawing (stickers.js `hideModel`); a slide that is leaving doesn't count */
+html.sketch body:has(.sk-hide-model:not(.outgoing-scene *)) #scene canvas { opacity: 0; transition: none; }
+/* a black pen line a sticker can stand on; it draws from left to right, then the sticker pops on */
+html.sketch .sk-slide-line {
+  position: absolute; height: 3px; border-radius: 3px; background: var(--sk-ink); pointer-events: none;
+  transform-origin: left center; animation: sk-line .45s ease-out .2s both;
+}
+html.sketch .has-title-entrance[data-step="0"] .sk-slide-line { animation: none; }
+/* upright lines draw from top to bottom and sit over the sticker, so they can hide a GIF's cut edge */
+html.sketch .sk-slide-vline { width: 3px; height: auto; z-index: 3; transform-origin: center top; animation-name: sk-vline; }
+@keyframes sk-vline { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes sk-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@media (prefers-reduced-motion: reduce) { html.sketch .sk-slide-sticker img, html.sketch .sk-slide-line { animation: none; transform: rotate(var(--tilt)); } html.sketch .sk-slide-line { transform: none; } }
+@media (max-width: 820px), (max-height: 500px) { html.sketch .sk-slide-sticker, html.sketch .sk-slide-line { display: none; } }
 @keyframes sk-stick { from { opacity: 0; transform: scale(.5) rotate(calc(var(--tilt) * 3)); } to { opacity: 1; transform: scale(1) rotate(var(--tilt)); } }
 @media (prefers-reduced-motion: reduce) { html.sketch .sk-sticker img { animation: none; transform: rotate(var(--tilt)); } }
 @media (max-width: 760px) { html.sketch .sk-stickers { display: none; } }

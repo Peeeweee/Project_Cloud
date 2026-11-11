@@ -12,6 +12,7 @@ Transitions are calm and quick: the old page fades first, then each title is wri
 
 - Add `?mars` to the address to present the original Mars design instead (for example `https://peeeweee.github.io/Project_Cloud/?mars`).
 - `src/theme.js` switches the theme; `src/sketchbook.css` holds the paper, type and details.
+- Tenor stickers: a flying bird on the cover (`src/direction.js`) and one sticker on each of slides 2, 3, 6, 7, 10, 12, 15, 17–20 and 31, listed in `src/stickers.js` (one line per slide: GIF, place, tilt, optional black lines, optional `hideModel` to hide that slide's 3D drawing). They are linked from Tenor, so they need a connection, and are hidden on phones.
 - `src/sketch-colors.css` is generated from every stylesheet by `node tools/sketch-theme.mjs`. Run it again after changing any stylesheet.
 - The style is inspired by an interactive electric-motor lesson; no code or assets were copied from it. Fonts are from Fontsource (SIL OFL 1.1).
 
